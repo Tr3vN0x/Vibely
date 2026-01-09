@@ -3,13 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vibely | Beyond Social</title>
+    <title>Vibely | Elite Social</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --primary: #a855f7;
-            --twitter-blue: #1d9bf0;
+            --primary: #a855f7; /* Vibely Purple */
             --bg: #000;
             --surface: #16181c;
             --border: #2f3336;
@@ -21,65 +20,58 @@
         body { background: var(--bg); color: var(--text); font-family: 'Plus Jakarta Sans', sans-serif; margin: 0; display: flex; height: 100vh; overflow: hidden; }
         .hidden { display: none !important; }
 
-        /* Sidebar Navigation */
-        .sidebar { width: 280px; border-right: 1px solid var(--border); padding: 1rem 1.5rem; display: flex; flex-direction: column; }
+        /* Navigation Sidebar */
+        .sidebar { width: 275px; border-right: 1px solid var(--border); padding: 1rem 1.5rem; display: flex; flex-direction: column; }
         .logo { font-size: 2rem; font-weight: 800; color: var(--primary); margin-bottom: 2rem; display: flex; align-items: center; gap: 15px; cursor: pointer; }
-        .nav-link { padding: 14px 18px; border-radius: 99px; font-size: 1.2rem; display: flex; align-items: center; gap: 15px; cursor: pointer; transition: 0.2s; margin-bottom: 5px; }
+        .nav-link { padding: 14px 18px; border-radius: 99px; font-size: 1.2rem; display: flex; align-items: center; gap: 20px; cursor: pointer; transition: 0.2s; margin-bottom: 5px; }
         .nav-link:hover { background: rgba(255,255,255,0.1); }
         .nav-link.active { font-weight: 800; color: var(--primary); }
 
-        /* Main Feed */
+        /* Main Viewport */
         .viewport { flex: 1; overflow-y: auto; border-right: 1px solid var(--border); scroll-behavior: smooth; }
-        .header { position: sticky; top: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(12px); padding: 15px 20px; border-bottom: 1px solid var(--border); z-index: 10; font-weight: 800; font-size: 1.2rem; }
+        .header { position: sticky; top: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(12px); padding: 15px 20px; border-bottom: 1px solid var(--border); z-index: 10; font-weight: 800; font-size: 1.2rem; display: flex; justify-content: space-between; align-items: center; }
 
-        /* Posting Box */
+        /* Composer */
         .composer { padding: 20px; border-bottom: 1px solid var(--border); }
-        .composer textarea { width: 100%; background: transparent; border: none; color: #fff; font-size: 1.25rem; outline: none; resize: none; min-height: 80px; }
+        .composer textarea { width: 100%; background: transparent; border: none; color: #fff; font-size: 1.25rem; outline: none; resize: none; min-height: 60px; }
         .preview-img { width: 100%; border-radius: 16px; margin: 10px 0; display: none; border: 1px solid var(--border); }
-        .composer-actions { display: flex; justify-content: space-between; align-items: center; margin-top: 15px; }
-        .btn-vibe { background: var(--primary); color: #fff; border: none; padding: 10px 24px; border-radius: 99px; font-weight: 800; cursor: pointer; box-shadow: 0 4px 12px rgba(168, 85, 247, 0.3); }
+        .composer-actions { display: flex; justify-content: space-between; align-items: center; margin-top: 15px; border-top: 1px solid var(--border); padding-top: 10px;}
+        .btn-vibe { background: var(--primary); color: #fff; border: none; padding: 10px 24px; border-radius: 99px; font-weight: 800; cursor: pointer; }
 
-        /* Post Cards */
+        /* Feed Posts */
         .post { padding: 15px 20px; border-bottom: 1px solid var(--border); display: flex; gap: 15px; animation: slideUp 0.3s ease; }
-        .avatar { width: 50px; height: 50px; border-radius: 50%; background: var(--surface); flex-shrink: 0; display: grid; place-items: center; border: 1px solid var(--border); overflow: hidden; }
+        .avatar { width: 48px; height: 48px; border-radius: 50%; background: var(--surface); flex-shrink: 0; display: grid; place-items: center; border: 1px solid var(--border); overflow: hidden; }
         .post-body { flex: 1; }
-        .post-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
+        .post-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
         .user-info { display: flex; align-items: center; gap: 5px; font-weight: 800; }
-        .post-text { line-height: 1.5; font-size: 1.05rem; margin-bottom: 10px; }
-        .post-image { width: 100%; border-radius: 16px; border: 1px solid var(--border); margin-top: 5px; }
-        
-        /* Interaction Buttons */
+        .post-text { line-height: 1.5; font-size: 1.05rem; }
+        .post-image { width: 100%; border-radius: 16px; border: 1px solid var(--border); margin-top: 10px; }
+
+        /* Action Icons */
         .actions { display: flex; gap: 40px; margin-top: 12px; color: var(--dim); }
         .action-btn { cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 8px; font-size: 0.9rem; }
         .action-btn:hover { color: var(--primary); }
-        .liked { color: #f91880 !important; }
-
+        
         /* Badges */
-        .badge-owner { color: var(--gold); }
-        .badge-elite { color: var(--twitter-blue); }
+        .badge-purple { color: var(--primary); filter: drop-shadow(0 0 4px rgba(168, 85, 247, 0.4)); }
+        .badge-owner { color: var(--gold); filter: drop-shadow(0 0 5px rgba(255, 215, 0, 0.5)); }
 
-        /* Trends Column */
-        .trends { width: 350px; padding: 20px; display: none; }
-        @media (min-width: 1100px) { .trends { display: block; } }
-        .trend-card { background: var(--surface); border-radius: 20px; padding: 20px; border: 1px solid var(--border); }
-
-        @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; } }
     </style>
 </head>
 <body>
 
     <aside class="sidebar">
-        <div class="logo" onclick="location.reload()"><i class="fas fa-skull"></i> VIBELY</div>
+        <div class="logo"><i class="fas fa-skull"></i> VIBELY</div>
         <div class="nav-link active" onclick="nav('home')"><i class="fas fa-house"></i> Home</div>
         <div class="nav-link" onclick="nav('profile')"><i class="fas fa-user"></i> Profile</div>
         <div class="nav-link" onclick="nav('settings')"><i class="fas fa-cog"></i> Settings</div>
-        <div class="nav-link" style="margin-top:auto; color:#ff4444" onclick="logout()"><i class="fas fa-power-off"></i> Logout</div>
+        <div class="nav-link" style="margin-top:auto; color:#ff4444" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</div>
     </aside>
 
     <main class="viewport">
         <div id="view-home">
             <div class="header">Home</div>
-            
             <div class="composer">
                 <textarea id="post-input" placeholder="What's the vibe?"></textarea>
                 <img id="img-preview" class="preview-img">
@@ -88,34 +80,25 @@
                         <i class="far fa-image"></i>
                     </label>
                     <input type="file" id="file-upload" class="hidden" accept="image/*">
-                    <button class="btn-vibe" onclick="handlePost()">Vibe It</button>
+                    <button class="btn-vibe" onclick="handlePost()">Vibe</button>
                 </div>
             </div>
-
             <div id="feed"></div>
         </div>
 
-        <div id="view-profile" class="hidden">
-            <div class="header">Your Profile</div>
-            <div style="padding:40px; text-align:center;">
-                <div class="avatar" style="width:100px; height:100px; margin:0 auto 20px; font-size:2rem;">
-                    <i class="fas fa-ghost"></i>
+        <div id="view-settings" class="hidden">
+            <div class="header">Settings</div>
+            <div style="padding: 20px;">
+                <h3>Account Information</h3>
+                <p style="color:var(--dim)">Manage your display settings and privacy.</p>
+                <hr style="border:0; border-top:1px solid var(--border); margin: 20px 0;">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <span>Verification Request</span>
+                    <button class="btn-vibe" style="background:var(--surface); border:1px solid var(--border)">Apply</button>
                 </div>
-                <h1 id="prof-name">Username</h1>
-                <p id="prof-stats" style="color:var(--dim)">0 Followers · 0 Following</p>
-                <button class="btn-vibe" style="margin-top:20px;">Edit Profile</button>
             </div>
         </div>
     </main>
-
-    <aside class="trends">
-        <div class="trend-card">
-            <h3 style="margin-top:0">Vibely Trends</h3>
-            <p style="color:var(--primary); font-weight:800;">#CyberSkull2026</p>
-            <p style="color:var(--primary); font-weight:800;">#EliteVibers</p>
-            <p style="color:var(--primary); font-weight:800;">#Web3Social</p>
-        </div>
-    </aside>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
@@ -123,7 +106,6 @@
         import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, doc, updateDoc, increment, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
         import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-storage.js";
 
-        // CONFIG (Already set for your project)
         const firebaseConfig = {
             apiKey: "AIzaSyCDll8RH1kzGOf-ixJmSlHXGssOHSMlO3s",
             authDomain: "vibely-5128e.firebaseapp.com",
@@ -141,19 +123,21 @@
 
         let selectedFile = null;
 
-        // Image Selection Logic
+        // --- PREVIEW IMAGE ---
         document.getElementById('file-upload').onchange = (e) => {
             selectedFile = e.target.files[0];
-            const reader = new FileReader();
-            reader.onload = (event) => {
-                const preview = document.getElementById('img-preview');
-                preview.src = event.target.result;
-                preview.style.display = 'block';
-            };
-            reader.readAsDataURL(selectedFile);
+            if (selectedFile) {
+                const reader = new FileReader();
+                reader.onload = (ev) => {
+                    const preview = document.getElementById('img-preview');
+                    preview.src = ev.target.result;
+                    preview.style.display = 'block';
+                };
+                reader.readAsDataURL(selectedFile);
+            }
         };
 
-        // Posting Logic
+        // --- POSTING ---
         window.handlePost = async () => {
             const txt = document.getElementById('post-input').value.trim();
             if(!txt && !selectedFile) return;
@@ -161,40 +145,38 @@
             let imgUrl = null;
             if(selectedFile) {
                 const sRef = ref(storage, `posts/${Date.now()}_${selectedFile.name}`);
-                const snap = await uploadBytes(sRef, selectedFile);
-                imgUrl = await getDownloadURL(snap.ref);
+                await uploadBytes(sRef, selectedFile);
+                imgUrl = await getDownloadURL(sRef);
             }
 
             await addDoc(collection(db, "posts"), {
                 text: txt,
                 image: imgUrl,
                 uid: auth.currentUser.uid,
-                author: auth.currentUser.displayName || "Ghost",
+                author: auth.currentUser.displayName || "NewViber",
                 likes: 0,
-                followers: 0, // In real app, fetch from user profile
+                followers: 0, // In real app, this pulls from user doc
                 createdAt: serverTimestamp()
             });
 
-            // Reset UI
             document.getElementById('post-input').value = "";
             document.getElementById('img-preview').style.display = 'none';
             selectedFile = null;
         };
 
-        // Like Logic
+        // --- LIKE LOGIC ---
         window.likePost = async (id) => {
-            const pRef = doc(db, "posts", id);
-            await updateDoc(pRef, { likes: increment(1) });
+            await updateDoc(doc(db, "posts", id), { likes: increment(1) });
         };
 
-        // Moderation Delete
+        // --- MODERATION DELETE ---
         window.deletePost = async (id) => {
-            if(confirm("Moderator: Delete this post permanently?")) {
+            if(confirm("Permanently remove this vibe?")) {
                 await deleteDoc(doc(db, "posts", id));
             }
         };
 
-        // Real-time Feed
+        // --- LOAD FEED ---
         function loadFeed(user) {
             const q = query(collection(db, "posts"), orderBy("createdAt", "desc"));
             onSnapshot(q, (snap) => {
@@ -204,14 +186,15 @@
                     const p = d.data();
                     const isOwner = p.uid === OWNER_ID;
                     const canDelete = isOwner || p.uid === user.uid;
-                    
+
+                    // Badge Logic
                     let badge = "";
                     if(isOwner) badge = `<i class="fas fa-crown badge-owner" title="Owner"></i>`;
-                    else if(p.followers >= 10000) badge = `<i class="fas fa-check-circle badge-elite" title="10K Elite"></i>`;
+                    else if(p.followers >= 10000) badge = `<i class="fas fa-check-circle badge-purple" title="Elite"></i>`;
 
                     container.innerHTML += `
                         <div class="post">
-                            <div class="avatar"><i class="fas fa-user"></i></div>
+                            <div class="avatar"><i class="fas fa-ghost"></i></div>
                             <div class="post-body">
                                 <div class="post-header">
                                     <span class="user-info">@${p.author} ${badge}</span>
@@ -220,11 +203,9 @@
                                 <div class="post-text">${p.text}</div>
                                 ${p.image ? `<img src="${p.image}" class="post-image">` : ""}
                                 <div class="actions">
-                                    <div class="action-btn" onclick="likePost('${d.id}')">
-                                        <i class="far fa-heart"></i> ${p.likes || 0}
-                                    </div>
+                                    <div class="action-btn" onclick="likePost('${d.id}')"><i class="far fa-heart"></i> ${p.likes || 0}</div>
                                     <div class="action-btn"><i class="far fa-comment"></i></div>
-                                    <div class="action-btn"><i class="fas fa-retweet"></i></div>
+                                    <div class="action-btn"><i class="fas fa-share"></i></div>
                                 </div>
                             </div>
                         </div>
@@ -233,22 +214,16 @@
             });
         }
 
-        // Navigation
-        window.nav = (page) => {
-            document.getElementById('view-home').classList.toggle('hidden', page !== 'home');
-            document.getElementById('view-profile').classList.toggle('hidden', page !== 'profile');
+        // --- NAV ---
+        window.nav = (p) => {
+            document.getElementById('view-home').classList.toggle('hidden', p !== 'home');
+            document.getElementById('view-settings').classList.toggle('hidden', p !== 'settings');
             document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
             event.currentTarget.classList.add('active');
         };
 
         onAuthStateChanged(auth, (user) => {
-            if(user) {
-                document.getElementById('prof-name').innerText = user.displayName;
-                loadFeed(user);
-            } else {
-                // If not logged in, you should show a login screen. 
-                // For simplicity, we assume user is logged in for the session.
-            }
+            if(user) loadFeed(user);
         });
 
         window.logout = () => signOut(auth).then(() => location.reload());
