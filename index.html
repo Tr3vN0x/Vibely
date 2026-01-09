@@ -22,14 +22,19 @@
         .nav-link:hover { background: rgba(255,255,255,0.1); }
         .nav-link.active { color: var(--primary); font-weight: 800; }
 
+        /* Auth Overlay */
+        #auth-overlay { position: fixed; inset: 0; background: var(--bg); z-index: 1000; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+
         /* Composer */
         .composer { padding: 20px; border-bottom: 1px solid var(--border); }
         .composer textarea { width: 100%; background: transparent; border: none; color: #fff; font-size: 1.2rem; outline: none; resize: none; }
-        .btn-vibe { background: var(--primary); color: #fff; border: none; padding: 10px 24px; border-radius: 99px; font-weight: 800; cursor: pointer; }
+        .btn-vibe { background: var(--primary); color: #fff; border: none; padding: 10px 24px; border-radius: 99px; font-weight: 800; cursor: pointer; transition: 0.2s; }
+        .btn-vibe:hover { opacity: 0.9; transform: scale(1.02); }
         .preview-img { width: 100%; border-radius: 15px; margin: 10px 0; display: none; border: 1px solid var(--border); }
 
         /* Post Card */
-        .post { padding: 20px; border-bottom: 1px solid var(--border); display: flex; gap: 15px; }
+        .post { padding: 20px; border-bottom: 1px solid var(--border); display: flex; gap: 15px; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         .avatar { width: 45px; height: 45px; border-radius: 50%; background: var(--surface); flex-shrink: 0; display: grid; place-items: center; border: 1px solid var(--border); }
         .post-content { flex: 1; }
         .post-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
@@ -43,11 +48,17 @@
 </head>
 <body>
 
+    <div id="auth-overlay">
+        <div class="logo">VIBELY</div>
+        <p style="margin-bottom: 2rem; color: var(--dim);">Share your vibe with the world.</p>
+        <button class="btn-vibe" onclick="signIn()">Sign in with Google</button>
+    </div>
+
     <aside class="sidebar">
         <div class="logo">VIBELY</div>
         <div class="nav-link active" onclick="showView('home')"><i class="fas fa-house"></i> Home</div>
         <div class="nav-link" onclick="showView('profile')"><i class="fas fa-user"></i> Profile</div>
-        <div class="nav-link" style="margin-top:auto; color:red" onclick="auth.signOut().then(()=>location.reload())"><i class="fas fa-sign-out-alt"></i> Logout</div>
+        <div class="nav-link" style="margin-top:auto; color: #ff4444" onclick="signOutUser()"><i class="fas fa-sign-out-alt"></i> Logout</div>
     </aside>
 
     <main class="viewport">
@@ -56,10 +67,10 @@
             <div class="composer">
                 <textarea id="post-input" placeholder="What's happening?"></textarea>
                 <img id="img-preview" class="preview-img">
-                <div style="display:flex; justify-content:space-between; margin-top:10px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px;">
                     <label for="img-upload" style="color:var(--primary); cursor:pointer; font-size:1.4rem;"><i class="far fa-image"></i></label>
                     <input type="file" id="img-upload" class="hidden" accept="image/*">
-                    <button class="btn-vibe" onclick="createPost()">Vibe</button>
+                    <button id="vibe-btn" class="btn-vibe" onclick="createPost()">Vibe</button>
                 </div>
             </div>
             <div id="feed-container"></div>
@@ -68,6 +79,9 @@
         <div id="view-profile" class="hidden">
             <div class="header">Profile</div>
             <div style="padding: 40px; text-align: center;">
+                <div class="avatar" style="width: 80px; height: 80px; margin: 0 auto 15px; font-size: 2rem;">
+                    <i class="fas fa-ghost"></i>
+                </div>
                 <h1 id="prof-name">...</h1>
                 <p id="prof-stats" style="color:var(--dim)">0 Followers</p>
             </div>
@@ -76,8 +90,8 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
-        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js";
-        import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, doc, updateDoc, increment, setDoc, getDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
+        import { getAuth, onAuthStateChanged, signInWithPopup, GoogleAuthProvider, signOut } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js";
+        import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, doc, setDoc, getDoc, deleteDoc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
         import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-storage.js";
 
         const firebaseConfig = {
@@ -93,17 +107,50 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
         const storage = getStorage(app);
+        const provider = new GoogleAuthProvider();
         const OWNER_ID = "pqPGbhBjvrVrgDrmUBa4J2ynmkW2";
 
         let selectedFile = null;
+
+        // --- Auth Functions ---
+        window.signIn = () => signInWithPopup(auth, provider);
+        window.signOutUser = () => signOut(auth).then(() => location.reload());
+
+        onAuthStateChanged(auth, async (user) => {
+            if(user) {
+                document.getElementById('auth-overlay').classList.add('hidden');
+                
+                // Initialize user profile in DB if new
+                const userRef = doc(db, "users", user.uid);
+                const userSnap = await getDoc(userRef);
+                if(!userSnap.exists()) {
+                    await setDoc(userRef, { name: user.displayName, followerCount: 0 });
+                }
+
+                document.getElementById('prof-name').innerText = user.displayName;
+                updateProfileStats(user.uid);
+                initFeed(user);
+            } else {
+                document.getElementById('auth-overlay').classList.remove('hidden');
+            }
+        });
+
+        async function updateProfileStats(uid) {
+            const uSnap = await getDoc(doc(db, "users", uid));
+            if(uSnap.exists()) {
+                document.getElementById('prof-stats').innerText = `${uSnap.data().followerCount || 0} Followers`;
+            }
+        }
 
         // --- View Controller ---
         window.showView = (v) => {
             document.getElementById('view-home').classList.toggle('hidden', v !== 'home');
             document.getElementById('view-profile').classList.toggle('hidden', v !== 'profile');
+            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+            event.currentTarget.classList.add('active');
         };
 
-        // --- Image Preview ---
+        // --- Image Handling ---
         document.getElementById('img-upload').onchange = (e) => {
             selectedFile = e.target.files[0];
             if(selectedFile) {
@@ -117,44 +164,51 @@
             }
         };
 
-        // --- Create Post (Safe Version) ---
+        // --- Create Post ---
         window.createPost = async () => {
+            const btn = document.getElementById('vibe-btn');
             const txt = document.getElementById('post-input').value.trim();
             if(!txt && !selectedFile) return;
 
-            let url = null;
-            if(selectedFile) {
-                const sRef = ref(storage, `posts/${Date.now()}`);
-                await uploadBytes(sRef, selectedFile);
-                url = await getDownloadURL(sRef);
+            btn.disabled = true;
+            btn.innerText = "Vibing...";
+
+            try {
+                let url = null;
+                if(selectedFile) {
+                    const sRef = ref(storage, `posts/${Date.now()}_${auth.currentUser.uid}`);
+                    await uploadBytes(sRef, selectedFile);
+                    url = await getDownloadURL(sRef);
+                }
+
+                const userSnap = await getDoc(doc(db, "users", auth.currentUser.uid));
+                const followers = userSnap.exists() ? userSnap.data().followerCount || 0 : 0;
+
+                await addDoc(collection(db, "posts"), {
+                    text: txt,
+                    image: url,
+                    uid: auth.currentUser.uid,
+                    author: auth.currentUser.displayName,
+                    followerCount: followers,
+                    createdAt: serverTimestamp()
+                });
+
+                document.getElementById('post-input').value = "";
+                document.getElementById('img-preview').style.display = 'none';
+                selectedFile = null;
+            } catch (e) {
+                alert("Error posting: " + e.message);
+            } finally {
+                btn.disabled = false;
+                btn.innerText = "Vibe";
             }
-
-            // Get current follower count to attach to the post for the badge logic
-            const userRef = doc(db, "users", auth.currentUser.uid);
-            const userSnap = await getDoc(userRef);
-            const followers = userSnap.exists() ? userSnap.data().followerCount || 0 : 0;
-
-            await addDoc(collection(db, "posts"), {
-                text: txt,
-                image: url,
-                uid: auth.currentUser.uid,
-                author: auth.currentUser.displayName || "Viber",
-                followerCount: followers,
-                createdAt: serverTimestamp()
-            });
-
-            // Reset UI
-            document.getElementById('post-input').value = "";
-            document.getElementById('img-preview').style.display = 'none';
-            selectedFile = null;
         };
 
-        // --- Follow Logic (Atomic - No Deletions) ---
+        // --- Follow Logic ---
         window.followUser = async (targetUid) => {
             const tRef = doc(db, "users", targetUid);
-            // setDoc with merge:true ensures we don't wipe out the user data
             await setDoc(tRef, { followerCount: increment(1) }, { merge: true });
-            alert("Vibe Synced!");
+            alert("Vibe Synced! You followed them.");
         };
 
         // --- Delete Logic ---
@@ -162,7 +216,7 @@
             if(confirm("Delete vibe?")) await deleteDoc(doc(db, "posts", id));
         };
 
-        // --- Load Feed ---
+        // --- Feed Sync ---
         function initFeed(user) {
             const q = query(collection(db, "posts"), orderBy("createdAt", "desc"));
             onSnapshot(q, (snap) => {
@@ -173,36 +227,27 @@
                     const isOwner = p.uid === OWNER_ID;
                     const isMe = p.uid === user.uid;
 
-                    let badge = isOwner ? `<i class="fas fa-crown badge-owner"></i>` : 
-                                (p.followerCount >= 10000 ? `<i class="fas fa-check-circle badge-purple"></i>` : "");
+                    let badge = isOwner ? `<i class="fas fa-crown badge-owner" title="Developer"></i>` : 
+                                (p.followerCount >= 10 ? `<i class="fas fa-check-circle badge-purple" title="Verified Vibe"></i>` : "");
 
                     cont.innerHTML += `
                         <div class="post">
                             <div class="avatar"><i class="fas fa-ghost"></i></div>
                             <div class="post-content">
                                 <div class="post-header">
-                                    <span style="font-weight:800">@${p.author} ${badge}</span>
+                                    <span style="font-weight:800">@${p.author || 'Anonymous'} ${badge}</span>
                                     <div>
                                         ${!isMe ? `<button class="btn-follow" onclick="followUser('${p.uid}')">Follow</button>` : ""}
                                         ${isOwner || isMe ? `<i class="far fa-trash-alt" style="margin-left:10px; cursor:pointer; color:var(--dim)" onclick="deletePost('${d.id}')"></i>` : ""}
                                     </div>
                                 </div>
-                                <div>${p.text}</div>
+                                <div style="white-space: pre-wrap; margin-top:5px;">${p.text}</div>
                                 ${p.image ? `<img src="${p.image}" class="post-img">` : ""}
                             </div>
                         </div>`;
                 });
             });
         }
-
-        onAuthStateChanged(auth, async (user) => {
-            if(user) {
-                document.getElementById('prof-name').innerText = user.displayName;
-                const uSnap = await getDoc(doc(db, "users", user.uid));
-                if(uSnap.exists()) document.getElementById('prof-stats').innerText = `${uSnap.data().followerCount || 0} Followers`;
-                initFeed(user);
-            }
-        });
     </script>
 </body>
 </html>
