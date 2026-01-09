@@ -3,93 +3,81 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vibely | Elite Social</title>
+    <title>Vibely | Professional</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root {
-            --primary: #a855f7;
-            --bg: #000;
-            --surface: #16181c;
-            --border: #2f3336;
-            --text: #eff3f4;
-            --dim: #71767b;
-            --gold: #ffd700;
-        }
-
+        :root { --primary: #a855f7; --bg: #000; --surface: #16181c; --border: #2f3336; --text: #eff3f4; --dim: #71767b; --gold: #ffd700; }
         body { background: var(--bg); color: var(--text); font-family: 'Plus Jakarta Sans', sans-serif; margin: 0; display: flex; height: 100vh; overflow: hidden; }
         .hidden { display: none !important; }
 
-        /* Navigation */
-        .sidebar { width: 275px; border-right: 1px solid var(--border); padding: 1rem 1.5rem; display: flex; flex-direction: column; }
-        .logo { font-size: 2rem; font-weight: 800; color: var(--primary); margin-bottom: 2rem; display: flex; align-items: center; gap: 15px; }
-        .nav-link { padding: 14px 18px; border-radius: 99px; font-size: 1.2rem; display: flex; align-items: center; gap: 20px; cursor: pointer; transition: 0.2s; margin-bottom: 5px; }
-        .nav-link:hover { background: rgba(255,255,255,0.1); }
-        .nav-link.active { font-weight: 800; color: var(--primary); }
+        /* Layout */
+        .sidebar { width: 260px; border-right: 1px solid var(--border); padding: 1rem 1.5rem; display: flex; flex-direction: column; }
+        .viewport { flex: 1; overflow-y: auto; position: relative; }
+        .header { position: sticky; top: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(12px); padding: 15px 20px; border-bottom: 1px solid var(--border); z-index: 10; font-weight: 800; display: flex; justify-content: space-between; }
 
-        /* Content Area */
-        .viewport { flex: 1; overflow-y: auto; border-right: 1px solid var(--border); }
-        .header { position: sticky; top: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(12px); padding: 15px 20px; border-bottom: 1px solid var(--border); z-index: 10; font-weight: 800; font-size: 1.2rem; }
+        /* Navigation */
+        .logo { font-size: 1.8rem; font-weight: 800; color: var(--primary); margin-bottom: 2rem; }
+        .nav-link { padding: 12px 16px; border-radius: 99px; cursor: pointer; display: flex; align-items: center; gap: 15px; margin-bottom: 5px; transition: 0.2s; }
+        .nav-link:hover { background: rgba(255,255,255,0.1); }
+        .nav-link.active { color: var(--primary); font-weight: 800; }
 
         /* Composer */
         .composer { padding: 20px; border-bottom: 1px solid var(--border); }
-        .composer textarea { width: 100%; background: transparent; border: none; color: #fff; font-size: 1.25rem; outline: none; resize: none; min-height: 50px; }
-        .preview-img { width: 100%; border-radius: 16px; margin: 10px 0; display: none; border: 1px solid var(--border); }
-        .composer-actions { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; }
+        .composer textarea { width: 100%; background: transparent; border: none; color: #fff; font-size: 1.2rem; outline: none; resize: none; }
         .btn-vibe { background: var(--primary); color: #fff; border: none; padding: 10px 24px; border-radius: 99px; font-weight: 800; cursor: pointer; }
+        .preview-img { width: 100%; border-radius: 15px; margin: 10px 0; display: none; border: 1px solid var(--border); }
 
-        /* Feed */
-        .post { padding: 15px 20px; border-bottom: 1px solid var(--border); display: flex; gap: 15px; }
-        .avatar { width: 48px; height: 48px; border-radius: 50%; background: var(--surface); flex-shrink: 0; display: grid; place-items: center; border: 1px solid var(--border); }
-        .post-body { flex: 1; }
-        .post-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
-        .user-info { display: flex; align-items: center; gap: 5px; font-weight: 800; }
-        .post-image { width: 100%; border-radius: 16px; border: 1px solid var(--border); margin-top: 10px; }
-        
+        /* Post Card */
+        .post { padding: 20px; border-bottom: 1px solid var(--border); display: flex; gap: 15px; }
+        .avatar { width: 45px; height: 45px; border-radius: 50%; background: var(--surface); flex-shrink: 0; display: grid; place-items: center; border: 1px solid var(--border); }
+        .post-content { flex: 1; }
+        .post-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
+        .post-img { width: 100%; border-radius: 15px; margin-top: 10px; border: 1px solid var(--border); }
+
         /* Badges */
-        .badge-purple { color: var(--primary); filter: drop-shadow(0 0 3px var(--primary)); }
-        .badge-owner { color: var(--gold); filter: drop-shadow(0 0 5px var(--gold)); }
-
-        .btn-follow { background: transparent; border: 1px solid var(--primary); color: var(--primary); padding: 4px 12px; border-radius: 99px; cursor: pointer; font-size: 0.8rem; font-weight: 600; }
+        .badge-purple { color: var(--primary); margin-left: 4px; }
+        .badge-owner { color: var(--gold); margin-left: 4px; }
+        .btn-follow { background: transparent; border: 1px solid var(--primary); color: var(--primary); padding: 4px 12px; border-radius: 99px; font-size: 0.8rem; cursor: pointer; }
     </style>
 </head>
 <body>
 
     <aside class="sidebar">
-        <div class="logo"><i class="fas fa-skull"></i> VIBELY</div>
-        <div class="nav-link active" onclick="nav('home')"><i class="fas fa-house"></i> Home</div>
-        <div class="nav-link" onclick="nav('profile')"><i class="fas fa-user"></i> Profile</div>
-        <div class="nav-link" style="margin-top:auto; color:#ff4444" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</div>
+        <div class="logo">VIBELY</div>
+        <div class="nav-link active" onclick="showView('home')"><i class="fas fa-house"></i> Home</div>
+        <div class="nav-link" onclick="showView('profile')"><i class="fas fa-user"></i> Profile</div>
+        <div class="nav-link" style="margin-top:auto; color:red" onclick="auth.signOut().then(()=>location.reload())"><i class="fas fa-sign-out-alt"></i> Logout</div>
     </aside>
 
     <main class="viewport">
         <div id="view-home">
             <div class="header">Home</div>
             <div class="composer">
-                <textarea id="post-input" placeholder="What's the vibe?"></textarea>
+                <textarea id="post-input" placeholder="What's happening?"></textarea>
                 <img id="img-preview" class="preview-img">
-                <div class="composer-actions">
-                    <label for="file-upload" style="cursor:pointer; color:var(--primary); font-size:1.3rem;"><i class="far fa-image"></i></label>
-                    <input type="file" id="file-upload" class="hidden" accept="image/*">
-                    <button class="btn-vibe" onclick="handlePost()">Vibe</button>
+                <div style="display:flex; justify-content:space-between; margin-top:10px;">
+                    <label for="img-upload" style="color:var(--primary); cursor:pointer; font-size:1.4rem;"><i class="far fa-image"></i></label>
+                    <input type="file" id="img-upload" class="hidden" accept="image/*">
+                    <button class="btn-vibe" onclick="createPost()">Vibe</button>
                 </div>
             </div>
-            <div id="feed"></div>
+            <div id="feed-container"></div>
         </div>
 
         <div id="view-profile" class="hidden">
             <div class="header">Profile</div>
-            <div style="padding:40px; text-align:center;">
-                <h1 id="my-name">Loading...</h1>
-                <p id="my-stats" style="color:var(--dim)">0 Followers</p>
+            <div style="padding: 40px; text-align: center;">
+                <h1 id="prof-name">...</h1>
+                <p id="prof-stats" style="color:var(--dim)">0 Followers</p>
             </div>
         </div>
     </main>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
-        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js";
-        import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, doc, updateDoc, increment, getDoc, setDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js";
+        import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, doc, updateDoc, increment, setDoc, getDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
         import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-storage.js";
 
         const firebaseConfig = {
@@ -109,110 +97,112 @@
 
         let selectedFile = null;
 
-        // Image Handling
-        document.getElementById('file-upload').onchange = (e) => {
-            selectedFile = e.target.files[0];
-            const reader = new FileReader();
-            reader.onload = (ev) => {
-                const preview = document.getElementById('img-preview');
-                preview.src = ev.target.result;
-                preview.style.display = 'block';
-            };
-            reader.readAsDataURL(selectedFile);
+        // --- View Controller ---
+        window.showView = (v) => {
+            document.getElementById('view-home').classList.toggle('hidden', v !== 'home');
+            document.getElementById('view-profile').classList.toggle('hidden', v !== 'profile');
         };
 
-        // Posting
-        window.handlePost = async () => {
+        // --- Image Preview ---
+        document.getElementById('img-upload').onchange = (e) => {
+            selectedFile = e.target.files[0];
+            if(selectedFile) {
+                const reader = new FileReader();
+                reader.onload = (f) => {
+                    const p = document.getElementById('img-preview');
+                    p.src = f.target.result;
+                    p.style.display = 'block';
+                };
+                reader.readAsDataURL(selectedFile);
+            }
+        };
+
+        // --- Create Post (Safe Version) ---
+        window.createPost = async () => {
             const txt = document.getElementById('post-input').value.trim();
             if(!txt && !selectedFile) return;
 
-            let imgUrl = null;
+            let url = null;
             if(selectedFile) {
-                const sRef = ref(storage, `posts/${Date.now()}_${selectedFile.name}`);
+                const sRef = ref(storage, `posts/${Date.now()}`);
                 await uploadBytes(sRef, selectedFile);
-                imgUrl = await getDownloadURL(sRef);
+                url = await getDownloadURL(sRef);
             }
 
+            // Get current follower count to attach to the post for the badge logic
             const userRef = doc(db, "users", auth.currentUser.uid);
             const userSnap = await getDoc(userRef);
-            const currentFollowers = userSnap.exists() ? userSnap.data().followerCount || 0 : 0;
+            const followers = userSnap.exists() ? userSnap.data().followerCount || 0 : 0;
 
             await addDoc(collection(db, "posts"), {
                 text: txt,
-                image: imgUrl,
+                image: url,
                 uid: auth.currentUser.uid,
-                author: auth.currentUser.displayName || "User",
-                followerCount: currentFollowers,
+                author: auth.currentUser.displayName || "Viber",
+                followerCount: followers,
                 createdAt: serverTimestamp()
             });
 
+            // Reset UI
             document.getElementById('post-input').value = "";
             document.getElementById('img-preview').style.display = 'none';
             selectedFile = null;
         };
 
-        // Follow Logic
+        // --- Follow Logic (Atomic - No Deletions) ---
         window.followUser = async (targetUid) => {
-            if(targetUid === auth.currentUser.uid) return;
-            const targetRef = doc(db, "users", targetUid);
-            await setDoc(targetRef, { followerCount: increment(1) }, { merge: true });
-            alert("Vibe Following!");
+            const tRef = doc(db, "users", targetUid);
+            // setDoc with merge:true ensures we don't wipe out the user data
+            await setDoc(tRef, { followerCount: increment(1) }, { merge: true });
+            alert("Vibe Synced!");
         };
 
-        // Delete Logic
+        // --- Delete Logic ---
         window.deletePost = async (id) => {
-            if(confirm("Delete this vibe?")) await deleteDoc(doc(db, "posts", id));
+            if(confirm("Delete vibe?")) await deleteDoc(doc(db, "posts", id));
         };
 
-        // Load Feed
-        function loadFeed(user) {
+        // --- Load Feed ---
+        function initFeed(user) {
             const q = query(collection(db, "posts"), orderBy("createdAt", "desc"));
             onSnapshot(q, (snap) => {
-                const container = document.getElementById('feed');
-                container.innerHTML = "";
+                const cont = document.getElementById('feed-container');
+                cont.innerHTML = "";
                 snap.forEach(d => {
                     const p = d.data();
                     const isOwner = p.uid === OWNER_ID;
                     const isMe = p.uid === user.uid;
-                    
+
                     let badge = isOwner ? `<i class="fas fa-crown badge-owner"></i>` : 
                                 (p.followerCount >= 10000 ? `<i class="fas fa-check-circle badge-purple"></i>` : "");
 
-                    container.innerHTML += `
+                    cont.innerHTML += `
                         <div class="post">
                             <div class="avatar"><i class="fas fa-ghost"></i></div>
-                            <div class="post-body">
+                            <div class="post-content">
                                 <div class="post-header">
-                                    <span class="user-info">@${p.author} ${badge}</span>
+                                    <span style="font-weight:800">@${p.author} ${badge}</span>
                                     <div>
                                         ${!isMe ? `<button class="btn-follow" onclick="followUser('${p.uid}')">Follow</button>` : ""}
-                                        ${isOwner || isMe ? `<i class="far fa-trash-alt" style="margin-left:10px; cursor:pointer; color:var(--dim);" onclick="deletePost('${d.id}')"></i>` : ""}
+                                        ${isOwner || isMe ? `<i class="far fa-trash-alt" style="margin-left:10px; cursor:pointer; color:var(--dim)" onclick="deletePost('${d.id}')"></i>` : ""}
                                     </div>
                                 </div>
-                                <div class="post-text">${p.text}</div>
-                                ${p.image ? `<img src="${p.image}" class="post-image">` : ""}
+                                <div>${p.text}</div>
+                                ${p.image ? `<img src="${p.image}" class="post-img">` : ""}
                             </div>
                         </div>`;
                 });
             });
         }
 
-        // Nav & Auth
-        window.nav = (p) => {
-            document.getElementById('view-home').classList.toggle('hidden', p !== 'home');
-            document.getElementById('view-profile').classList.toggle('hidden', p !== 'profile');
-        };
-
         onAuthStateChanged(auth, async (user) => {
             if(user) {
-                document.getElementById('my-name').innerText = user.displayName;
+                document.getElementById('prof-name').innerText = user.displayName;
                 const uSnap = await getDoc(doc(db, "users", user.uid));
-                if(uSnap.exists()) document.getElementById('my-stats').innerText = `${uSnap.data().followerCount || 0} Followers`;
-                loadFeed(user);
+                if(uSnap.exists()) document.getElementById('prof-stats').innerText = `${uSnap.data().followerCount || 0} Followers`;
+                initFeed(user);
             }
         });
-
-        window.logout = () => signOut(auth).then(() => location.reload());
     </script>
 </body>
 </html>
