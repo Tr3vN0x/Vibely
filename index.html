@@ -16,42 +16,44 @@
         .viewport { flex: 1; overflow-y: auto; position: relative; }
         .header { position: sticky; top: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(12px); padding: 15px 20px; border-bottom: 1px solid var(--border); z-index: 10; font-weight: 800; display: flex; justify-content: space-between; }
 
-        /* Navigation */
-        .logo { font-size: 1.8rem; font-weight: 800; color: var(--primary); margin-bottom: 2rem; }
+        /* Auth Overlay */
+        #auth-overlay { position: fixed; inset: 0; background: var(--bg); z-index: 1000; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+        .auth-card { background: var(--surface); padding: 2rem; border-radius: 20px; width: 320px; border: 1px solid var(--border); }
+        .auth-input { width: 100%; padding: 12px; margin: 8px 0; background: var(--bg); border: 1px solid var(--border); color: white; border-radius: 8px; box-sizing: border-box; }
+        
+        /* Nav & Elements */
+        .logo { font-size: 1.8rem; font-weight: 800; color: var(--primary); margin-bottom: 1rem; }
         .nav-link { padding: 12px 16px; border-radius: 99px; cursor: pointer; display: flex; align-items: center; gap: 15px; margin-bottom: 5px; transition: 0.2s; }
         .nav-link:hover { background: rgba(255,255,255,0.1); }
         .nav-link.active { color: var(--primary); font-weight: 800; }
-
-        /* Auth Overlay */
-        #auth-overlay { position: fixed; inset: 0; background: var(--bg); z-index: 1000; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
-
-        /* Composer */
-        .composer { padding: 20px; border-bottom: 1px solid var(--border); }
-        .composer textarea { width: 100%; background: transparent; border: none; color: #fff; font-size: 1.2rem; outline: none; resize: none; }
-        .btn-vibe { background: var(--primary); color: #fff; border: none; padding: 10px 24px; border-radius: 99px; font-weight: 800; cursor: pointer; transition: 0.2s; }
-        .btn-vibe:hover { opacity: 0.9; transform: scale(1.02); }
-        .preview-img { width: 100%; border-radius: 15px; margin: 10px 0; display: none; border: 1px solid var(--border); }
-
+        .btn-vibe { background: var(--primary); color: #fff; border: none; padding: 12px 24px; border-radius: 99px; font-weight: 800; cursor: pointer; width: 100%; margin-top: 10px; }
+        
         /* Post Card */
-        .post { padding: 20px; border-bottom: 1px solid var(--border); display: flex; gap: 15px; animation: fadeIn 0.3s ease; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .post { padding: 20px; border-bottom: 1px solid var(--border); display: flex; gap: 15px; }
         .avatar { width: 45px; height: 45px; border-radius: 50%; background: var(--surface); flex-shrink: 0; display: grid; place-items: center; border: 1px solid var(--border); }
         .post-content { flex: 1; }
-        .post-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
+        .post-header { display: flex; justify-content: space-between; align-items: center; }
         .post-img { width: 100%; border-radius: 15px; margin-top: 10px; border: 1px solid var(--border); }
-
-        /* Badges */
-        .badge-purple { color: var(--primary); margin-left: 4px; }
         .badge-owner { color: var(--gold); margin-left: 4px; }
-        .btn-follow { background: transparent; border: 1px solid var(--primary); color: var(--primary); padding: 4px 12px; border-radius: 99px; font-size: 0.8rem; cursor: pointer; }
     </style>
 </head>
 <body>
 
     <div id="auth-overlay">
-        <div class="logo">VIBELY</div>
-        <p style="margin-bottom: 2rem; color: var(--dim);">Share your vibe with the world.</p>
-        <button class="btn-vibe" onclick="signIn()">Sign in with Google</button>
+        <div class="auth-card">
+            <div class="logo">VIBELY</div>
+            <div id="auth-toggle-text" style="color: var(--dim); margin-bottom: 15px;">Login to your account</div>
+            
+            <input type="text" id="auth-username" class="auth-input hidden" placeholder="Username">
+            <input type="email" id="auth-email" class="auth-input" placeholder="Email">
+            <input type="password" id="auth-password" class="auth-input" placeholder="Password">
+            
+            <button class="btn-vibe" id="auth-btn" onclick="handleAuth()">Login</button>
+            
+            <p style="font-size: 0.8rem; margin-top: 15px; cursor: pointer; color: var(--primary);" onclick="toggleAuthMode()" id="auth-switch">
+                Don't have an account? Sign Up
+            </p>
+        </div>
     </div>
 
     <aside class="sidebar">
@@ -65,12 +67,9 @@
         <div id="view-home">
             <div class="header">Home</div>
             <div class="composer">
-                <textarea id="post-input" placeholder="What's happening?"></textarea>
-                <img id="img-preview" class="preview-img">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px;">
-                    <label for="img-upload" style="color:var(--primary); cursor:pointer; font-size:1.4rem;"><i class="far fa-image"></i></label>
-                    <input type="file" id="img-upload" class="hidden" accept="image/*">
-                    <button id="vibe-btn" class="btn-vibe" onclick="createPost()">Vibe</button>
+                <textarea id="post-input" style="width:100%; background:none; border:none; color:white; font-size:1.1rem; outline:none; padding:20px;" placeholder="What's the vibe?"></textarea>
+                <div style="padding:0 20px 20px; display:flex; justify-content:flex-end;">
+                    <button class="btn-vibe" style="width:auto;" onclick="createPost()">Vibe</button>
                 </div>
             </div>
             <div id="feed-container"></div>
@@ -79,9 +78,6 @@
         <div id="view-profile" class="hidden">
             <div class="header">Profile</div>
             <div style="padding: 40px; text-align: center;">
-                <div class="avatar" style="width: 80px; height: 80px; margin: 0 auto 15px; font-size: 2rem;">
-                    <i class="fas fa-ghost"></i>
-                </div>
                 <h1 id="prof-name">...</h1>
                 <p id="prof-stats" style="color:var(--dim)">0 Followers</p>
             </div>
@@ -90,9 +86,8 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
-        import { getAuth, onAuthStateChanged, signInWithPopup, GoogleAuthProvider, signOut } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js";
-        import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, doc, setDoc, getDoc, deleteDoc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
-        import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-storage.js";
+        import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile, signOut } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js";
+        import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyCDll8RH1kzGOf-ixJmSlHXGssOHSMlO3s",
@@ -106,117 +101,68 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
-        const storage = getStorage(app);
-        const provider = new GoogleAuthProvider();
         const OWNER_ID = "pqPGbhBjvrVrgDrmUBa4J2ynmkW2";
 
-        let selectedFile = null;
+        let isSignUp = false;
 
-        // --- Auth Functions ---
-        window.signIn = () => signInWithPopup(auth, provider);
+        // --- Auth UI Toggling ---
+        window.toggleAuthMode = () => {
+            isSignUp = !isSignUp;
+            document.getElementById('auth-username').classList.toggle('hidden', !isSignUp);
+            document.getElementById('auth-btn').innerText = isSignUp ? "Create Account" : "Login";
+            document.getElementById('auth-toggle-text').innerText = isSignUp ? "Join the community" : "Login to your account";
+            document.getElementById('auth-switch').innerText = isSignUp ? "Already have an account? Login" : "Don't have an account? Sign Up";
+        };
+
+        // --- Authentication Logic ---
+        window.handleAuth = async () => {
+            const email = document.getElementById('auth-email').value;
+            const password = document.getElementById('auth-password').value;
+            const username = document.getElementById('auth-username').value;
+
+            try {
+                if (isSignUp) {
+                    const res = await createUserWithEmailAndPassword(auth, email, password);
+                    await updateProfile(res.user, { displayName: username });
+                    await setDoc(doc(db, "users", res.user.uid), {
+                        username: username,
+                        followerCount: 0,
+                        createdAt: serverTimestamp()
+                    });
+                } else {
+                    await signInWithEmailAndPassword(auth, email, password);
+                }
+            } catch (err) {
+                alert(err.message);
+            }
+        };
+
         window.signOutUser = () => signOut(auth).then(() => location.reload());
 
+        // --- Post & Feed Logic ---
         onAuthStateChanged(auth, async (user) => {
             if(user) {
                 document.getElementById('auth-overlay').classList.add('hidden');
-                
-                // Initialize user profile in DB if new
-                const userRef = doc(db, "users", user.uid);
-                const userSnap = await getDoc(userRef);
-                if(!userSnap.exists()) {
-                    await setDoc(userRef, { name: user.displayName, followerCount: 0 });
-                }
-
-                document.getElementById('prof-name').innerText = user.displayName;
-                updateProfileStats(user.uid);
+                document.getElementById('prof-name').innerText = `@${user.displayName}`;
                 initFeed(user);
             } else {
                 document.getElementById('auth-overlay').classList.remove('hidden');
             }
         });
 
-        async function updateProfileStats(uid) {
-            const uSnap = await getDoc(doc(db, "users", uid));
-            if(uSnap.exists()) {
-                document.getElementById('prof-stats').innerText = `${uSnap.data().followerCount || 0} Followers`;
-            }
-        }
-
-        // --- View Controller ---
-        window.showView = (v) => {
-            document.getElementById('view-home').classList.toggle('hidden', v !== 'home');
-            document.getElementById('view-profile').classList.toggle('hidden', v !== 'profile');
-            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-            event.currentTarget.classList.add('active');
-        };
-
-        // --- Image Handling ---
-        document.getElementById('img-upload').onchange = (e) => {
-            selectedFile = e.target.files[0];
-            if(selectedFile) {
-                const reader = new FileReader();
-                reader.onload = (f) => {
-                    const p = document.getElementById('img-preview');
-                    p.src = f.target.result;
-                    p.style.display = 'block';
-                };
-                reader.readAsDataURL(selectedFile);
-            }
-        };
-
-        // --- Create Post ---
         window.createPost = async () => {
-            const btn = document.getElementById('vibe-btn');
             const txt = document.getElementById('post-input').value.trim();
-            if(!txt && !selectedFile) return;
+            if(!txt) return;
 
-            btn.disabled = true;
-            btn.innerText = "Vibing...";
-
-            try {
-                let url = null;
-                if(selectedFile) {
-                    const sRef = ref(storage, `posts/${Date.now()}_${auth.currentUser.uid}`);
-                    await uploadBytes(sRef, selectedFile);
-                    url = await getDownloadURL(sRef);
-                }
-
-                const userSnap = await getDoc(doc(db, "users", auth.currentUser.uid));
-                const followers = userSnap.exists() ? userSnap.data().followerCount || 0 : 0;
-
-                await addDoc(collection(db, "posts"), {
-                    text: txt,
-                    image: url,
-                    uid: auth.currentUser.uid,
-                    author: auth.currentUser.displayName,
-                    followerCount: followers,
-                    createdAt: serverTimestamp()
-                });
-
-                document.getElementById('post-input').value = "";
-                document.getElementById('img-preview').style.display = 'none';
-                selectedFile = null;
-            } catch (e) {
-                alert("Error posting: " + e.message);
-            } finally {
-                btn.disabled = false;
-                btn.innerText = "Vibe";
-            }
+            await addDoc(collection(db, "posts"), {
+                text: txt,
+                uid: auth.currentUser.uid,
+                author: auth.currentUser.displayName,
+                createdAt: serverTimestamp()
+            });
+            document.getElementById('post-input').value = "";
         };
 
-        // --- Follow Logic ---
-        window.followUser = async (targetUid) => {
-            const tRef = doc(db, "users", targetUid);
-            await setDoc(tRef, { followerCount: increment(1) }, { merge: true });
-            alert("Vibe Synced! You followed them.");
-        };
-
-        // --- Delete Logic ---
-        window.deletePost = async (id) => {
-            if(confirm("Delete vibe?")) await deleteDoc(doc(db, "posts", id));
-        };
-
-        // --- Feed Sync ---
         function initFeed(user) {
             const q = query(collection(db, "posts"), orderBy("createdAt", "desc"));
             onSnapshot(q, (snap) => {
@@ -224,30 +170,23 @@
                 cont.innerHTML = "";
                 snap.forEach(d => {
                     const p = d.data();
-                    const isOwner = p.uid === OWNER_ID;
-                    const isMe = p.uid === user.uid;
-
-                    let badge = isOwner ? `<i class="fas fa-crown badge-owner" title="Developer"></i>` : 
-                                (p.followerCount >= 10 ? `<i class="fas fa-check-circle badge-purple" title="Verified Vibe"></i>` : "");
-
+                    const badge = p.uid === OWNER_ID ? `<i class="fas fa-crown badge-owner"></i>` : "";
                     cont.innerHTML += `
                         <div class="post">
-                            <div class="avatar"><i class="fas fa-ghost"></i></div>
+                            <div class="avatar"><i class="fas fa-user"></i></div>
                             <div class="post-content">
-                                <div class="post-header">
-                                    <span style="font-weight:800">@${p.author || 'Anonymous'} ${badge}</span>
-                                    <div>
-                                        ${!isMe ? `<button class="btn-follow" onclick="followUser('${p.uid}')">Follow</button>` : ""}
-                                        ${isOwner || isMe ? `<i class="far fa-trash-alt" style="margin-left:10px; cursor:pointer; color:var(--dim)" onclick="deletePost('${d.id}')"></i>` : ""}
-                                    </div>
-                                </div>
-                                <div style="white-space: pre-wrap; margin-top:5px;">${p.text}</div>
-                                ${p.image ? `<img src="${p.image}" class="post-img">` : ""}
+                                <div class="post-header"><span style="font-weight:800">@${p.author} ${badge}</span></div>
+                                <div style="margin-top:5px;">${p.text}</div>
                             </div>
                         </div>`;
                 });
             });
         }
+
+        window.showView = (v) => {
+            document.getElementById('view-home').classList.toggle('hidden', v !== 'home');
+            document.getElementById('view-profile').classList.toggle('hidden', v !== 'profile');
+        };
     </script>
 </body>
 </html>
