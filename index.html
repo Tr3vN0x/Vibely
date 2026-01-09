@@ -3,96 +3,127 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vibely | Multimedia Pro</title>
+    <title>Vibely | Beyond Social</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
             --primary: #a855f7;
             --twitter-blue: #1d9bf0;
-            --bg: #000000;
+            --bg: #000;
             --surface: #16181c;
             --border: #2f3336;
-            --text-main: #eff3f4;
-            --text-dim: #71767b;
+            --text: #eff3f4;
+            --dim: #71767b;
             --gold: #ffd700;
         }
 
-        body { background: var(--bg); color: var(--text-main); font-family: 'Plus Jakarta Sans', sans-serif; margin: 0; display: flex; height: 100vh; overflow: hidden; }
+        body { background: var(--bg); color: var(--text); font-family: 'Plus Jakarta Sans', sans-serif; margin: 0; display: flex; height: 100vh; overflow: hidden; }
         .hidden { display: none !important; }
 
-        /* Sidebar */
-        .sidebar { width: 275px; border-right: 1px solid var(--border); padding: 1rem 1.5rem; display: flex; flex-direction: column; }
-        .nav-item { padding: 12px 16px; border-radius: 99px; font-size: 1.2rem; color: var(--text-main); text-decoration: none; display: flex; align-items: center; gap: 20px; transition: 0.2s; cursor: pointer; margin-bottom: 5px; }
-        .nav-item:hover { background: rgba(255,255,255,0.1); }
+        /* Sidebar Navigation */
+        .sidebar { width: 280px; border-right: 1px solid var(--border); padding: 1rem 1.5rem; display: flex; flex-direction: column; }
+        .logo { font-size: 2rem; font-weight: 800; color: var(--primary); margin-bottom: 2rem; display: flex; align-items: center; gap: 15px; cursor: pointer; }
+        .nav-link { padding: 14px 18px; border-radius: 99px; font-size: 1.2rem; display: flex; align-items: center; gap: 15px; cursor: pointer; transition: 0.2s; margin-bottom: 5px; }
+        .nav-link:hover { background: rgba(255,255,255,0.1); }
+        .nav-link.active { font-weight: 800; color: var(--primary); }
 
-        /* Main View */
-        .main-viewport { flex: 1; overflow-y: auto; border-right: 1px solid var(--border); }
-        .header-sticky { position: sticky; top: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(12px); padding: 15px 20px; border-bottom: 1px solid var(--border); z-index: 10; font-weight: 800; font-size: 1.3rem; }
+        /* Main Feed */
+        .viewport { flex: 1; overflow-y: auto; border-right: 1px solid var(--border); scroll-behavior: smooth; }
+        .header { position: sticky; top: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(12px); padding: 15px 20px; border-bottom: 1px solid var(--border); z-index: 10; font-weight: 800; font-size: 1.2rem; }
 
-        /* Composer */
-        .composer { padding: 15px 20px; border-bottom: 1px solid var(--border); }
-        .composer-tools { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; }
-        .icon-btn { color: var(--primary); cursor: pointer; font-size: 1.2rem; }
+        /* Posting Box */
+        .composer { padding: 20px; border-bottom: 1px solid var(--border); }
+        .composer textarea { width: 100%; background: transparent; border: none; color: #fff; font-size: 1.25rem; outline: none; resize: none; min-height: 80px; }
+        .preview-img { width: 100%; border-radius: 16px; margin: 10px 0; display: none; border: 1px solid var(--border); }
+        .composer-actions { display: flex; justify-content: space-between; align-items: center; margin-top: 15px; }
+        .btn-vibe { background: var(--primary); color: #fff; border: none; padding: 10px 24px; border-radius: 99px; font-weight: 800; cursor: pointer; box-shadow: 0 4px 12px rgba(168, 85, 247, 0.3); }
 
-        /* Posts */
-        .post-card { padding: 15px 20px; border-bottom: 1px solid var(--border); display: flex; gap: 12px; animation: fadeIn 0.3s ease; }
-        .post-img { width: 100%; border-radius: 16px; margin-top: 10px; border: 1px solid var(--border); }
-        .avatar { width: 48px; height: 48px; border-radius: 50%; background: #333; flex-shrink: 0; overflow: hidden; }
-        .avatar img { width: 100%; height: 100%; object-fit: cover; }
+        /* Post Cards */
+        .post { padding: 15px 20px; border-bottom: 1px solid var(--border); display: flex; gap: 15px; animation: slideUp 0.3s ease; }
+        .avatar { width: 50px; height: 50px; border-radius: 50%; background: var(--surface); flex-shrink: 0; display: grid; place-items: center; border: 1px solid var(--border); overflow: hidden; }
+        .post-body { flex: 1; }
+        .post-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
+        .user-info { display: flex; align-items: center; gap: 5px; font-weight: 800; }
+        .post-text { line-height: 1.5; font-size: 1.05rem; margin-bottom: 10px; }
+        .post-image { width: 100%; border-radius: 16px; border: 1px solid var(--border); margin-top: 5px; }
+        
+        /* Interaction Buttons */
+        .actions { display: flex; gap: 40px; margin-top: 12px; color: var(--dim); }
+        .action-btn { cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 8px; font-size: 0.9rem; }
+        .action-btn:hover { color: var(--primary); }
+        .liked { color: #f91880 !important; }
 
         /* Badges */
-        .badge-verified { color: var(--twitter-blue); margin-left: 4px; }
-        .badge-owner { color: var(--gold); margin-left: 4px; }
+        .badge-owner { color: var(--gold); }
+        .badge-elite { color: var(--twitter-blue); }
 
-        .btn-vibe { background: var(--primary); color: white; border: none; padding: 8px 20px; border-radius: 99px; font-weight: 700; cursor: pointer; }
-        .preview-box { width: 100%; max-height: 200px; object-fit: cover; border-radius: 10px; margin-top: 10px; display: none; }
+        /* Trends Column */
+        .trends { width: 350px; padding: 20px; display: none; }
+        @media (min-width: 1100px) { .trends { display: block; } }
+        .trend-card { background: var(--surface); border-radius: 20px; padding: 20px; border: 1px solid var(--border); }
 
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
 
     <aside class="sidebar">
-        <div class="nav-item" onclick="nav('feed')"><i class="fas fa-ghost" style="color:var(--primary)"></i> <span>Vibely</span></div>
-        <div class="nav-item" onclick="nav('feed')"><i class="fas fa-house"></i> <span>Home</span></div>
-        <div class="nav-item" onclick="nav('profile')"><i class="fas fa-user"></i> <span>Profile</span></div>
-        <div class="nav-item" onclick="nav('settings')"><i class="fas fa-cog"></i> <span>Settings</span></div>
+        <div class="logo" onclick="location.reload()"><i class="fas fa-skull"></i> VIBELY</div>
+        <div class="nav-link active" onclick="nav('home')"><i class="fas fa-house"></i> Home</div>
+        <div class="nav-link" onclick="nav('profile')"><i class="fas fa-user"></i> Profile</div>
+        <div class="nav-link" onclick="nav('settings')"><i class="fas fa-cog"></i> Settings</div>
+        <div class="nav-link" style="margin-top:auto; color:#ff4444" onclick="logout()"><i class="fas fa-power-off"></i> Logout</div>
     </aside>
 
-    <main class="main-viewport">
-        <div id="view-feed">
-            <div class="header-sticky">Home</div>
+    <main class="viewport">
+        <div id="view-home">
+            <div class="header">Home</div>
             
             <div class="composer">
-                <textarea id="post-input" style="width:100%; background:transparent; border:none; color:#fff; font-size:1.2rem; outline:none; resize:none;" placeholder="What's the vibe?"></textarea>
-                <img id="image-preview" class="preview-box">
-                <div class="composer-tools">
-                    <label for="post-image-upload" class="icon-btn"><i class="far fa-image"></i></label>
-                    <input type="file" id="post-image-upload" class="hidden" accept="image/*">
-                    <button class="btn-vibe" onclick="sendPost()">Vibe</button>
+                <textarea id="post-input" placeholder="What's the vibe?"></textarea>
+                <img id="img-preview" class="preview-img">
+                <div class="composer-actions">
+                    <label for="file-upload" style="cursor:pointer; color:var(--primary); font-size:1.3rem;">
+                        <i class="far fa-image"></i>
+                    </label>
+                    <input type="file" id="file-upload" class="hidden" accept="image/*">
+                    <button class="btn-vibe" onclick="handlePost()">Vibe It</button>
                 </div>
             </div>
 
-            <div id="posts-container"></div>
+            <div id="feed"></div>
         </div>
 
         <div id="view-profile" class="hidden">
-            <div class="header-sticky">Profile Settings</div>
-            <div style="padding: 20px;">
-                <label>Change Display Name</label>
-                <input type="text" id="edit-name" style="width:100%; padding:10px; margin:10px 0; background:#16181c; border:1px solid var(--border); color:#fff;">
-                <button class="btn-vibe" onclick="updateDisplayName()">Update Name</button>
+            <div class="header">Your Profile</div>
+            <div style="padding:40px; text-align:center;">
+                <div class="avatar" style="width:100px; height:100px; margin:0 auto 20px; font-size:2rem;">
+                    <i class="fas fa-ghost"></i>
+                </div>
+                <h1 id="prof-name">Username</h1>
+                <p id="prof-stats" style="color:var(--dim)">0 Followers · 0 Following</p>
+                <button class="btn-vibe" style="margin-top:20px;">Edit Profile</button>
             </div>
         </div>
     </main>
 
+    <aside class="trends">
+        <div class="trend-card">
+            <h3 style="margin-top:0">Vibely Trends</h3>
+            <p style="color:var(--primary); font-weight:800;">#CyberSkull2026</p>
+            <p style="color:var(--primary); font-weight:800;">#EliteVibers</p>
+            <p style="color:var(--primary); font-weight:800;">#Web3Social</p>
+        </div>
+    </aside>
+
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
-        import { getAuth, updateProfile, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js";
-        import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js";
+        import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, doc, updateDoc, increment, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
         import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-storage.js";
 
+        // CONFIG (Already set for your project)
         const firebaseConfig = {
             apiKey: "AIzaSyCDll8RH1kzGOf-ixJmSlHXGssOHSMlO3s",
             authDomain: "vibely-5128e.firebaseapp.com",
@@ -106,71 +137,95 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
         const storage = getStorage(app);
-        const OWNER_UID = "pqPGbhBjvrVrgDrmUBa4J2ynmkW2";
+        const OWNER_ID = "pqPGbhBjvrVrgDrmUBa4J2ynmkW2";
 
-        let selectedImageFile = null;
+        let selectedFile = null;
 
-        // --- Image Preview Logic ---
-        document.getElementById('post-image-upload').onchange = (e) => {
-            selectedImageFile = e.target.files[0];
-            if (selectedImageFile) {
-                const reader = new FileReader();
-                reader.onload = (event) => {
-                    const preview = document.getElementById('image-preview');
-                    preview.src = event.target.result;
-                    preview.style.display = 'block';
-                };
-                reader.readAsDataURL(selectedImageFile);
-            }
+        // Image Selection Logic
+        document.getElementById('file-upload').onchange = (e) => {
+            selectedFile = e.target.files[0];
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                const preview = document.getElementById('img-preview');
+                preview.src = event.target.result;
+                preview.style.display = 'block';
+            };
+            reader.readAsDataURL(selectedFile);
         };
 
-        // --- Posting Logic with Image Upload ---
-        window.sendPost = async () => {
-            const text = document.getElementById('post-input').value;
-            if (!text && !selectedImageFile) return;
+        // Posting Logic
+        window.handlePost = async () => {
+            const txt = document.getElementById('post-input').value.trim();
+            if(!txt && !selectedFile) return;
 
-            let imageUrl = null;
-
-            // 1. If there's an image, upload to Storage first
-            if (selectedImageFile) {
-                const storageRef = ref(storage, `post_images/${Date.now()}_${selectedImageFile.name}`);
-                const snapshot = await uploadBytes(storageRef, selectedImageFile);
-                imageUrl = await getDownloadURL(snapshot.ref);
+            let imgUrl = null;
+            if(selectedFile) {
+                const sRef = ref(storage, `posts/${Date.now()}_${selectedFile.name}`);
+                const snap = await uploadBytes(sRef, selectedFile);
+                imgUrl = await getDownloadURL(snap.ref);
             }
 
-            // 2. Save post data to Firestore
             await addDoc(collection(db, "posts"), {
-                text: text,
-                imageUrl: imageUrl,
+                text: txt,
+                image: imgUrl,
                 uid: auth.currentUser.uid,
-                author: auth.currentUser.displayName || "Anonymous",
-                createdAt: serverTimestamp(),
-                followerCount: 0 // Mocking for badge logic
+                author: auth.currentUser.displayName || "Ghost",
+                likes: 0,
+                followers: 0, // In real app, fetch from user profile
+                createdAt: serverTimestamp()
             });
 
-            // Reset
+            // Reset UI
             document.getElementById('post-input').value = "";
-            document.getElementById('image-preview').style.display = 'none';
-            selectedImageFile = null;
+            document.getElementById('img-preview').style.display = 'none';
+            selectedFile = null;
         };
 
-        // --- Load Feed ---
-        function loadFeed() {
+        // Like Logic
+        window.likePost = async (id) => {
+            const pRef = doc(db, "posts", id);
+            await updateDoc(pRef, { likes: increment(1) });
+        };
+
+        // Moderation Delete
+        window.deletePost = async (id) => {
+            if(confirm("Moderator: Delete this post permanently?")) {
+                await deleteDoc(doc(db, "posts", id));
+            }
+        };
+
+        // Real-time Feed
+        function loadFeed(user) {
             const q = query(collection(db, "posts"), orderBy("createdAt", "desc"));
             onSnapshot(q, (snap) => {
-                const container = document.getElementById('posts-container');
+                const container = document.getElementById('feed');
                 container.innerHTML = "";
                 snap.forEach(d => {
-                    const post = d.data();
-                    let badge = post.uid === OWNER_UID ? `<i class="fas fa-check-circle badge-owner"></i>` : "";
+                    const p = d.data();
+                    const isOwner = p.uid === OWNER_ID;
+                    const canDelete = isOwner || p.uid === user.uid;
                     
+                    let badge = "";
+                    if(isOwner) badge = `<i class="fas fa-crown badge-owner" title="Owner"></i>`;
+                    else if(p.followers >= 10000) badge = `<i class="fas fa-check-circle badge-elite" title="10K Elite"></i>`;
+
                     container.innerHTML += `
-                        <div class="post-card">
-                            <div class="avatar"><i class="fas fa-user" style="margin:12px"></i></div>
-                            <div style="flex:1">
-                                <div style="font-weight:800">@${post.author} ${badge}</div>
-                                <div style="margin-top:4px">${post.text}</div>
-                                ${post.imageUrl ? `<img src="${post.imageUrl}" class="post-img">` : ""}
+                        <div class="post">
+                            <div class="avatar"><i class="fas fa-user"></i></div>
+                            <div class="post-body">
+                                <div class="post-header">
+                                    <span class="user-info">@${p.author} ${badge}</span>
+                                    ${canDelete ? `<i class="far fa-trash-alt" style="color:var(--dim); cursor:pointer;" onclick="deletePost('${d.id}')"></i>` : ""}
+                                </div>
+                                <div class="post-text">${p.text}</div>
+                                ${p.image ? `<img src="${p.image}" class="post-image">` : ""}
+                                <div class="actions">
+                                    <div class="action-btn" onclick="likePost('${d.id}')">
+                                        <i class="far fa-heart"></i> ${p.likes || 0}
+                                    </div>
+                                    <div class="action-btn"><i class="far fa-comment"></i></div>
+                                    <div class="action-btn"><i class="fas fa-retweet"></i></div>
+                                </div>
                             </div>
                         </div>
                     `;
@@ -178,12 +233,25 @@
             });
         }
 
-        window.nav = (v) => {
-            document.getElementById('view-feed').classList.toggle('hidden', v !== 'feed');
-            document.getElementById('view-profile').classList.toggle('hidden', v !== 'profile');
+        // Navigation
+        window.nav = (page) => {
+            document.getElementById('view-home').classList.toggle('hidden', page !== 'home');
+            document.getElementById('view-profile').classList.toggle('hidden', page !== 'profile');
+            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+            event.currentTarget.classList.add('active');
         };
 
-        onAuthStateChanged(auth, (user) => { if(user) loadFeed(); });
+        onAuthStateChanged(auth, (user) => {
+            if(user) {
+                document.getElementById('prof-name').innerText = user.displayName;
+                loadFeed(user);
+            } else {
+                // If not logged in, you should show a login screen. 
+                // For simplicity, we assume user is logged in for the session.
+            }
+        });
+
+        window.logout = () => signOut(auth).then(() => location.reload());
     </script>
 </body>
 </html>
