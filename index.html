@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vibely | Settings & Elite</title>
+    <title>Vibely | Multimedia Pro</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -21,45 +21,40 @@
         body { background: var(--bg); color: var(--text-main); font-family: 'Plus Jakarta Sans', sans-serif; margin: 0; display: flex; height: 100vh; overflow: hidden; }
         .hidden { display: none !important; }
 
-        /* Navigation Sidebar */
+        /* Sidebar */
         .sidebar { width: 275px; border-right: 1px solid var(--border); padding: 1rem 1.5rem; display: flex; flex-direction: column; }
         .nav-item { padding: 12px 16px; border-radius: 99px; font-size: 1.2rem; color: var(--text-main); text-decoration: none; display: flex; align-items: center; gap: 20px; transition: 0.2s; cursor: pointer; margin-bottom: 5px; }
         .nav-item:hover { background: rgba(255,255,255,0.1); }
-        .nav-item.active { font-weight: 800; }
 
-        /* Main Viewport */
+        /* Main View */
         .main-viewport { flex: 1; overflow-y: auto; border-right: 1px solid var(--border); }
         .header-sticky { position: sticky; top: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(12px); padding: 15px 20px; border-bottom: 1px solid var(--border); z-index: 10; font-weight: 800; font-size: 1.3rem; }
 
-        /* Feed & Post UI */
-        .post-card { padding: 15px 20px; border-bottom: 1px solid var(--border); display: flex; gap: 12px; }
+        /* Composer */
+        .composer { padding: 15px 20px; border-bottom: 1px solid var(--border); }
+        .composer-tools { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; }
+        .icon-btn { color: var(--primary); cursor: pointer; font-size: 1.2rem; }
+
+        /* Posts */
+        .post-card { padding: 15px 20px; border-bottom: 1px solid var(--border); display: flex; gap: 12px; animation: fadeIn 0.3s ease; }
+        .post-img { width: 100%; border-radius: 16px; margin-top: 10px; border: 1px solid var(--border); }
         .avatar { width: 48px; height: 48px; border-radius: 50%; background: #333; flex-shrink: 0; overflow: hidden; }
         .avatar img { width: 100%; height: 100%; object-fit: cover; }
-        
+
         /* Badges */
-        .badge-verified { color: var(--twitter-blue); font-size: 1.1rem; margin-left: 4px; }
-        .badge-owner { color: var(--gold); font-size: 1.1rem; margin-left: 4px; }
+        .badge-verified { color: var(--twitter-blue); margin-left: 4px; }
+        .badge-owner { color: var(--gold); margin-left: 4px; }
 
-        /* Settings Page UI */
-        .settings-list { list-style: none; padding: 0; }
-        .settings-item { padding: 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: 0.2s; }
-        .settings-item:hover { background: rgba(255,255,255,0.03); }
-        .settings-item i { color: var(--text-dim); }
+        .btn-vibe { background: var(--primary); color: white; border: none; padding: 8px 20px; border-radius: 99px; font-weight: 700; cursor: pointer; }
+        .preview-box { width: 100%; max-height: 200px; object-fit: cover; border-radius: 10px; margin-top: 10px; display: none; }
 
-        /* Forms */
-        .edit-group { padding: 20px; border-bottom: 1px solid var(--border); }
-        label { display: block; color: var(--text-dim); margin-bottom: 8px; font-size: 0.9rem; }
-        input, textarea { width: 100%; background: transparent; border: 1px solid var(--border); color: #fff; padding: 12px; border-radius: 8px; font-size: 1rem; }
-        .btn-save { background: var(--text-main); color: #000; border: none; padding: 10px 20px; border-radius: 99px; font-weight: 700; cursor: pointer; float: right; margin: 15px; }
-
-        /* Image Upload Mockup */
-        .upload-circle { width: 100px; height: 100px; border-radius: 50%; border: 2px dashed var(--border); display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; color: var(--text-dim); margin-bottom: 20px; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     </style>
 </head>
 <body>
 
     <aside class="sidebar">
-        <div class="nav-item active" onclick="nav('feed')"><i class="fas fa-ghost"></i> <span>Vibely</span></div>
+        <div class="nav-item" onclick="nav('feed')"><i class="fas fa-ghost" style="color:var(--primary)"></i> <span>Vibely</span></div>
         <div class="nav-item" onclick="nav('feed')"><i class="fas fa-house"></i> <span>Home</span></div>
         <div class="nav-item" onclick="nav('profile')"><i class="fas fa-user"></i> <span>Profile</span></div>
         <div class="nav-item" onclick="nav('settings')"><i class="fas fa-cog"></i> <span>Settings</span></div>
@@ -68,63 +63,35 @@
     <main class="main-viewport">
         <div id="view-feed">
             <div class="header-sticky">Home</div>
+            
+            <div class="composer">
+                <textarea id="post-input" style="width:100%; background:transparent; border:none; color:#fff; font-size:1.2rem; outline:none; resize:none;" placeholder="What's the vibe?"></textarea>
+                <img id="image-preview" class="preview-box">
+                <div class="composer-tools">
+                    <label for="post-image-upload" class="icon-btn"><i class="far fa-image"></i></label>
+                    <input type="file" id="post-image-upload" class="hidden" accept="image/*">
+                    <button class="btn-vibe" onclick="sendPost()">Vibe</button>
+                </div>
+            </div>
+
             <div id="posts-container"></div>
         </div>
 
         <div id="view-profile" class="hidden">
-            <div class="header-sticky">Edit Profile</div>
-            <div class="edit-group">
-                <div class="upload-circle" onclick="document.getElementById('fileInput').click()">
-                    <i class="fas fa-camera"></i>
-                    <span style="font-size:0.7rem">Upload</span>
-                </div>
-                <input type="file" id="fileInput" class="hidden">
-                
-                <label>Display Name</label>
-                <input type="text" id="edit-name" placeholder="Name">
-                <br><br>
-                <label>Bio</label>
-                <textarea id="edit-bio" placeholder="Tell the world your vibe..."></textarea>
-                <button class="btn-save" onclick="saveProfile()">Save Changes</button>
-            </div>
-        </div>
-
-        <div id="view-settings" class="hidden">
-            <div class="header-sticky">Settings</div>
-            <div class="settings-list">
-                <div class="settings-item">
-                    <div>
-                        <div>Account Information</div>
-                        <div style="font-size:0.8rem; color:var(--text-dim)">Email, password, and status.</div>
-                    </div>
-                    <i class="fas fa-chevron-right"></i>
-                </div>
-                <div class="settings-item">
-                    <div>
-                        <div>Privacy and Safety</div>
-                        <div style="font-size:0.8rem; color:var(--text-dim)">Manage what info you share.</div>
-                    </div>
-                    <i class="fas fa-chevron-right"></i>
-                </div>
-                <div class="settings-item">
-                    <div>
-                        <div>Verification Center</div>
-                        <div style="font-size:0.8rem; color:var(--text-dim)">Request your Elite badge.</div>
-                    </div>
-                    <i class="fas fa-chevron-right"></i>
-                </div>
-                <div class="settings-item" style="color: #f4212e;" onclick="handleLogout()">
-                    <div>Logout</div>
-                    <i class="fas fa-sign-out-alt"></i>
-                </div>
+            <div class="header-sticky">Profile Settings</div>
+            <div style="padding: 20px;">
+                <label>Change Display Name</label>
+                <input type="text" id="edit-name" style="width:100%; padding:10px; margin:10px 0; background:#16181c; border:1px solid var(--border); color:#fff;">
+                <button class="btn-vibe" onclick="updateDisplayName()">Update Name</button>
             </div>
         </div>
     </main>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
-        import { getAuth, updateProfile, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js";
-        import { getFirestore, collection, query, orderBy, onSnapshot, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
+        import { getAuth, updateProfile, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js";
+        import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
+        import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-storage.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyCDll8RH1kzGOf-ixJmSlHXGssOHSMlO3s",
@@ -138,30 +105,56 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
+        const storage = getStorage(app);
         const OWNER_UID = "pqPGbhBjvrVrgDrmUBa4J2ynmkW2";
 
-        // Simple Nav
-        window.nav = (v) => {
-            ['view-feed', 'view-profile', 'view-settings'].forEach(id => document.getElementById(id).classList.add('hidden'));
-            document.getElementById('view-' + v).classList.remove('hidden');
+        let selectedImageFile = null;
+
+        // --- Image Preview Logic ---
+        document.getElementById('post-image-upload').onchange = (e) => {
+            selectedImageFile = e.target.files[0];
+            if (selectedImageFile) {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    const preview = document.getElementById('image-preview');
+                    preview.src = event.target.result;
+                    preview.style.display = 'block';
+                };
+                reader.readAsDataURL(selectedImageFile);
+            }
         };
 
-        // Save Profile Logic
-        window.saveProfile = async () => {
-            const newName = document.getElementById('edit-name').value;
-            const bio = document.getElementById('edit-bio').value;
-            
-            await updateProfile(auth.currentUser, { displayName: newName });
-            await setDoc(doc(db, "users", auth.currentUser.uid), {
-                bio: bio,
-                displayName: newName
-            }, { merge: true });
-            
-            alert("Vibe Updated!");
-            nav('feed');
+        // --- Posting Logic with Image Upload ---
+        window.sendPost = async () => {
+            const text = document.getElementById('post-input').value;
+            if (!text && !selectedImageFile) return;
+
+            let imageUrl = null;
+
+            // 1. If there's an image, upload to Storage first
+            if (selectedImageFile) {
+                const storageRef = ref(storage, `post_images/${Date.now()}_${selectedImageFile.name}`);
+                const snapshot = await uploadBytes(storageRef, selectedImageFile);
+                imageUrl = await getDownloadURL(snapshot.ref);
+            }
+
+            // 2. Save post data to Firestore
+            await addDoc(collection(db, "posts"), {
+                text: text,
+                imageUrl: imageUrl,
+                uid: auth.currentUser.uid,
+                author: auth.currentUser.displayName || "Anonymous",
+                createdAt: serverTimestamp(),
+                followerCount: 0 // Mocking for badge logic
+            });
+
+            // Reset
+            document.getElementById('post-input').value = "";
+            document.getElementById('image-preview').style.display = 'none';
+            selectedImageFile = null;
         };
 
-        // Load Feed with dynamic Badges
+        // --- Load Feed ---
         function loadFeed() {
             const q = query(collection(db, "posts"), orderBy("createdAt", "desc"));
             onSnapshot(q, (snap) => {
@@ -169,23 +162,15 @@
                 container.innerHTML = "";
                 snap.forEach(d => {
                     const post = d.data();
-                    let badge = "";
+                    let badge = post.uid === OWNER_UID ? `<i class="fas fa-check-circle badge-owner"></i>` : "";
                     
-                    // Owner logic
-                    if (post.uid === OWNER_UID) {
-                        badge = `<i class="fas fa-check-circle badge-owner"></i>`;
-                    } 
-                    // 10K Follower Logic (Verified Badge)
-                    else if (post.followerCount >= 10000) {
-                        badge = `<i class="fas fa-check-circle badge-verified"></i>`;
-                    }
-
                     container.innerHTML += `
                         <div class="post-card">
                             <div class="avatar"><i class="fas fa-user" style="margin:12px"></i></div>
                             <div style="flex:1">
                                 <div style="font-weight:800">@${post.author} ${badge}</div>
                                 <div style="margin-top:4px">${post.text}</div>
+                                ${post.imageUrl ? `<img src="${post.imageUrl}" class="post-img">` : ""}
                             </div>
                         </div>
                     `;
@@ -193,14 +178,12 @@
             });
         }
 
-        onAuthStateChanged(auth, (user) => {
-            if(user) {
-                document.getElementById('edit-name').value = user.displayName;
-                loadFeed();
-            }
-        });
+        window.nav = (v) => {
+            document.getElementById('view-feed').classList.toggle('hidden', v !== 'feed');
+            document.getElementById('view-profile').classList.toggle('hidden', v !== 'profile');
+        };
 
-        window.handleLogout = () => signOut(auth);
+        onAuthStateChanged(auth, (user) => { if(user) loadFeed(); });
     </script>
 </body>
 </html>
