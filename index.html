@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --primary: #a855f7; /* Vibely Purple */
+            --primary: #a855f7;
             --bg: #000;
             --surface: #16181c;
             --border: #2f3336;
@@ -20,43 +20,37 @@
         body { background: var(--bg); color: var(--text); font-family: 'Plus Jakarta Sans', sans-serif; margin: 0; display: flex; height: 100vh; overflow: hidden; }
         .hidden { display: none !important; }
 
-        /* Navigation Sidebar */
+        /* Navigation */
         .sidebar { width: 275px; border-right: 1px solid var(--border); padding: 1rem 1.5rem; display: flex; flex-direction: column; }
-        .logo { font-size: 2rem; font-weight: 800; color: var(--primary); margin-bottom: 2rem; display: flex; align-items: center; gap: 15px; cursor: pointer; }
+        .logo { font-size: 2rem; font-weight: 800; color: var(--primary); margin-bottom: 2rem; display: flex; align-items: center; gap: 15px; }
         .nav-link { padding: 14px 18px; border-radius: 99px; font-size: 1.2rem; display: flex; align-items: center; gap: 20px; cursor: pointer; transition: 0.2s; margin-bottom: 5px; }
         .nav-link:hover { background: rgba(255,255,255,0.1); }
         .nav-link.active { font-weight: 800; color: var(--primary); }
 
-        /* Main Viewport */
-        .viewport { flex: 1; overflow-y: auto; border-right: 1px solid var(--border); scroll-behavior: smooth; }
-        .header { position: sticky; top: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(12px); padding: 15px 20px; border-bottom: 1px solid var(--border); z-index: 10; font-weight: 800; font-size: 1.2rem; display: flex; justify-content: space-between; align-items: center; }
+        /* Content Area */
+        .viewport { flex: 1; overflow-y: auto; border-right: 1px solid var(--border); }
+        .header { position: sticky; top: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(12px); padding: 15px 20px; border-bottom: 1px solid var(--border); z-index: 10; font-weight: 800; font-size: 1.2rem; }
 
         /* Composer */
         .composer { padding: 20px; border-bottom: 1px solid var(--border); }
-        .composer textarea { width: 100%; background: transparent; border: none; color: #fff; font-size: 1.25rem; outline: none; resize: none; min-height: 60px; }
+        .composer textarea { width: 100%; background: transparent; border: none; color: #fff; font-size: 1.25rem; outline: none; resize: none; min-height: 50px; }
         .preview-img { width: 100%; border-radius: 16px; margin: 10px 0; display: none; border: 1px solid var(--border); }
-        .composer-actions { display: flex; justify-content: space-between; align-items: center; margin-top: 15px; border-top: 1px solid var(--border); padding-top: 10px;}
+        .composer-actions { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; }
         .btn-vibe { background: var(--primary); color: #fff; border: none; padding: 10px 24px; border-radius: 99px; font-weight: 800; cursor: pointer; }
 
-        /* Feed Posts */
-        .post { padding: 15px 20px; border-bottom: 1px solid var(--border); display: flex; gap: 15px; animation: slideUp 0.3s ease; }
-        .avatar { width: 48px; height: 48px; border-radius: 50%; background: var(--surface); flex-shrink: 0; display: grid; place-items: center; border: 1px solid var(--border); overflow: hidden; }
+        /* Feed */
+        .post { padding: 15px 20px; border-bottom: 1px solid var(--border); display: flex; gap: 15px; }
+        .avatar { width: 48px; height: 48px; border-radius: 50%; background: var(--surface); flex-shrink: 0; display: grid; place-items: center; border: 1px solid var(--border); }
         .post-body { flex: 1; }
         .post-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
         .user-info { display: flex; align-items: center; gap: 5px; font-weight: 800; }
-        .post-text { line-height: 1.5; font-size: 1.05rem; }
         .post-image { width: 100%; border-radius: 16px; border: 1px solid var(--border); margin-top: 10px; }
-
-        /* Action Icons */
-        .actions { display: flex; gap: 40px; margin-top: 12px; color: var(--dim); }
-        .action-btn { cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 8px; font-size: 0.9rem; }
-        .action-btn:hover { color: var(--primary); }
         
         /* Badges */
-        .badge-purple { color: var(--primary); filter: drop-shadow(0 0 4px rgba(168, 85, 247, 0.4)); }
-        .badge-owner { color: var(--gold); filter: drop-shadow(0 0 5px rgba(255, 215, 0, 0.5)); }
+        .badge-purple { color: var(--primary); filter: drop-shadow(0 0 3px var(--primary)); }
+        .badge-owner { color: var(--gold); filter: drop-shadow(0 0 5px var(--gold)); }
 
-        @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; } }
+        .btn-follow { background: transparent; border: 1px solid var(--primary); color: var(--primary); padding: 4px 12px; border-radius: 99px; cursor: pointer; font-size: 0.8rem; font-weight: 600; }
     </style>
 </head>
 <body>
@@ -65,7 +59,6 @@
         <div class="logo"><i class="fas fa-skull"></i> VIBELY</div>
         <div class="nav-link active" onclick="nav('home')"><i class="fas fa-house"></i> Home</div>
         <div class="nav-link" onclick="nav('profile')"><i class="fas fa-user"></i> Profile</div>
-        <div class="nav-link" onclick="nav('settings')"><i class="fas fa-cog"></i> Settings</div>
         <div class="nav-link" style="margin-top:auto; color:#ff4444" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</div>
     </aside>
 
@@ -76,9 +69,7 @@
                 <textarea id="post-input" placeholder="What's the vibe?"></textarea>
                 <img id="img-preview" class="preview-img">
                 <div class="composer-actions">
-                    <label for="file-upload" style="cursor:pointer; color:var(--primary); font-size:1.3rem;">
-                        <i class="far fa-image"></i>
-                    </label>
+                    <label for="file-upload" style="cursor:pointer; color:var(--primary); font-size:1.3rem;"><i class="far fa-image"></i></label>
                     <input type="file" id="file-upload" class="hidden" accept="image/*">
                     <button class="btn-vibe" onclick="handlePost()">Vibe</button>
                 </div>
@@ -86,16 +77,11 @@
             <div id="feed"></div>
         </div>
 
-        <div id="view-settings" class="hidden">
-            <div class="header">Settings</div>
-            <div style="padding: 20px;">
-                <h3>Account Information</h3>
-                <p style="color:var(--dim)">Manage your display settings and privacy.</p>
-                <hr style="border:0; border-top:1px solid var(--border); margin: 20px 0;">
-                <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <span>Verification Request</span>
-                    <button class="btn-vibe" style="background:var(--surface); border:1px solid var(--border)">Apply</button>
-                </div>
+        <div id="view-profile" class="hidden">
+            <div class="header">Profile</div>
+            <div style="padding:40px; text-align:center;">
+                <h1 id="my-name">Loading...</h1>
+                <p id="my-stats" style="color:var(--dim)">0 Followers</p>
             </div>
         </div>
     </main>
@@ -103,7 +89,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js";
-        import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, doc, updateDoc, increment, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, doc, updateDoc, increment, getDoc, setDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
         import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-storage.js";
 
         const firebaseConfig = {
@@ -123,21 +109,19 @@
 
         let selectedFile = null;
 
-        // --- PREVIEW IMAGE ---
+        // Image Handling
         document.getElementById('file-upload').onchange = (e) => {
             selectedFile = e.target.files[0];
-            if (selectedFile) {
-                const reader = new FileReader();
-                reader.onload = (ev) => {
-                    const preview = document.getElementById('img-preview');
-                    preview.src = ev.target.result;
-                    preview.style.display = 'block';
-                };
-                reader.readAsDataURL(selectedFile);
-            }
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                const preview = document.getElementById('img-preview');
+                preview.src = ev.target.result;
+                preview.style.display = 'block';
+            };
+            reader.readAsDataURL(selectedFile);
         };
 
-        // --- POSTING ---
+        // Posting
         window.handlePost = async () => {
             const txt = document.getElementById('post-input').value.trim();
             if(!txt && !selectedFile) return;
@@ -149,13 +133,16 @@
                 imgUrl = await getDownloadURL(sRef);
             }
 
+            const userRef = doc(db, "users", auth.currentUser.uid);
+            const userSnap = await getDoc(userRef);
+            const currentFollowers = userSnap.exists() ? userSnap.data().followerCount || 0 : 0;
+
             await addDoc(collection(db, "posts"), {
                 text: txt,
                 image: imgUrl,
                 uid: auth.currentUser.uid,
-                author: auth.currentUser.displayName || "NewViber",
-                likes: 0,
-                followers: 0, // In real app, this pulls from user doc
+                author: auth.currentUser.displayName || "User",
+                followerCount: currentFollowers,
                 createdAt: serverTimestamp()
             });
 
@@ -164,19 +151,20 @@
             selectedFile = null;
         };
 
-        // --- LIKE LOGIC ---
-        window.likePost = async (id) => {
-            await updateDoc(doc(db, "posts", id), { likes: increment(1) });
+        // Follow Logic
+        window.followUser = async (targetUid) => {
+            if(targetUid === auth.currentUser.uid) return;
+            const targetRef = doc(db, "users", targetUid);
+            await setDoc(targetRef, { followerCount: increment(1) }, { merge: true });
+            alert("Vibe Following!");
         };
 
-        // --- MODERATION DELETE ---
+        // Delete Logic
         window.deletePost = async (id) => {
-            if(confirm("Permanently remove this vibe?")) {
-                await deleteDoc(doc(db, "posts", id));
-            }
+            if(confirm("Delete this vibe?")) await deleteDoc(doc(db, "posts", id));
         };
 
-        // --- LOAD FEED ---
+        // Load Feed
         function loadFeed(user) {
             const q = query(collection(db, "posts"), orderBy("createdAt", "desc"));
             onSnapshot(q, (snap) => {
@@ -185,12 +173,10 @@
                 snap.forEach(d => {
                     const p = d.data();
                     const isOwner = p.uid === OWNER_ID;
-                    const canDelete = isOwner || p.uid === user.uid;
-
-                    // Badge Logic
-                    let badge = "";
-                    if(isOwner) badge = `<i class="fas fa-crown badge-owner" title="Owner"></i>`;
-                    else if(p.followers >= 10000) badge = `<i class="fas fa-check-circle badge-purple" title="Elite"></i>`;
+                    const isMe = p.uid === user.uid;
+                    
+                    let badge = isOwner ? `<i class="fas fa-crown badge-owner"></i>` : 
+                                (p.followerCount >= 10000 ? `<i class="fas fa-check-circle badge-purple"></i>` : "");
 
                     container.innerHTML += `
                         <div class="post">
@@ -198,32 +184,32 @@
                             <div class="post-body">
                                 <div class="post-header">
                                     <span class="user-info">@${p.author} ${badge}</span>
-                                    ${canDelete ? `<i class="far fa-trash-alt" style="color:var(--dim); cursor:pointer;" onclick="deletePost('${d.id}')"></i>` : ""}
+                                    <div>
+                                        ${!isMe ? `<button class="btn-follow" onclick="followUser('${p.uid}')">Follow</button>` : ""}
+                                        ${isOwner || isMe ? `<i class="far fa-trash-alt" style="margin-left:10px; cursor:pointer; color:var(--dim);" onclick="deletePost('${d.id}')"></i>` : ""}
+                                    </div>
                                 </div>
                                 <div class="post-text">${p.text}</div>
                                 ${p.image ? `<img src="${p.image}" class="post-image">` : ""}
-                                <div class="actions">
-                                    <div class="action-btn" onclick="likePost('${d.id}')"><i class="far fa-heart"></i> ${p.likes || 0}</div>
-                                    <div class="action-btn"><i class="far fa-comment"></i></div>
-                                    <div class="action-btn"><i class="fas fa-share"></i></div>
-                                </div>
                             </div>
-                        </div>
-                    `;
+                        </div>`;
                 });
             });
         }
 
-        // --- NAV ---
+        // Nav & Auth
         window.nav = (p) => {
             document.getElementById('view-home').classList.toggle('hidden', p !== 'home');
-            document.getElementById('view-settings').classList.toggle('hidden', p !== 'settings');
-            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-            event.currentTarget.classList.add('active');
+            document.getElementById('view-profile').classList.toggle('hidden', p !== 'profile');
         };
 
-        onAuthStateChanged(auth, (user) => {
-            if(user) loadFeed(user);
+        onAuthStateChanged(auth, async (user) => {
+            if(user) {
+                document.getElementById('my-name').innerText = user.displayName;
+                const uSnap = await getDoc(doc(db, "users", user.uid));
+                if(uSnap.exists()) document.getElementById('my-stats').innerText = `${uSnap.data().followerCount || 0} Followers`;
+                loadFeed(user);
+            }
         });
 
         window.logout = () => signOut(auth).then(() => location.reload());
