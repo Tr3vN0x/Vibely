@@ -150,7 +150,6 @@ input { background:#111; border:1px solid #333; color:#fff; padding:10px; margin
             <h2 style="font-family:'Cinzel'; color:var(--ice-blue); text-align:center;">Inventory</h2>
             <div id="inventoryContainer" class="shop-grid"></div>
         </section>
-
     </main>
 
     <aside class="right-sidebar">
@@ -191,46 +190,4 @@ const shopItems=[
     {id:'shimmerXP',name:'Shimmer XP Bar',cost:40,desc:'XP bar glows with winter shimmer'},
     {id:'eliteBadge',name:'Elite Badge ❄',cost:30,desc:'Exclusive winter badge'}
 ];
-
-/* Load Shop */
-function loadShop(){ const cont=document.getElementById('shopContainer'); cont.innerHTML=''; shopItems.forEach(item=>{ cont.innerHTML+=`<div class="shop-card"><div class="effect-name">${item.name}</div><div class="desc" style="font-size:0.7rem; color:#aaa; margin-bottom:5px;">${item.desc}</div><div class="cost">♦ ${item.cost}</div><button onclick="buyItem('${item.id}')">Purchase</button></div>`;}); }
-
-/* Buy Item */
-async function buyItem(itemId){ const item=shopItems.find(i=>i.id===itemId); if(myProfile.vibes<item.cost){alert("Not enough diamonds!"); return;} const userRef=db.collection('users').doc(auth.currentUser.uid); const newInv={...myProfile.inventory,[itemId]:true}; await userRef.update({vibes:firebase.firestore.FieldValue.increment(-item.cost),inventory:newInv}); alert(`Purchased: ${item.name} (in inventory)`); loadInventory(); }
-
-/* Load Inventory */
-function loadInventory(){ const cont=document.getElementById('inventoryContainer'); cont.innerHTML=''; if(!myProfile.inventory) return; Object.keys(myProfile.inventory).forEach(itemId=>{ const item=shopItems.find(i=>i.id===itemId); if(!item) return; const equipped=Object.values(myProfile.equipped||{}).includes(itemId); cont.innerHTML+=`<div class="shop-card"><div class="effect-name">${item.name}</div><div class="desc" style="font-size:0.7rem; color:#aaa; margin-bottom:5px;">${item.desc}</div><button onclick="equipItem('${itemId}')">${equipped?'Equipped':'Equip'}</button></div>`;}); }
-
-/* Equip Item */
-async function equipItem(itemId){ const item=shopItems.find(i=>i.id===itemId); if(!item) return; const typeMap={sparkleAura:'aura',frostBorder:'cardEffect',snowTrail:'cardEffect',shimmerXP:'xpBar',eliteBadge:'badge'}; const field=typeMap[itemId]; const userRef=db.collection('users').doc(auth.currentUser.uid); const newEquipped={...myProfile.equipped,[field]:itemId}; await userRef.update({equipped:newEquipped}); alert(`Equipped: ${item.name}`); }
-
-/* XP Helper */
-function xpPercent(xp){ return Math.min((xp%100)/100*100,100); }
-
-/* Load App */
-function loadApp(uid){
-    db.collection('users').doc(uid).onSnapshot(d=>{
-        myProfile=d.data();
-        document.getElementById('headerBalance').innerText=`♦ ${myProfile.vibes}`;
-        renderCards();
-        loadInventory();
-    });
-
-    db.collection('users').onSnapshot(snap=>{ renderCards(); });
-}
-
-/* Render User Cards */
-function renderCards(){ const cont=document.getElementById('cardsContainer'); cont.innerHTML=''; if(!myProfile) return; db.collection('users').get().then(snap=>{ snap.forEach((d,i)=>{ const u=d.data(); const level=Math.floor(u.xp/100)+1; const xpFill=xpPercent(u.xp); const aura=u.equipped?.aura==='sparkleAura'?'box-shadow:0 0 20px rgba(165,243,252,0.8);':''; const frost=u.equipped?.cardEffect==='frostBorder'?'border:2px solid #a5f3fc;':''; const snow=u.equipped?.cardEffect==='snowTrail'?'position:relative;':''; const shimmer=u.equipped?.xpBar==='shimmer'?'background: linear-gradient(90deg,#a5f3fc,#fff);':''; const badge=u.equipped?.badge?u.badge:u.badge; cont.innerHTML+=`<div class="user-card" style="${aura}${frost}${snow};animation-delay:${i*0.1}s"><div class="card-avatar"><img src="${u.avatar || 'https://api.dicebear.com/7.x/bottts/svg?seed='+u.name}"></div><div style="font-family:'Cinzel'; color:var(--ice-blue);">${u.name}</div><div style="font-size:0.6rem; color:#888; margin-bottom:5px;">${badge || ''}</div><div style="color:var(--gold); font-size:0.8rem;">♦ ${u.vibes}</div><div class="card-level">Lvl ${level}</div><div class="card-xp"><div class="card-xp-fill" style="width:${xpFill}%; ${shimmer}"></div></div></div>`;}); });}
-
-/* Wheel */
-async function spinWheel(){ const userRef=db.collection('users').doc(auth.currentUser.uid); const uSnap=await userRef.get(); const u=uSnap.data(); const last=u.lastSpin?u.lastSpin.toDate():new Date(0); const now=new Date(); if(now-last<24*60*60*1000){alert("You can only spin once per day."); return;} let index; do{index=Math.floor(Math.random()*8);}while(index===3); const rot=3600+(index*45); document.getElementById('wheel').style.transform=`rotate(${rot}deg)`; document.getElementById('spinBtn').disabled=true; setTimeout(async()=>{ const rewards=[{v:5},{x:50},{v:10},{x:1000},{v:1},{x:10},{v:25},{v:0}]; const win=rewards[index]; const up={}; if(win.v) up.vibes=firebase.firestore.FieldValue.increment(win.v); if(win.x) up.xp=firebase.firestore.FieldValue.increment(win.x); up.lastSpin=firebase.firestore.FieldValue.serverTimestamp(); await userRef.update(up); document.getElementById('spinBtn').disabled=false; },5500); }
-
-/* Profile */
-async function updateProfile(){ const avatar=document.getElementById('newAvatar').value; const badge=document.getElementById('newBadge').value; await db.collection('users').doc(auth.currentUser.uid).update({avatar,badge}); alert("Identity Updated"); }
-
-/* Chat */
-function sendChat(){ const msg=document.getElementById('chatInput').value; if(!msg) return; db.collection('chat').add({user:myProfile.name,msg,time:firebase.firestore.FieldValue.serverTimestamp()}); document.getElementById('chatInput').value=''; }
-db.collection('chat').orderBy('time','desc').limit(15).onSnapshot(s=>{ const box=document.getElementById('chatBox'); box.innerHTML=''; s.docs.reverse().forEach(d=>box.innerHTML+=`<div class="chat-msg"><b>${d.data().user}:</b> ${d.data().msg}</div>`); box.scrollTop=box.scrollHeight; });
 </script>
-</body>
-</html>
