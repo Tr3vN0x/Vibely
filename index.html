@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Vibely</title>
+<title>Vibely Social</title>
 
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
@@ -11,17 +11,22 @@
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
 
 <style>
+:root{--blue:#1877f2}
 body{margin:0;font-family:system-ui;background:#f0f2f5}
-header{background:#1877f2;color:#fff;padding:12px 20px;display:flex;justify-content:space-between;align-items:center}
+header{background:var(--blue);color:#fff;padding:12px 20px;display:flex;justify-content:space-between;align-items:center}
 button{cursor:pointer;border:none;border-radius:6px;padding:6px 12px}
-.primary{background:#1877f2;color:white}
-.container{display:grid;grid-template-columns:240px 1fr 300px;gap:15px;padding:15px}
-.card{background:#fff;border-radius:10px;padding:12px;margin-bottom:10px}
+.primary{background:var(--blue);color:white}
+.container{display:grid;grid-template-columns:240px 1fr 320px;gap:15px;padding:15px}
+.card{background:#fff;border-radius:12px;padding:12px;margin-bottom:12px;box-shadow:0 2px 4px rgba(0,0,0,.05)}
 textarea,input{width:100%;padding:8px;border-radius:6px;border:1px solid #ccc}
 .post{margin-bottom:10px}
 .comment{font-size:14px;margin-left:10px;color:#444}
 .chat-box{height:300px;overflow-y:auto}
 .message{margin:5px 0}
+.badge{color:#1da1f2;font-weight:bold;margin-left:4px}
+.preview{display:flex;align-items:center;gap:8px}
+.avatar{width:36px;height:36px;border-radius:50%;background:#ccc;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:bold}
+.friend{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
 </style>
 </head>
 <body>
@@ -34,7 +39,7 @@ textarea,input{width:100%;padding:8px;border-radius:6px;border:1px solid #ccc}
 <div id="auth" class="card" style="max-width:400px;margin:80px auto">
 <h3>Login / Register</h3>
 <input id="email" placeholder="Email" />
-<input id="password" type="password" placeholder="Password" />
+<input id="password" type="password" />
 <button class="primary" onclick="login()">Login</button>
 <button class="primary" onclick="register()">Register</button>
 </div>
@@ -42,14 +47,21 @@ textarea,input{width:100%;padding:8px;border-radius:6px;border:1px solid #ccc}
 <div id="app" style="display:none">
 <div class="container">
 
+<!-- LEFT -->
 <div>
 <div class="card">
 <h4>Profile</h4>
 <input id="username" placeholder="Username" />
+<label><input type="checkbox" id="verified" /> Verified</label>
 <button onclick="saveProfile()">Save</button>
+</div>
+<div class="card">
+<h4>People</h4>
+<div id="people"></div>
 </div>
 </div>
 
+<!-- FEED -->
 <div>
 <div class="card">
 <textarea id="postText" placeholder="What's on your mind?"></textarea>
@@ -58,6 +70,7 @@ textarea,input{width:100%;padding:8px;border-radius:6px;border:1px solid #ccc}
 <div id="posts"></div>
 </div>
 
+<!-- RIGHT -->
 <div>
 <div class="card">
 <h4>Chat</h4>
@@ -88,7 +101,7 @@ const authDiv=document.getElementById('auth');
 const appDiv=document.getElementById('app');
 
 auth.onAuthStateChanged(u=>{
-if(u){authDiv.style.display='none';appDiv.style.display='block';loadPosts();loadChat();}
+if(u){authDiv.style.display='none';appDiv.style.display='block';loadPosts();loadChat();loadPeople();}
 else{authDiv.style.display='block';appDiv.style.display='none';}
 });
 
@@ -96,32 +109,62 @@ function register(){auth.createUserWithEmailAndPassword(email.value,password.val
 function login(){auth.signInWithEmailAndPassword(email.value,password.value)}
 function logout(){auth.signOut()}
 
-function saveProfile(){db.collection('users').doc(auth.currentUser.uid).set({username:username.value})}
+function saveProfile(){
+db.collection('users').doc(auth.currentUser.uid).set({
+username:username.value,
+verified:verified.checked
+});}
 
 function createPost(){
 if(!postText.value)return;
-db.collection('posts').add({text:postText.value,uid:auth.currentUser.uid,likes:0,created:firebase.firestore.FieldValue.serverTimestamp()});
-postText.value='';}
+db.collection('posts').add({
+text:postText.value,
+uid:auth.currentUser.uid,
+created:firebase.firestore.FieldValue.serverTimestamp()
+});postText.value='';}
+
+function loadPosts(){
+db.collection('posts').orderBy('created','desc').onSnapshot(async s=>{
+posts.innerHTML='';
+for(const d of s.docs){
+const u=await db.collection('users').doc(d.data().uid).get();
+const user=u.data()||{};
+posts.innerHTML+=`
+<div class='card post'>
+<div class='preview'>
+<div class='avatar'>${(user.username||'?')[0]}</div>
+<b>${user.username||'User'}${user.verified?'<span class="badge">✔</span>':''}</b>
+</div>
+<p>${d.data().text}</p>
+<button onclick="likePost('${d.id}')">❤️</button>
+<button onclick="commentPost('${d.id}')">💬</button>
+<div id='c${d.id}'></div>
+</div>`;
+loadComments(d.id);
+}
+});}
 
 function likePost(id){db.collection('posts').doc(id).update({likes:firebase.firestore.FieldValue.increment(1)})}
 
 function commentPost(id){const c=prompt('Comment');if(c)db.collection('posts').doc(id).collection('comments').add({text:c})}
 
-function loadPosts(){
-db.collection('posts').orderBy('created','desc').onSnapshot(s=>{
-posts.innerHTML='';
-s.forEach(d=>{
-posts.innerHTML+=`<div class='card post'>${d.data().text}<br>
-<button onclick="likePost('${d.id}')">❤️ ${d.data().likes}</button>
-<button onclick="commentPost('${d.id}')">💬</button></div>`;
-});});}
+function loadComments(id){
+db.collection('posts').doc(id).collection('comments').onSnapshot(s=>{
+const div=document.getElementById('c'+id);if(!div)return;
+div.innerHTML='';s.forEach(d=>div.innerHTML+=`<div class='comment'>${d.data().text}</div>`);
+});}
 
 function sendMessage(){if(!chatText.value)return;
-db.collection('chat').add({text:chatText.value,uid:auth.currentUser.uid,created:firebase.firestore.FieldValue.serverTimestamp()});
-chatText.value='';}
+db.collection('chat').add({text:chatText.value,uid:auth.currentUser.uid,created:firebase.firestore.FieldValue.serverTimestamp()});chatText.value='';}
 
 function loadChat(){db.collection('chat').orderBy('created').onSnapshot(s=>{
-chat.innerHTML='';s.forEach(d=>{chat.innerHTML+=`<div class='message'>${d.data().text}</div>`});});}
+chat.innerHTML='';s.forEach(d=>chat.innerHTML+=`<div class='message'>${d.data().text}</div>`)});}
+
+function loadPeople(){
+db.collection('users').onSnapshot(s=>{
+people.innerHTML='';s.forEach(d=>{
+people.innerHTML+=`<div class='friend'>${d.data().username||'User'}${d.data().verified?'<span class="badge">✔</span>':''}</div>`;
+});});}
 </script>
 </body>
 </html>
