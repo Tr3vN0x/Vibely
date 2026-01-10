@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vibely | Diamond Lounge Elite</title>
+    <title>Vibely | Diamond Lounge Pro</title>
 
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
@@ -17,17 +17,18 @@
             --gold-gradient: linear-gradient(135deg, #d4af37 0%, #fceabb 50%, #af9500 100%);
             --obsidian: #05050a;
             --border: rgba(212, 175, 55, 0.2);
-            --glass: rgba(255, 255, 255, 0.03);
+            --glass: rgba(255, 255, 255, 0.05);
         }
 
         * { box-sizing: border-box; transition: all 0.3s ease; }
         body { margin: 0; font-family: 'Inter', sans-serif; background: var(--obsidian); color: #fff; height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
 
-        /* Login */
+        /* Auth Screen */
         #loginOverlay { position: fixed; inset: 0; background: radial-gradient(circle, #151515 0%, #000 100%); z-index: 1000; display: flex; align-items: center; justify-content: center; }
-        .login-card { background: rgba(0,0,0,0.9); padding: 40px; border: 1px solid var(--gold); border-radius: 15px; text-align: center; max-width: 400px; width: 90%; }
+        .login-card { background: rgba(0,0,0,0.9); padding: 40px; border: 1px solid var(--gold); border-radius: 15px; text-align: center; max-width: 400px; width: 95%; box-shadow: 0 0 50px rgba(212, 175, 55, 0.2); }
 
-        header { padding: 15px 40px; background: rgba(0,0,0,0.9); border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+        /* Navigation & Layout */
+        header { padding: 15px 40px; background: rgba(0,0,0,0.9); border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; z-index: 100; }
         .logo { font-family: 'Cinzel', serif; letter-spacing: 8px; font-size: 1.1rem; color: var(--gold); margin: 0; }
 
         .main-layout { display: grid; grid-template-columns: 240px 1fr 320px; flex-grow: 1; overflow: hidden; }
@@ -38,27 +39,39 @@
         #centerContent { overflow-y: auto; padding: 40px; background: radial-gradient(circle at top, #111 0%, #050505 100%); }
         .view-section { display: none; max-width: 900px; margin: 0 auto; }
 
-        /* Cards & XP */
-        .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 25px; }
+        /* User Cards & Items */
+        .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 25px; }
         .user-card { background: linear-gradient(180deg, rgba(212, 175, 55, 0.05) 0%, rgba(0,0,0,0.8) 100%); border: 1px solid var(--border); border-radius: 15px; padding: 30px; text-align: center; position: relative; }
+        
+        /* Gold Aura & Animations */
         .gold-aura { border-color: var(--gold) !important; box-shadow: 0 0 20px rgba(212, 175, 55, 0.4); }
+        @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
+        .animated-card { 
+            background: linear-gradient(90deg, #0a0a15 0%, #1a1a2e 25%, #0a0a15 50%, #1a1a2e 75%, #0a0a15 100%) !important;
+            background-size: 200% 100% !important; animation: shimmer 3s infinite linear; border: 1px solid var(--gold) !important; 
+        }
+
         .card-lvl { position: absolute; top: 15px; right: 15px; background: var(--gold-gradient); color: #000; font-size: 0.65rem; padding: 2px 8px; border-radius: 10px; font-weight: bold; }
-        .card-avatar { width: 80px; height: 80px; margin: 0 auto 15px; border: 2px solid var(--gold); border-radius: 50%; padding: 2px; }
+        .card-avatar { width: 80px; height: 80px; margin: 0 auto 15px; border: 2px solid var(--gold); border-radius: 50%; padding: 3px; background: #000; }
         .card-avatar img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
         .xp-bar { width: 100%; height: 4px; background: #222; margin-top: 10px; border-radius: 2px; overflow: hidden; }
         .xp-fill { height: 100%; background: var(--gold-gradient); transition: width 1s; }
 
+        /* Shop */
+        .shop-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; }
+        .shop-item { background: var(--glass); border: 1px solid var(--border); padding: 25px; border-radius: 12px; text-align: center; }
+        .price-tag { color: var(--gold); font-weight: bold; font-family: 'Cinzel'; display: block; margin: 10px 0; }
+
         /* Vault Wheel */
-        .wheel-container { position: relative; width: 300px; height: 300px; margin: 0 auto; }
-        #wheel { width: 100%; height: 100%; border-radius: 50%; border: 4px solid var(--gold); position: relative; background: conic-gradient(#000 0deg 60deg, #111 60deg 120deg, #000 120deg 180deg, #111 180deg 240deg, #000 240deg 300deg, #111 300deg 360deg); transition: transform 4s cubic-bezier(0.15, 0, 0.15, 1); }
-        .wheel-label { position: absolute; width: 100%; height: 100%; text-align: center; color: var(--gold); font-size: 0.7rem; padding-top: 20px; font-family: 'Cinzel'; }
-        .cooldown-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.9); border-radius: 50%; display: none; flex-direction: column; justify-content: center; align-items: center; z-index: 5; }
+        .wheel-container { position: relative; width: 300px; height: 300px; margin: 40px auto; }
+        #wheel { width: 100%; height: 100%; border-radius: 50%; border: 6px solid var(--gold); position: relative; background: conic-gradient(#000 0deg 60deg, #111 60deg 120deg, #000 120deg 180deg, #111 180deg 240deg, #000 240deg 300deg, #111 300deg 360deg); transition: transform 4s cubic-bezier(0.15, 0, 0.15, 1); }
+        .wheel-label { position: absolute; width: 100%; height: 100%; text-align: center; color: var(--gold); font-size: 0.7rem; padding-top: 25px; font-family: 'Cinzel'; }
+        .cooldown-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.92); border-radius: 50%; display: none; flex-direction: column; justify-content: center; align-items: center; z-index: 10; border: 1px solid var(--border); }
 
         /* Chat */
         .right-sidebar { background: #000; border-left: 1px solid var(--border); display: flex; flex-direction: column; padding: 20px; }
         #chatBox { flex-grow: 1; overflow-y: auto; font-size: 0.85rem; margin-bottom: 15px; }
-        .chat-msg { margin-bottom: 8px; padding: 8px; background: rgba(255,255,255,0.02); border-radius: 4px; border-left: 2px solid var(--gold); }
-        
+        .chat-msg { margin-bottom: 10px; padding: 10px; background: rgba(255,255,255,0.03); border-radius: 6px; border-left: 2px solid var(--gold); }
         input { background: #111; border: 1px solid #333; color: #fff; padding: 12px; margin-bottom: 10px; width: 100%; border-radius: 5px; }
     </style>
 </head>
@@ -66,21 +79,21 @@
 
 <div id="loginOverlay">
     <div class="login-card">
-        <h1 style="font-family:'Cinzel'; color:var(--gold);">DIAMOND LOUNGE</h1>
-        <input id="regName" placeholder="Username (Display Name)" style="display:none;">
+        <h1 style="font-family:'Cinzel'; color:var(--gold); margin-bottom:20px;">DIAMOND LOUNGE</h1>
+        <input id="regName" placeholder="Desired Username" style="display:none;">
         <input id="authEmail" type="email" placeholder="Email Address">
         <input id="authPass" type="password" placeholder="Password">
         <div id="authErr" style="color:#ff4444; font-size:0.75rem; margin-bottom:10px;"></div>
-        <button class="nav-btn" style="width:100%; text-align:center; margin-bottom:10px;" onclick="handleAuth()">ENTER</button>
-        <div id="modeToggle" style="font-size:0.7rem; color:var(--gold); cursor:pointer;" onclick="toggleMode()">New? Register Here.</div>
+        <button class="nav-btn" style="width:100%; text-align:center; margin-bottom:15px; color:var(--gold); font-weight:bold;" onclick="handleAuth()">PROCEED</button>
+        <div id="modeToggle" style="font-size:0.7rem; color:#888; cursor:pointer;" onclick="toggleMode()">New? Create Elite Account.</div>
     </div>
 </div>
 
 <header>
     <div class="logo">DIAMOND LOUNGE</div>
     <div style="display: flex; gap: 20px; align-items: center;">
-        <div id="stakingMsg" style="font-size: 0.6rem; color: var(--gold); letter-spacing: 1px;">ACTIVE</div>
-        <div id="headerBalance" style="color: var(--gold); border: 1px solid var(--gold); padding: 4px 15px; border-radius: 20px; font-family: 'Cinzel'; font-weight: bold;">♦ 0</div>
+        <div id="statusPulse" style="font-size: 0.6rem; color: var(--gold); letter-spacing: 2px;">• LIVE</div>
+        <div id="headerBalance" style="color: var(--gold); border: 1px solid var(--gold); padding: 5px 20px; border-radius: 20px; font-family: 'Cinzel'; font-weight: bold;">♦ 0</div>
     </div>
 </header>
 
@@ -88,7 +101,8 @@
     <nav class="nav-sidebar">
         <button class="nav-btn active" id="btn-explore" onclick="switchTab('explore')">Lounge Floor</button>
         <button class="nav-btn" id="btn-wheel" onclick="switchTab('wheel')">Daily Vault</button>
-        <button class="nav-btn" style="margin-top:auto; color:#ff4444;" onclick="auth.signOut()">Logout</button>
+        <button class="nav-btn" id="btn-shop" onclick="switchTab('shop')">Boutique Shop</button>
+        <button class="nav-btn" style="margin-top:auto; color:#ff4444; opacity:0.6;" onclick="auth.signOut()">Secure Exit</button>
     </nav>
 
     <main id="centerContent">
@@ -97,12 +111,12 @@
         </section>
 
         <section id="view-wheel" class="view-section" style="text-align: center;">
-            <div style="background: var(--glass); padding: 40px; border: 1px solid var(--border); border-radius: 15px;">
-                <h2 style="font-family:'Cinzel'; color:var(--gold);">THE VAULT</h2>
+            <div style="background: var(--glass); padding: 40px; border: 1px solid var(--border); border-radius: 20px;">
+                <h2 style="font-family:'Cinzel'; color:var(--gold); margin:0;">DAILY VAULT</h2>
                 <div class="wheel-container">
                     <div id="cdOverlay" class="cooldown-overlay">
-                        <div style="font-size:0.7rem; color:#888;">RECHARGING</div>
-                        <div id="timerDisplay" style="font-family:'Cinzel'; font-size:1.5rem; color:var(--gold);">00:00:00</div>
+                        <div style="font-size:0.7rem; color:#888; margin-bottom:5px;">NEXT ACTIVATION IN</div>
+                        <div id="timerDisplay" style="font-family:'Cinzel'; font-size:1.8rem; color:var(--gold);">00:00:00</div>
                     </div>
                     <div id="wheel">
                         <div class="wheel-label" style="transform: rotate(0deg)">♦ 1</div>
@@ -113,18 +127,39 @@
                         <div class="wheel-label" style="transform: rotate(300deg)">+100 XP</div>
                     </div>
                 </div>
-                <button id="spinBtn" class="nav-btn" style="width:200px; text-align:center; margin-top:30px; color:var(--gold); font-weight:bold;" onclick="spinVault()">ACTIVATE</button>
+                <button id="spinBtn" class="nav-btn" style="width:220px; text-align:center; color:var(--gold); font-weight:bold; font-size:1rem;" onclick="spinVault()">ACTIVATE</button>
+            </div>
+        </section>
+
+        <section id="view-shop" class="view-section">
+            <h2 style="font-family:'Cinzel'; color:var(--gold); text-align:center; margin-bottom:30px;">DIAMOND BOUTIQUE</h2>
+            <div class="shop-grid">
+                <div class="shop-item">
+                    <div style="font-size: 2.5rem;">✨</div>
+                    <h3>Animated Profile</h3>
+                    <p style="font-size:0.75rem; color:#888;">Shimmering card animation.</p>
+                    <span class="price-tag">♦ 50</span>
+                    <button class="nav-btn" style="width:100%; text-align:center;" onclick="buyItem('animatedProfile', 50)">Purchase</button>
+                </div>
+                <div class="shop-item">
+                    <div style="font-size: 2.5rem;">👑</div>
+                    <h3>Royal Badge</h3>
+                    <p style="font-size:0.75rem; color:#888;">Gold crown icon on your card.</p>
+                    <span class="price-tag">♦ 150</span>
+                    <button class="nav-btn" style="width:100%; text-align:center;" onclick="buyItem('royalBadge', 150)">Purchase</button>
+                </div>
             </div>
         </section>
     </main>
 
     <aside class="right-sidebar">
         <div id="chatBox"></div>
-        <input id="chatInput" placeholder="Message..." onkeypress="if(event.key==='Enter') sendChat()">
+        <input id="chatInput" placeholder="Send message..." onkeypress="if(event.key==='Enter') sendChat()">
     </aside>
 </div>
 
 <script>
+// --- CONFIGURATION ---
 const firebaseConfig = {
     apiKey: "AIzaSyCDll8RH1kzGOf-ixJmSlHXGssOHSMlO3s",
     authDomain: "vibely-5128e.firebaseapp.com",
@@ -140,15 +175,15 @@ const auth = firebase.auth();
 let isLogin = true;
 let myProfile = null;
 
-// --- LEVELING MATH ---
+// --- LEVELING ENGINE ---
 const getLvl = (xp) => (xp < 250) ? Math.floor(xp / 50) + 1 : Math.floor(Math.sqrt((xp - 250) / 100)) + 6;
 const getXPReq = (lvl) => (lvl <= 5) ? (lvl - 1) * 50 : 250 + Math.pow(lvl - 6, 2) * 100;
 
-// --- AUTH ---
+// --- AUTH LOGIC ---
 function toggleMode() {
     isLogin = !isLogin;
     document.getElementById('regName').style.display = isLogin ? 'none' : 'block';
-    document.getElementById('modeToggle').innerText = isLogin ? "New? Register Here." : "Already a member? Enter.";
+    document.getElementById('modeToggle').innerText = isLogin ? "New? Create Elite Account." : "Member? Sign In.";
 }
 
 async function handleAuth() {
@@ -160,9 +195,9 @@ async function handleAuth() {
         if (isLogin) {
             await auth.signInWithEmailAndPassword(email, pass);
         } else {
-            if(!name) throw new Error("Please enter a username.");
+            if(!name) throw new Error("Username required.");
             const res = await auth.createUserWithEmailAndPassword(email, pass);
-            await db.collection('users').doc(res.user.uid).set({ name, vibes: 0, xp: 0, lastSpin: 0, avatar: "" });
+            await db.collection('users').doc(res.user.uid).set({ name, vibes: 0, xp: 0, lastSpin: 0, inventory: [] });
         }
     } catch (e) { err.innerText = e.message; }
 }
@@ -180,36 +215,58 @@ auth.onAuthStateChanged(user => {
 
 // --- CORE APP ---
 function initLounge(uid) {
-    // Passive XP (10xp every 60s)
+    // Random Passive XP award (5-15 XP) every 2 minutes
     setInterval(() => {
-        db.collection('users').doc(uid).update({ xp: firebase.firestore.FieldValue.increment(10) });
-    }, 60000);
+        const gain = Math.floor(Math.random() * 11) + 5;
+        db.collection('users').doc(uid).update({ xp: firebase.firestore.FieldValue.increment(gain) });
+    }, 120000);
 
     // Profile Listener
     db.collection('users').doc(uid).onSnapshot(doc => {
         myProfile = doc.data();
-        document.getElementById('headerBalance').innerText = `♦ ${myProfile.vibes || 0}`;
-        handleCD(myProfile.lastSpin || 0);
+        if(myProfile) {
+            document.getElementById('headerBalance').innerText = `♦ ${myProfile.vibes || 0}`;
+            handleCD(myProfile.lastSpin || 0);
+        }
     });
 
-    // Global Floor
+    // Global Floor Observer
     db.collection('users').onSnapshot(snap => {
         const cont = document.getElementById('cardsContainer');
         cont.innerHTML = '';
         snap.forEach(d => {
             const u = d.data();
             const lvl = getLvl(u.xp || 0);
-            const prog = ((u.xp || 0) - getXPReq(lvl)) / (getXPReq(lvl+1) - getXPReq(lvl)) * 100;
+            const nextLvlXP = getXPReq(lvl + 1);
+            const currLvlXP = getXPReq(lvl);
+            const prog = ((u.xp || 0) - currLvlXP) / (nextLvlXP - currLvlXP) * 100;
+            
+            const hasAnim = u.inventory && u.inventory.includes('animatedProfile');
+            const hasBadge = u.inventory && u.inventory.includes('royalBadge');
+            
             cont.innerHTML += `
-                <div class="user-card ${lvl >= 5 ? 'gold-aura' : ''}">
+                <div class="user-card ${lvl >= 5 ? 'gold-aura' : ''} ${hasAnim ? 'animated-card' : ''}">
+                    ${hasBadge ? '<div style="position:absolute; bottom:15px; right:15px; font-size:1.2rem;">👑</div>' : ''}
                     <div class="card-lvl">LVL ${lvl}</div>
-                    <div class="card-avatar"><img src="${u.avatar || 'https://api.dicebear.com/7.x/pixel-art/svg?seed='+u.name}"></div>
-                    <div style="font-family:'Cinzel'; color:${lvl >= 5 ? 'var(--gold)' : '#fff'};">${u.name.toUpperCase()}</div>
-                    <div style="font-size:0.8rem; color:var(--gold);">♦ ${u.vibes || 0}</div>
+                    <div class="card-avatar"><img src="https://api.dicebear.com/7.x/pixel-art/svg?seed=${u.name}"></div>
+                    <div style="font-family:'Cinzel'; color:${lvl >= 5 ? 'var(--gold)' : '#fff'}; font-weight:bold;">${u.name.toUpperCase()}</div>
+                    <div style="font-size:0.8rem; color:var(--gold); margin-top:5px;">♦ ${u.vibes || 0}</div>
                     <div class="xp-bar"><div class="xp-fill" style="width:${prog}%"></div></div>
                 </div>`;
         });
     });
+}
+
+// --- SHOP ---
+async function buyItem(id, cost) {
+    if (myProfile.vibes < cost) return alert("Insufficient Diamonds!");
+    if (myProfile.inventory && myProfile.inventory.includes(id)) return alert("Item already owned!");
+    
+    await db.collection('users').doc(auth.currentUser.uid).update({
+        vibes: firebase.firestore.FieldValue.increment(-cost),
+        inventory: firebase.firestore.FieldValue.arrayUnion(id)
+    });
+    alert("Purchase Successful!");
 }
 
 // --- VAULT ---
@@ -223,7 +280,6 @@ function handleCD(last) {
         if (rem <= 0) {
             overlay.style.display = 'none';
             btn.disabled = false;
-            clearInterval(timer);
         } else {
             overlay.style.display = 'flex';
             btn.disabled = true;
@@ -268,7 +324,7 @@ db.collection('chat').orderBy('time', 'desc').limit(15).onSnapshot(s => {
 function switchTab(t) {
     document.querySelectorAll('.view-section').forEach(v => v.style.display = 'none');
     document.getElementById('view-' + t).style.display = 'block';
-    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.nav-sidebar .nav-btn').forEach(b => b.classList.remove('active'));
     document.getElementById('btn-' + t).classList.add('active');
 }
 </script>
