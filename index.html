@@ -24,12 +24,21 @@
         * { box-sizing: border-box; transition: all 0.3s ease; }
         body { margin: 0; font-family: 'Inter', sans-serif; background: var(--obsidian); color: #fff; height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
 
+        /* Login Overlay */
+        #loginOverlay {
+            position: fixed; inset: 0; background: var(--obsidian); z-index: 1000;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .login-card {
+            background: var(--glass); padding: 40px; border: 1px solid var(--gold); border-radius: 15px;
+            text-align: center; max-width: 400px; width: 90%;
+        }
+
         header { padding: 15px 40px; background: rgba(0,0,0,0.9); border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; z-index: 100; }
         .logo { font-family: 'Cinzel', serif; letter-spacing: 8px; font-size: 1.1rem; color: var(--gold); margin: 0; }
 
         .main-layout { display: grid; grid-template-columns: 240px 1fr 320px; flex-grow: 1; overflow: hidden; }
 
-        /* Sidebar */
         .nav-sidebar { padding: 25px 15px; background: rgba(0,0,0,0.5); border-right: 1px solid var(--border); display: flex; flex-direction: column; gap: 10px; }
         .nav-btn { background: var(--glass); border: 1px solid transparent; color: #aaa; padding: 12px 20px; font-family: 'Cinzel', serif; cursor: pointer; border-radius: 4px; text-align: left; font-size: 0.85rem; }
         .nav-btn:hover, .nav-btn.active { background: rgba(255,255,255,0.08); color: var(--gold); border-color: var(--gold); }
@@ -37,21 +46,14 @@
         #centerContent { overflow-y: auto; padding: 40px; background: radial-gradient(circle at top, #111 0%, #050505 100%); }
         .view-section { display: none; max-width: 900px; margin: 0 auto; }
 
-        /* Gold Level Shower & Cards */
         .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 25px; }
         .user-card { 
             background: linear-gradient(180deg, rgba(212, 175, 55, 0.05) 0%, rgba(0,0,0,0.8) 100%); 
             border: 1px solid var(--border); border-radius: 15px; padding: 30px; 
             text-align: center; position: relative; overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
         
-        /* The Gold Shower Effect */
-        .gold-aura { 
-            border-color: var(--gold) !important; 
-            box-shadow: 0 0 20px rgba(212, 175, 55, 0.4), inset 0 0 15px rgba(212, 175, 55, 0.1); 
-        }
-
+        .gold-aura { border-color: var(--gold) !important; box-shadow: 0 0 20px rgba(212, 175, 55, 0.4); }
         .card-lvl { position: absolute; top: 15px; right: 15px; background: var(--gold-gradient); color: #000; font-size: 0.65rem; padding: 2px 8px; border-radius: 10px; font-weight: bold; }
         .card-avatar { width: 85px; height: 85px; margin: 0 auto 15px; border: 2px solid var(--gold); border-radius: 50%; padding: 3px; background: #000; }
         .card-avatar img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
@@ -59,35 +61,45 @@
         .xp-mini-bar { width: 100%; height: 4px; background: #222; margin-top: 10px; border-radius: 2px; overflow: hidden; }
         .xp-fill { height: 100%; background: var(--gold-gradient); width: 0%; transition: width 1s; }
 
-        /* Vault Wheel */
-        .wheel-container { position: relative; width: 340px; height: 340px; margin: 0 auto; border: 10px solid #111; border-radius: 50%; box-shadow: 0 0 50px rgba(212, 175, 55, 0.3); }
+        .wheel-container { position: relative; width: 300px; height: 300px; margin: 0 auto; border: 10px solid #111; border-radius: 50%; box-shadow: 0 0 50px rgba(212, 175, 55, 0.3); }
         #wheel { width: 100%; height: 100%; border-radius: 50%; position: relative; border: 2px solid var(--gold); background: conic-gradient(#000 0deg 60deg, #111 60deg 120deg, #000 120deg 180deg, #111 180deg 240deg, #000 240deg 300deg, #111 300deg 360deg); transition: transform 4s cubic-bezier(0.15, 0, 0.15, 1); }
-        .wheel-label { position: absolute; width: 100%; height: 100%; text-align: center; font-family: 'Cinzel'; color: var(--gold); font-size: 0.8rem; padding-top: 25px; }
+        .wheel-label { position: absolute; width: 100%; height: 100%; text-align: center; font-family: 'Cinzel'; color: var(--gold); font-size: 0.7rem; padding-top: 20px; }
         
-        .cooldown-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 50%; background: rgba(0,0,0,0.85); backdrop-filter: blur(6px); display: none; flex-direction: column; justify-content: center; align-items: center; z-index: 10; }
+        .cooldown-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 50%; background: rgba(0,0,0,0.85); display: none; flex-direction: column; justify-content: center; align-items: center; z-index: 10; }
 
-        /* Chat Sidebar */
         .right-sidebar { background: #000; border-left: 1px solid var(--border); display: flex; flex-direction: column; padding: 20px; }
         #chatBox { flex-grow: 1; overflow-y: auto; font-size: 0.85rem; margin-bottom: 15px; }
-        .chat-msg { margin-bottom: 10px; padding: 8px; background: rgba(255,255,255,0.02); border-radius: 4px; border-left: 2px solid var(--border); }
+        .chat-msg { margin-bottom: 10px; padding: 8px; background: rgba(255,255,255,0.02); border-radius: 4px; }
+        
+        input { background: #111; border: 1px solid #333; color: #fff; padding: 12px; margin-bottom: 15px; width: 100%; border-radius: 5px; }
     </style>
 </head>
 <body>
 
+<div id="loginOverlay">
+    <div class="login-card">
+        <h1 style="font-family:'Cinzel'; color:var(--gold);">WELCOME ELITE</h1>
+        <p style="font-size:0.8rem; color:#888;">Enter a unique username to enter the lounge.</p>
+        <input id="authUsername" placeholder="Unique Username...">
+        <button class="nav-btn" style="width:100%; text-align:center;" onclick="claimUsername()">ENTER LOUNGE</button>
+        <p id="loginError" style="color:#ff4444; font-size:0.75rem; margin-top:10px;"></p>
+    </div>
+</div>
+
 <header>
     <div class="logo">DIAMOND LOUNGE</div>
     <div style="display: flex; gap: 20px; align-items: center;">
-        <div id="passiveStatus" style="font-size: 0.65rem; color: var(--gold); letter-spacing: 1px; opacity: 0.7;">STAKING XP...</div>
+        <div id="passiveStatus" style="font-size: 0.65rem; color: var(--gold); opacity: 0.7;">STAKING...</div>
         <div id="headerBalance" style="color: var(--gold); border: 1px solid var(--gold); padding: 4px 15px; border-radius: 20px; font-family: 'Cinzel'; font-weight: bold;">♦ 0</div>
     </div>
 </header>
 
-<div id="mainView" class="main-layout" style="display:none">
+<div id="mainView" class="main-layout">
     <nav class="nav-sidebar">
         <button class="nav-btn active" id="btn-explore" onclick="switchTab('explore')">Lounge Floor</button>
         <button class="nav-btn" id="btn-wheel" onclick="switchTab('wheel')">Daily Vault</button>
         <button class="nav-btn" id="btn-editor" onclick="switchTab('editor')">Identity</button>
-        <button class="nav-btn" style="margin-top:auto; color:#ff4444;" onclick="auth.signOut()">Logout</button>
+        <button class="nav-btn" style="margin-top:auto; color:#ff4444;" onclick="location.reload()">Reset Session</button>
     </nav>
 
     <main id="centerContent">
@@ -99,7 +111,7 @@
             <div style="background: var(--glass); padding: 50px; border-radius: 20px; border: 1px solid var(--border);">
                 <div class="wheel-container">
                     <div id="cooldownOverlay" class="cooldown-overlay">
-                        <div id="timerDisplay" style="font-family:'Cinzel'; font-size: 2rem; color:var(--gold);">00:00:00</div>
+                        <div id="timerDisplay" style="font-family:'Cinzel'; font-size: 1.5rem; color:var(--gold);">00:00:00</div>
                     </div>
                     <div id="wheel">
                         <div class="wheel-label" style="transform: rotate(0deg)">♦ 1</div>
@@ -116,21 +128,19 @@
 
         <section id="view-editor" class="view-section">
             <div style="max-width:400px; margin:0 auto; background:var(--glass); padding:40px; border:1px solid var(--border);">
-                <input id="inName" placeholder="Name">
-                <input id="inAvatar" placeholder="Avatar URL">
-                <button class="nav-btn" style="width:100%; text-align:center;" onclick="saveIdentity()">Update</button>
+                <input id="inAvatar" placeholder="New Avatar URL">
+                <button class="nav-btn" style="width:100%; text-align:center;" onclick="saveIdentity()">Update Profile</button>
             </div>
         </section>
     </main>
 
     <aside class="right-sidebar">
         <div id="chatBox"></div>
-        <input id="chatInput" placeholder="Message..." onkeypress="if(event.key==='Enter') sendChat()" style="background:#111; border:1px solid #333; color:#fff; padding:12px; border-radius:5px;">
+        <input id="chatInput" placeholder="Message..." onkeypress="if(event.key==='Enter') sendChat()">
     </aside>
 </div>
 
 <script>
-// --- CONFIG & FIREBASE ---
 const firebaseConfig = {
     apiKey: "AIzaSyCDll8RH1kzGOf-ixJmSlHXGssOHSMlO3s",
     authDomain: "vibely-5128e.firebaseapp.com",
@@ -140,34 +150,82 @@ const firebaseConfig = {
     appId: "1:1048550825812:web:fc5bbba51e065807ffb2c1"
 };
 firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
 const db = firebase.firestore();
+const auth = firebase.auth();
 
-// --- LEVEL LOGIC (1-5 is very easy) ---
-// Formula: Level 1-5 takes 50xp each. After that, exponential growth.
-const calcLvl = (xp) => {
-    if (xp < 250) return Math.floor(xp / 50) + 1;
-    return Math.floor(Math.sqrt((xp - 250) / 100)) + 6;
-};
-const calcXPNeeded = (lvl) => {
-    if (lvl <= 5) return (lvl - 1) * 50;
-    return 250 + Math.pow(lvl - 6, 2) * 100;
-};
+let currentUserData = null;
 
-// --- PASSIVE XP SYSTEM ---
-// Awards 5-10 random XP every 30 seconds while user is active
-setInterval(() => {
-    if(auth.currentUser) {
-        const gain = Math.floor(Math.random() * 6) + 5; 
-        db.collection('users').doc(auth.currentUser.uid).update({
-            xp: firebase.firestore.FieldValue.increment(gain)
+// --- LOGIN LOGIC ---
+async function claimUsername() {
+    const username = document.getElementById('authUsername').value.trim().toLowerCase();
+    const errorMsg = document.getElementById('loginError');
+    if (username.length < 3) return errorMsg.innerText = "Username too short.";
+
+    // Check if user exists or claim new
+    const userQuery = await db.collection('users').where('name', '==', username).get();
+    
+    if (!userQuery.empty) {
+        // User exists - usually you'd check a password here, but for this simple version:
+        login(userQuery.docs[0].id);
+    } else {
+        // New User - Authenticate Anonymously then create doc
+        auth.signInAnonymously().then(cred => {
+            db.collection('users').doc(cred.user.uid).set({
+                name: username,
+                vibes: 0,
+                xp: 0,
+                lastSpin: 0,
+                avatar: ""
+            }).then(() => login(cred.user.uid));
         });
-        const status = document.getElementById('passiveStatus');
-        status.innerText = `+${gain} XP GAINED`;
-        setTimeout(() => { status.innerText = "STAKING XP..."; }, 3000);
     }
-}, 30000);
+}
 
+function login(uid) {
+    document.getElementById('loginOverlay').style.display = 'none';
+    startListeners(uid);
+}
+
+// --- CORE APP LOGIC ---
+const calcLvl = (xp) => (xp < 250) ? Math.floor(xp / 50) + 1 : Math.floor(Math.sqrt((xp - 250) / 100)) + 6;
+const calcXPNeeded = (lvl) => (lvl <= 5) ? (lvl - 1) * 50 : 250 + Math.pow(lvl - 6, 2) * 100;
+
+function startListeners(uid) {
+    // Current User Data
+    db.collection('users').doc(uid).onSnapshot(doc => {
+        currentUserData = doc.data();
+        document.getElementById('headerBalance').innerText = `♦ ${currentUserData.vibes || 0}`;
+        updateCooldown(currentUserData.lastSpin || 0);
+    });
+
+    // Global Lounge Floor
+    db.collection('users').onSnapshot(snap => {
+        const cont = document.getElementById('cardsContainer');
+        cont.innerHTML = '';
+        snap.forEach(d => {
+            const u = d.data();
+            const lvl = calcLvl(u.xp || 0);
+            const nextXP = calcXPNeeded(lvl + 1);
+            const currentXP = calcXPNeeded(lvl);
+            const prog = ((u.xp || 0) - currentXP) / (nextXP - currentXP) * 100;
+            cont.innerHTML += `
+                <div class="user-card ${lvl >= 5 ? 'gold-aura' : ''}">
+                    <div class="card-lvl">LVL ${lvl}</div>
+                    <div class="card-avatar"><img src="${u.avatar || 'https://api.dicebear.com/7.x/pixel-art/svg?seed='+u.name}"></div>
+                    <div style="font-weight:bold; font-family:'Cinzel'; color:${lvl >= 5 ? 'var(--gold)' : '#fff'}">${u.name.toUpperCase()}</div>
+                    <div style="color:var(--gold); font-size:0.8rem; margin:5px 0;">♦ ${u.vibes || 0}</div>
+                    <div class="xp-mini-bar"><div class="xp-fill" style="width:${prog}%"></div></div>
+                </div>`;
+        });
+    });
+
+    // Passive XP
+    setInterval(() => {
+        db.collection('users').doc(uid).update({ xp: firebase.firestore.FieldValue.increment(5) });
+    }, 30000);
+}
+
+// --- UI / NAVIGATION ---
 function switchTab(target) {
     document.querySelectorAll('.view-section').forEach(v => v.style.display = 'none');
     document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
@@ -177,62 +235,18 @@ function switchTab(target) {
 
 function saveIdentity() {
     db.collection('users').doc(auth.currentUser.uid).update({
-        name: document.getElementById('inName').value,
         avatar: document.getElementById('inAvatar').value
     }).then(() => switchTab('explore'));
 }
 
-let cdTimer;
-function updateCooldown(lastSpin) {
-    const overlay = document.getElementById('cooldownOverlay');
-    const btn = document.getElementById('spinBtn');
-    const display = document.getElementById('timerDisplay');
-    const oneDay = 86400000;
-    
-    if (cdTimer) clearInterval(cdTimer);
-    const tick = () => {
-        const remaining = oneDay - (Date.now() - lastSpin);
-        if (remaining <= 0) {
-            overlay.style.display = 'none';
-            btn.disabled = false;
-        } else {
-            overlay.style.display = 'flex';
-            btn.disabled = true;
-            const h = Math.floor(remaining / 3600000).toString().padStart(2, '0');
-            const m = Math.floor((remaining % 3600000) / 60000).toString().padStart(2, '0');
-            const s = Math.floor((remaining % 60000) / 1000).toString().padStart(2, '0');
-            display.innerText = `${h}:${m}:${s}`;
-        }
-    };
-    tick(); cdTimer = setInterval(tick, 1000);
-}
-
-function spinWheel() {
-    const outcomes = [
-        { type: 'diamonds', val: 1, deg: 0 },
-        { type: 'xp', val: 25, deg: 300 },
-        { type: 'diamonds', val: 2, deg: 240 },
-        { type: 'spin', val: 0, deg: 180 },
-        { type: 'diamonds', val: 5, deg: 120 },
-        { type: 'xp', val: 100, deg: 60 }
-    ];
-    const res = outcomes[Math.floor(Math.random() * outcomes.length)];
-    document.getElementById('wheel').style.transform = `rotate(${1800 + res.deg}deg)`;
-    document.getElementById('spinBtn').disabled = true;
-
-    setTimeout(() => {
-        const now = Date.now();
-        let up = { lastSpin: res.type === 'spin' ? 0 : now };
-        if(res.type === 'diamonds') up.vibes = firebase.firestore.FieldValue.increment(res.val);
-        if(res.type === 'xp') up.xp = firebase.firestore.FieldValue.increment(res.val);
-        db.collection('users').doc(auth.currentUser.uid).update(up);
-    }, 4100);
-}
-
 function sendChat() {
     const msg = document.getElementById('chatInput').value;
-    if(!msg) return;
-    db.collection('chat').add({ msg, user: auth.currentUser.email.split('@')[0], time: firebase.firestore.FieldValue.serverTimestamp() });
+    if(!msg || !currentUserData) return;
+    db.collection('chat').add({ 
+        msg, 
+        user: currentUserData.name.toUpperCase(), 
+        time: firebase.firestore.FieldValue.serverTimestamp() 
+    });
     document.getElementById('chatInput').value = '';
 }
 
@@ -245,38 +259,43 @@ db.collection('chat').orderBy('time', 'desc').limit(20).onSnapshot(s => {
     box.scrollTop = box.scrollHeight;
 });
 
-auth.onAuthStateChanged(u => {
-    if(u) {
-        document.getElementById('mainView').style.display = 'grid';
-        db.collection('users').onSnapshot(s => {
-            const cont = document.getElementById('cardsContainer');
-            cont.innerHTML = '';
-            s.forEach(d => {
-                const uData = d.data();
-                const lvl = calcLvl(uData.xp || 0);
-                const nextXP = calcXPNeeded(lvl + 1);
-                const currentXP = calcXPNeeded(lvl);
-                const prog = ((uData.xp || 0) - currentXP) / (nextXP - currentXP) * 100;
-                
-                cont.innerHTML += `
-                    <div class="user-card ${lvl >= 5 ? 'gold-aura' : ''}">
-                        <div class="card-lvl">LVL ${lvl}</div>
-                        <div class="card-avatar"><img src="${uData.avatar || 'https://api.dicebear.com/7.x/pixel-art/svg?seed='+d.id}"></div>
-                        <div style="font-weight:bold; font-family:'Cinzel'; color:${lvl >= 5 ? 'var(--gold)' : '#fff'}">${uData.name || 'GUEST'}</div>
-                        <div style="color:var(--gold); font-size:0.8rem; margin:5px 0;">♦ ${uData.vibes || 0}</div>
-                        <div class="xp-mini-bar"><div class="xp-fill" style="width:${prog}%"></div></div>
-                    </div>`;
-            });
-        });
+// --- WHEEL ---
+let cdTimer;
+function updateCooldown(lastSpin) {
+    const overlay = document.getElementById('cooldownOverlay');
+    const btn = document.getElementById('spinBtn');
+    const oneDay = 86400000;
+    if (cdTimer) clearInterval(cdTimer);
+    const tick = () => {
+        const remaining = oneDay - (Date.now() - lastSpin);
+        if (remaining <= 0) {
+            overlay.style.display = 'none';
+            btn.disabled = false;
+        } else {
+            overlay.style.display = 'flex';
+            btn.disabled = true;
+            const h = Math.floor(remaining / 3600000).toString().padStart(2, '0');
+            const m = Math.floor((remaining % 3600000) / 60000).toString().padStart(2, '0');
+            const s = Math.floor((remaining % 60000) / 1000).toString().padStart(2, '0');
+            document.getElementById('timerDisplay').innerText = `${h}:${m}:${s}`;
+        }
+    };
+    tick(); cdTimer = setInterval(tick, 1000);
+}
 
-        db.collection('users').doc(u.uid).onSnapshot(d => {
-            const data = d.data();
-            if(!data) return;
-            document.getElementById('headerBalance').innerText = `♦ ${data.vibes || 0}`;
-            updateCooldown(data.lastSpin || 0);
-        });
-    } else { auth.signInAnonymously(); }
-});
+function spinWheel() {
+    const outcomes = [{t:'d',v:1,d:0},{t:'x',v:25,d:300},{t:'d',v:2,d:240},{t:'s',v:0,d:180},{t:'d',v:5,d:120},{t:'x',v:100,d:60}];
+    const res = outcomes[Math.floor(Math.random()*outcomes.length)];
+    document.getElementById('wheel').style.transform = `rotate(${1800 + res.d}deg)`;
+    document.getElementById('spinBtn').disabled = true;
+    setTimeout(() => {
+        const now = Date.now();
+        let up = { lastSpin: res.t === 's' ? 0 : now };
+        if(res.t === 'd') up.vibes = firebase.firestore.FieldValue.increment(res.v);
+        if(res.t === 'x') up.xp = firebase.firestore.FieldValue.increment(res.v);
+        db.collection('users').doc(auth.currentUser.uid).update(up);
+    }, 4100);
+}
 </script>
 </body>
 </html>
