@@ -1,193 +1,127 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>MySocial</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Vibely</title>
 
-  <!-- Firebase -->
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
 
-  <style>
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      font-family: system-ui, Arial, sans-serif;
-      background: #f0f2f5;
-    }
-    header {
-      height: 60px;
-      background: #1877f2;
-      color: white;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 20px;
-    }
-    header h1 { font-size: 22px; }
-    header button {
-      background: white;
-      border: none;
-      padding: 8px 12px;
-      border-radius: 6px;
-      cursor: pointer;
-    }
-    .container {
-      display: grid;
-      grid-template-columns: 250px 1fr 250px;
-      gap: 20px;
-      padding: 20px;
-    }
-    .box {
-      background: white;
-      border-radius: 10px;
-      padding: 15px;
-    }
-    textarea {
-      width: 100%;
-      resize: none;
-      padding: 10px;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-    }
-    button.primary {
-      background: #1877f2;
-      color: white;
-      border: none;
-      padding: 8px 14px;
-      border-radius: 6px;
-      cursor: pointer;
-      margin-top: 8px;
-    }
-    .post {
-      background: white;
-      padding: 15px;
-      border-radius: 10px;
-      margin-top: 10px;
-    }
-    .auth {
-      max-width: 400px;
-      margin: 80px auto;
-      background: white;
-      padding: 20px;
-      border-radius: 10px;
-    }
-    .auth input {
-      width: 100%;
-      padding: 10px;
-      margin-bottom: 10px;
-    }
-  </style>
+<style>
+body{margin:0;font-family:system-ui;background:#f0f2f5}
+header{background:#1877f2;color:#fff;padding:12px 20px;display:flex;justify-content:space-between;align-items:center}
+button{cursor:pointer;border:none;border-radius:6px;padding:6px 12px}
+.primary{background:#1877f2;color:white}
+.container{display:grid;grid-template-columns:240px 1fr 300px;gap:15px;padding:15px}
+.card{background:#fff;border-radius:10px;padding:12px;margin-bottom:10px}
+textarea,input{width:100%;padding:8px;border-radius:6px;border:1px solid #ccc}
+.post{margin-bottom:10px}
+.comment{font-size:14px;margin-left:10px;color:#444}
+.chat-box{height:300px;overflow-y:auto}
+.message{margin:5px 0}
+</style>
 </head>
 <body>
 
 <header>
-  <h1>MySocial</h1>
-  <button onclick="logout()">Logout</button>
+<h2>Vibely</h2>
+<button onclick="logout()">Logout</button>
 </header>
 
-<div id="auth" class="auth">
-  <h2>Login / Register</h2>
-  <input id="email" type="email" placeholder="Email" />
-  <input id="password" type="password" placeholder="Password" />
-  <button class="primary" onclick="login()">Login</button>
-  <button class="primary" onclick="register()">Register</button>
+<div id="auth" class="card" style="max-width:400px;margin:80px auto">
+<h3>Login / Register</h3>
+<input id="email" placeholder="Email" />
+<input id="password" type="password" placeholder="Password" />
+<button class="primary" onclick="login()">Login</button>
+<button class="primary" onclick="register()">Register</button>
 </div>
 
 <div id="app" style="display:none">
-  <div class="container">
-    <div class="box">Menu</div>
+<div class="container">
 
-    <div>
-      <div class="box">
-        <textarea id="postText" placeholder="What's on your mind?"></textarea>
-        <button class="primary" onclick="createPost()">Post</button>
-      </div>
-      <div id="posts"></div>
-    </div>
+<div>
+<div class="card">
+<h4>Profile</h4>
+<input id="username" placeholder="Username" />
+<button onclick="saveProfile()">Save</button>
+</div>
+</div>
 
-    <div class="box">Contacts</div>
-  </div>
+<div>
+<div class="card">
+<textarea id="postText" placeholder="What's on your mind?"></textarea>
+<button class="primary" onclick="createPost()">Post</button>
+</div>
+<div id="posts"></div>
+</div>
+
+<div>
+<div class="card">
+<h4>Chat</h4>
+<div class="chat-box" id="chat"></div>
+<input id="chatText" placeholder="Type message" />
+<button onclick="sendMessage()">Send</button>
+</div>
+</div>
+
+</div>
 </div>
 
 <script>
-  // 🔥 Firebase Config
-  const firebaseConfig = {
-    apiKey: "AIzaSyCDll8RH1kzGOf-ixJmSlHXGssOHSMlO3s",
-    authDomain: "vibely-5128e.firebaseapp.com",
-    projectId: "vibely-5128e",
-    storageBucket: "vibely-5128e.firebasestorage.app",
-    messagingSenderId: "1048550825812",
-    appId: "1:1048550825812:web:fc5bbba51e065807ffb2c1",
-    measurementId: "G-HZW6SXDZQT"
-  };
+const firebaseConfig={
+apiKey:"AIzaSyCDll8RH1kzGOf-ixJmSlHXGssOHSMlO3s",
+authDomain:"vibely-5128e.firebaseapp.com",
+projectId:"vibely-5128e",
+storageBucket:"vibely-5128e.firebasestorage.app",
+messagingSenderId:"1048550825812",
+appId:"1:1048550825812:web:fc5bbba51e065807ffb2c1"
+};
 
-  firebase.initializeApp(firebaseConfig);
+firebase.initializeApp(firebaseConfig);
+const auth=firebase.auth();
+const db=firebase.firestore();
 
-  const auth = firebase.auth();
-  const db = firebase.firestore();
+const authDiv=document.getElementById('auth');
+const appDiv=document.getElementById('app');
 
-  const authDiv = document.getElementById('auth');
-  const appDiv = document.getElementById('app');
-  const postsDiv = document.getElementById('posts');
+auth.onAuthStateChanged(u=>{
+if(u){authDiv.style.display='none';appDiv.style.display='block';loadPosts();loadChat();}
+else{authDiv.style.display='block';appDiv.style.display='none';}
+});
 
-  auth.onAuthStateChanged(user => {
-    if (user) {
-      authDiv.style.display = 'none';
-      appDiv.style.display = 'block';
-      loadPosts();
-    } else {
-      authDiv.style.display = 'block';
-      appDiv.style.display = 'none';
-    }
-  });
+function register(){auth.createUserWithEmailAndPassword(email.value,password.value)}
+function login(){auth.signInWithEmailAndPassword(email.value,password.value)}
+function logout(){auth.signOut()}
 
-  function register() {
-    auth.createUserWithEmailAndPassword(
-      email.value,
-      password.value
-    ).catch(alert);
-  }
+function saveProfile(){db.collection('users').doc(auth.currentUser.uid).set({username:username.value})}
 
-  function login() {
-    auth.signInWithEmailAndPassword(
-      email.value,
-      password.value
-    ).catch(alert);
-  }
+function createPost(){
+if(!postText.value)return;
+db.collection('posts').add({text:postText.value,uid:auth.currentUser.uid,likes:0,created:firebase.firestore.FieldValue.serverTimestamp()});
+postText.value='';}
 
-  function logout() {
-    auth.signOut();
-  }
+function likePost(id){db.collection('posts').doc(id).update({likes:firebase.firestore.FieldValue.increment(1)})}
 
-  function createPost() {
-    const text = postText.value;
-    if (!text) return;
+function commentPost(id){const c=prompt('Comment');if(c)db.collection('posts').doc(id).collection('comments').add({text:c})}
 
-    db.collection('posts').add({
-      text,
-      uid: auth.currentUser.uid,
-      createdAt: firebase.firestore.FieldValue.serverTimestamp()
-    });
+function loadPosts(){
+db.collection('posts').orderBy('created','desc').onSnapshot(s=>{
+posts.innerHTML='';
+s.forEach(d=>{
+posts.innerHTML+=`<div class='card post'>${d.data().text}<br>
+<button onclick="likePost('${d.id}')">❤️ ${d.data().likes}</button>
+<button onclick="commentPost('${d.id}')">💬</button></div>`;
+});});}
 
-    postText.value = '';
-  }
+function sendMessage(){if(!chatText.value)return;
+db.collection('chat').add({text:chatText.value,uid:auth.currentUser.uid,created:firebase.firestore.FieldValue.serverTimestamp()});
+chatText.value='';}
 
-  function loadPosts() {
-    db.collection('posts')
-      .orderBy('createdAt', 'desc')
-      .onSnapshot(snapshot => {
-        postsDiv.innerHTML = '';
-        snapshot.forEach(doc => {
-          postsDiv.innerHTML += `
-            <div class="post">${doc.data().text}</div>
-          `;
-        });
-      });
-  }
+function loadChat(){db.collection('chat').orderBy('created').onSnapshot(s=>{
+chat.innerHTML='';s.forEach(d=>{chat.innerHTML+=`<div class='message'>${d.data().text}</div>`});});}
 </script>
-
 </body>
 </html>
