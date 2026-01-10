@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Vibely – Social Platform</title>
+<title>Vibely – Full Social App</title>
 
 <!-- Firebase SDKs -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
@@ -16,7 +16,7 @@
 *{box-sizing:border-box}
 body{margin:0;font-family:system-ui;background:#f0f2f5}
 header{background:var(--blue);color:#fff;padding:12px 16px;display:flex;justify-content:space-between;align-items:center}
-nav{display:flex;gap:10px}
+nav{display:flex;gap:8px;flex-wrap:wrap}
 nav button{background:rgba(255,255,255,.15);color:#fff}
 button{cursor:pointer;border:none;border-radius:8px;padding:8px 12px}
 .primary{background:var(--blue);color:white}
@@ -24,12 +24,11 @@ button{cursor:pointer;border:none;border-radius:8px;padding:8px 12px}
 .card{background:#fff;border-radius:14px;padding:14px;margin-bottom:12px;box-shadow:0 2px 4px rgba(0,0,0,.05)}
 input,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid #ccc}
 .hidden{display:none}
-.avatar{width:40px;height:40px;border-radius:50%;background:#aaa;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:bold}
+.avatar{width:40px;height:40px;border-radius:50%;background:#888;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:bold}
 .preview{display:flex;gap:10px;align-items:center}
 .badge{color:#1da1f2;font-weight:bold;margin-left:4px}
-.story{display:inline-block;width:90px;height:140px;background:#ddd;border-radius:12px;margin-right:8px;display:flex;align-items:flex-end;padding:8px;font-size:12px}
-.post video,.post img{max-width:100%;border-radius:10px;margin-top:8px}
-@media(max-width:900px){.container{grid-template-columns:1fr}nav{overflow-x:auto}}
+.post img,.post video{max-width:100%;border-radius:10px;margin-top:8px}
+@media(max-width:900px){.container{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -52,6 +51,7 @@ input,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid #ccc}
 <input id="password" type="password" placeholder="Password" />
 <button class="primary" onclick="login()">Login</button>
 <button class="primary" onclick="register()">Register</button>
+<p id="authError" style="color:red"></p>
 </div>
 
 <!-- APP -->
@@ -66,13 +66,11 @@ input,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid #ccc}
 <label><input type="checkbox" id="verified" /> Premium Verified</label>
 <button onclick="saveProfile()">Save</button>
 </div>
-<div class="card" id="stories"></div>
 </div>
 
 <!-- CENTER -->
 <div>
 
-<!-- FEED TAB -->
 <div id="feed" class="tab">
 <div class="card">
 <textarea id="postText" placeholder="What's on your mind?"></textarea>
@@ -82,13 +80,11 @@ input,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid #ccc}
 <div id="posts"></div>
 </div>
 
-<!-- FRIENDS TAB -->
 <div id="friends" class="tab hidden">
 <div class="card"><h4>Friend Requests</h4><div id="requests"></div></div>
 <div class="card"><h4>Followers</h4><div id="followers"></div></div>
 </div>
 
-<!-- REELS TAB -->
 <div id="reels" class="tab hidden">
 <div class="card">
 <input type="file" id="videoUpload" />
@@ -97,7 +93,6 @@ input,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid #ccc}
 <div id="reelFeed"></div>
 </div>
 
-<!-- NOTIFICATIONS TAB -->
 <div id="notifications" class="tab hidden">
 <div class="card" id="notify"></div>
 </div>
@@ -119,68 +114,54 @@ input,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid #ccc}
 
 <script>
 // Firebase Config
-const firebaseConfig={apiKey:"AIzaSyCDll8RH1kzGOf-ixJmSlHXGssOHSMlO3s",authDomain:"vibely-5128e.firebaseapp.com",projectId:"vibely-5128e",storageBucket:"vibely-5128e.firebasestorage.app",messagingSenderId:"1048550825812",appId:"1:1048550825812:web:fc5bbba51e065807ffb2c1"};
+const firebaseConfig={
+apiKey:"AIzaSyCDll8RH1kzGOf-ixJmSlHXGssOHSMlO3s",
+authDomain:"vibely-5128e.firebaseapp.com",
+projectId:"vibely-5128e",
+storageBucket:"vibely-5128e.firebasestorage.app",
+messagingSenderId:"1048550825812",
+appId:"1:1048550825812:web:fc5bbba51e065807ffb2c1"
+};
+
 firebase.initializeApp(firebaseConfig);
 const auth=firebase.auth();
 const db=firebase.firestore();
 const storage=firebase.storage();
 
-const authDiv=authDiv=document.getElementById('auth');
+const authDiv=document.getElementById('auth');
 const appDiv=document.getElementById('app');
+const authError=document.getElementById('authError');
 
-auth.onAuthStateChanged(u=>{if(u){authDiv.style.display='none';appDiv.classList.remove('hidden');loadFeed();loadChat();loadNotifications();}else{authDiv.style.display='block';appDiv.classList.add('hidden');}});
+auth.onAuthStateChanged(user=>{
+if(user){authDiv.style.display='none';appDiv.classList.remove('hidden');loadFeed();loadChat();loadNotifications();}
+else{authDiv.style.display='block';appDiv.classList.add('hidden');}
+});
 
-function showTab(t){document.querySelectorAll('.tab').forEach(x=>x.classList.add('hidden'));document.getElementById(t).classList.remove('hidden');}
+function showTab(tab){document.querySelectorAll('.tab').forEach(t=>t.classList.add('hidden'));document.getElementById(tab).classList.remove('hidden')}
 
-function register(){auth.createUserWithEmailAndPassword(email.value,password.value)}
-function login(){auth.signInWithEmailAndPassword(email.value,password.value)}
+function register(){auth.createUserWithEmailAndPassword(email.value,password.value).catch(e=>authError.innerText=e.message)}
+function login(){auth.signInWithEmailAndPassword(email.value,password.value).catch(e=>authError.innerText=e.message)}
 function logout(){auth.signOut()}
 
-function saveProfile(){db.collection('users').doc(auth.currentUser.uid).set({username:username.value,verified:verified.checked,followers:0},{merge:true})}
-
-// Algorithmic feed ranking (likes + recency)
-function loadFeed(){db.collection('posts').onSnapshot(async s=>{
-posts.innerHTML='';
-let arr=[];
-for(const d of s.docs){const p=d.data();const score=(p.likes||0)*2+(Date.now()-(p.created?.toMillis()||0))*-0.000001;arr.push({id:d.id,score,p});}
-arr.sort((a,b)=>b.score-a.score);
-for(const o of arr){posts.innerHTML+=`<div class='card post'><p>${o.p.text||''}</p>${o.p.image?`<img src='${o.p.image}'>`:''}<button onclick="likePost('${o.id}')">❤️ ${(o.p.likes||0)}</button></div>`;}
-});}
+function saveProfile(){db.collection('users').doc(auth.currentUser.uid).set({username:username.value,verified:verified.checked},{merge:true})}
 
 function createPost(){
 const text=postText.value;const file=imageUpload.files[0];
-if(file){const ref=storage.ref('images/'+Date.now()+file.name);ref.put(file).then(r=>r.ref.getDownloadURL().then(url=>savePost(text,url)));}
+if(file){const ref=storage.ref('images/'+Date.now()+file.name);ref.put(file).then(r=>r.ref.getDownloadURL().then(url=>savePost(text,url)))}
 else savePost(text,null);
 postText.value='';imageUpload.value='';}
+
 function savePost(text,image){db.collection('posts').add({text,image,uid:auth.currentUser.uid,likes:0,created:firebase.firestore.FieldValue.serverTimestamp()})}
+
+function loadFeed(){db.collection('posts').orderBy('created','desc').onSnapshot(s=>{posts.innerHTML='';s.forEach(d=>{const p=d.data();posts.innerHTML+=`<div class='card post'><p>${p.text||''}</p>${p.image?`<img src='${p.image}'>`:''}<button onclick="likePost('${d.id}')">❤️ ${p.likes||0}</button></div>`})})}
 function likePost(id){db.collection('posts').doc(id).update({likes:firebase.firestore.FieldValue.increment(1)})}
 
-// Chat
-function sendMessage(){if(!chatText.value)return;db.collection('chat').add({text:chatText.value,created:firebase.firestore.FieldValue.serverTimestamp()});chatText.value='';}
-function loadChat(){db.collection('chat').orderBy('created').onSnapshot(s=>{chat.innerHTML='';s.forEach(d=>chat.innerHTML+=`<div>${d.data().text}</div>`);});}
+function sendMessage(){if(!chatText.value)return;db.collection('chat').add({text:chatText.value,created:firebase.firestore.FieldValue.serverTimestamp()});chatText.value=''}
+function loadChat(){db.collection('chat').orderBy('created').onSnapshot(s=>{chat.innerHTML='';s.forEach(d=>chat.innerHTML+=`<div>${d.data().text}</div>`)});}
 
-// Notifications
-function loadNotifications(){db.collection('notifications').onSnapshot(s=>{notify.innerHTML='';s.forEach(d=>notify.innerHTML+=`<div>${d.data().text}</div>`);});}
+function loadNotifications(){db.collection('notifications').onSnapshot(s=>{notify.innerHTML='';s.forEach(d=>notify.innerHTML+=`<div>${d.data().text}</div>`)});}
 
-// Reels
-function uploadReel(){const f=videoUpload.files[0];if(!f)return;const ref=storage.ref('reels/'+Date.now()+f.name);ref.put(f).then(r=>r.ref.getDownloadURL().then(url=>db.collection('reels').add({url,created:firebase.firestore.FieldValue.serverTimestamp()})));}
+function uploadReel(){const f=videoUpload.files[0];if(!f)return;const ref=storage.ref('reels/'+Date.now()+f.name);ref.put(f).then(r=>r.ref.getDownloadURL().then(url=>db.collection('reels').add({url,created:firebase.firestore.FieldValue.serverTimestamp()})))}
 </script>
-
-<!-- ADMIN PANEL (PHP - server/admin.php)
-<?php
-require 'vendor/autoload.php';
-use Kreait\\Firebase\\Factory;
-$firebase=(new Factory)->withServiceAccount('serviceAccount.json')->create();
-$db=$firebase->getFirestore();
-// Admin moderation, verification, ads, bans
-?>
--->
-
-<!-- DEPLOYMENT
-1. firebase init hosting
-2. firebase deploy
-3. connect domain + SSL auto
--->
-
 </body>
 </html>
