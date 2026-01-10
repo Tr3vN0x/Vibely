@@ -17,9 +17,10 @@
             --fb-card: #ffffff;
             --fb-text: #050505;
             --fb-secondary: #65676b;
+            --fb-divider: #ced0d4;
         }
 
-        body { margin: 0; font-family: Helvetica, Arial, sans-serif; background: var(--fb-bg); color: var(--fb-text); }
+        body { margin: 0; font-family: Segoe UI, Helvetica, Arial, sans-serif; background: var(--fb-bg); color: var(--fb-text); overflow-x: hidden; }
         
         /* HEADER */
         header { 
@@ -27,242 +28,318 @@
             display: flex; justify-content: space-between; align-items: center; 
             box-shadow: 0 2px 4px rgba(0,0,0,.1); position: sticky; top: 0; z-index: 1000;
         }
-        .logo { color: var(--fb-blue); font-size: 28px; font-weight: bold; letter-spacing: -1px; }
-        nav button { background: none; border: none; padding: 10px 20px; font-size: 20px; cursor: pointer; color: var(--fb-secondary); border-radius: 8px; }
+        .logo-box { display: flex; align-items: center; gap: 8px; }
+        .logo { color: var(--fb-blue); font-size: 32px; font-weight: bold; letter-spacing: -1px; text-decoration: none; }
+        
+        nav { display: flex; gap: 5px; position: absolute; left: 50%; transform: translateX(-50%); }
+        nav button { background: none; border: none; width: 100px; height: 50px; font-size: 24px; cursor: pointer; color: var(--fb-secondary); border-radius: 8px; transition: 0.2s; }
         nav button:hover { background: #f2f2f2; }
+        nav button.active { color: var(--fb-blue); border-bottom: 3px solid var(--fb-blue); border-radius: 0; }
 
         /* LAYOUT */
-        .container { display: grid; grid-template-columns: 280px 1fr 280px; gap: 32px; padding: 16px; max-width: 1250px; margin: auto; }
+        .container { display: grid; grid-template-columns: 300px 1fr 300px; gap: 32px; padding: 16px; max-width: 1400px; margin: auto; }
 
         /* SIDEBARS */
-        .sidebar-item { display: flex; align-items: center; gap: 12px; padding: 10px; border-radius: 8px; cursor: pointer; transition: 0.2s; font-weight: 500; }
+        .sidebar { position: sticky; top: 72px; height: calc(100vh - 80px); overflow-y: auto; }
+        .sidebar-item { display: flex; align-items: center; gap: 12px; padding: 8px 10px; border-radius: 8px; cursor: pointer; transition: 0.2s; font-weight: 500; font-size: 15px; }
         .sidebar-item:hover { background: #e4e6eb; }
-        .sidebar-icon { width: 36px; height: 36px; background: #ddd; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+        .sidebar-icon { width: 36px; height: 36px; background: #e4e6eb; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; }
 
-        /* CARDS & POSTS */
-        .card { background: var(--fb-card); border-radius: 8px; padding: 16px; margin-bottom: 16px; box-shadow: 0 1px 2px rgba(0,0,0,.1); }
-        .post-header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
-        .avatar { width: 40px; height: 40px; border-radius: 50%; background: #ccc; }
-        .user-info b { display: block; font-size: 15px; }
-        .user-info span { font-size: 13px; color: var(--fb-secondary); }
-        .post-text { margin-bottom: 12px; line-height: 1.4; }
-        .post-img { width: calc(100% + 32px); margin-left: -16px; border-top: 1px solid #eee; border-bottom: 1px solid #eee; }
+        /* CARDS */
+        .card { background: var(--fb-card); border-radius: 8px; padding: 12px 16px; margin-bottom: 16px; box-shadow: 0 1px 2px rgba(0,0,0,.2); }
         
-        /* BUTTONS */
-        .action-bar { display: flex; border-top: 1px solid #eee; margin-top: 10px; padding-top: 4px; }
-        .action-btn { flex: 1; background: none; border: none; padding: 8px; color: var(--fb-secondary); font-weight: 600; cursor: pointer; border-radius: 4px; }
-        .action-btn:hover { background: #f2f2f2; }
-        .btn-primary { background: var(--fb-blue); color: white; border: none; padding: 8px 16px; border-radius: 6px; font-weight: bold; cursor: pointer; width: 100%; }
+        /* POST COMPOSER */
+        .composer-top { display: flex; gap: 10px; margin-bottom: 12px; }
+        .avatar { width: 40px; height: 40px; border-radius: 50%; background: #ddd; object-fit: cover; }
+        .composer-input { background: #f0f2f5; border-radius: 20px; padding: 10px 15px; flex: 1; cursor: pointer; color: var(--fb-secondary); border: none; text-align: left; }
+        .composer-input:hover { background: #e4e6eb; }
 
-        /* STORIES */
-        .stories { display: flex; gap: 8px; margin-bottom: 16px; overflow-x: auto; padding-bottom: 8px; }
-        .story { width: 110px; height: 190px; background: #ddd; border-radius: 10px; flex-shrink: 0; position: relative; }
-        .story-name { position: absolute; bottom: 8px; left: 8px; color: white; font-size: 12px; font-weight: bold; text-shadow: 0 1px 4px rgba(0,0,0,.8); }
+        /* FEED POSTS */
+        .post-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
+        .post-user { display: flex; gap: 10px; }
+        .user-meta b { display: block; font-size: 15px; cursor: pointer; }
+        .user-meta b:hover { text-decoration: underline; }
+        .user-meta span { font-size: 13px; color: var(--fb-secondary); }
+        .post-content { font-size: 15px; line-height: 1.4; margin-bottom: 12px; }
+        .post-media { width: calc(100% + 32px); margin-left: -16px; max-height: 500px; object-fit: cover; }
+        
+        .action-row { display: flex; border-top: 1px solid var(--fb-divider); border-bottom: 1px solid var(--fb-divider); margin: 10px 0; padding: 2px 0; }
+        .action-btn { flex: 1; background: none; border: none; padding: 8px; color: var(--fb-secondary); font-weight: 600; cursor: pointer; border-radius: 4px; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .action-btn:hover { background: #f2f2f2; }
+
+        /* AUTH SCREEN */
+        .auth-container { display: flex; align-items: center; justify-content: center; min-height: 90vh; background: #f0f2f5; gap: 100px; }
+        .auth-text { max-width: 500px; }
+        .auth-text h1 { color: var(--fb-blue); font-size: 60px; margin: 0; }
+        .auth-text p { font-size: 28px; line-height: 1.2; }
+        .auth-card { background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,.1); width: 400px; }
+        .auth-card input { width: 100%; padding: 14px; margin-bottom: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 16px; box-sizing: border-box; }
+        .login-btn { width: 100%; background: var(--fb-blue); color: white; border: none; padding: 14px; border-radius: 6px; font-size: 20px; font-weight: bold; cursor: pointer; }
+        .reg-btn { background: #42b72a; color: white; border: none; padding: 12px 16px; border-radius: 6px; font-weight: bold; font-size: 17px; cursor: pointer; display: block; margin: 20px auto 0; }
 
         .hidden { display: none; }
-        @media(max-width: 900px) { .container { grid-template-columns: 1fr; } .left-side, .right-side { display: none; } }
+        @media (max-width: 1100px) { .container { grid-template-columns: 1fr 350px; } .left-side { display: none; } }
+        @media (max-width: 700px) { .container { grid-template-columns: 1fr; } .right-side { display: none; } nav { display: none; } }
     </style>
 </head>
 <body>
 
-<header>
-    <div class="logo">vibely</div>
-    <nav id="app-nav" class="hidden">
-        <button onclick="showTab('feed')">🏠</button>
+<header id="main-header" class="hidden">
+    <div class="logo-box">
+        <a href="#" class="logo">vibely</a>
+    </div>
+    <nav>
+        <button class="active" onclick="showTab('feed')">🏠</button>
         <button onclick="showTab('reels')">📺</button>
         <button onclick="logout()">👋</button>
     </nav>
+    <div style="display:flex; gap:10px">
+        <div class="sidebar-icon">🔔</div>
+        <div class="sidebar-icon">💬</div>
+        <div class="avatar" style="width:35px; height:35px"></div>
+    </div>
 </header>
 
-<div id="auth" class="card" style="max-width: 400px; margin: 100px auto; text-align: center;">
-    <h1 style="color:var(--fb-blue)">vibely</h1>
-    <p>Connect with friends and the world around you.</p>
-    <input id="email" type="email" placeholder="Email address" />
-    <input id="password" type="password" placeholder="Password" />
-    <button class="btn-primary" onclick="login()" style="font-size: 18px; padding: 12px;">Log In</button>
-    <hr style="margin: 20px 0">
-    <button onclick="register()" style="background:#42b72a; color:white; border:none; padding:12px 16px; border-radius:6px; font-weight:bold; cursor:pointer;">Create New Account</button>
-    <p id="authError" style="color:red; margin-top:10px"></p>
+<div id="auth" class="auth-container">
+    <div class="auth-text">
+        <h1>vibely</h1>
+        <p>Vibely helps you connect and share with the people in your life.</p>
+    </div>
+    <div class="auth-card">
+        <input id="email" type="email" placeholder="Email address" />
+        <input id="password" type="password" placeholder="Password" />
+        <button class="login-btn" onclick="login()">Log In</button>
+        <div style="text-align: center; margin: 15px 0; border-bottom: 1px solid #ddd; line-height: 0.1em;"><span style="background:#fff; padding:0 10px; color:#888">or</span></div>
+        <button class="reg-btn" onclick="register()">Create New Account</button>
+        <p id="authError" style="color:red; text-align:center; margin-top:10px; font-size:14px;"></p>
+    </div>
 </div>
 
 <div id="app" class="hidden">
     <div class="container">
         
-        <div class="left-side">
-            <div class="sidebar-item"> <div class="sidebar-icon">👤</div> <span id="sidebar-name">Profile</span></div>
-            <div class="sidebar-item"> <div class="sidebar-icon" style="color: #1877f2;">👥</div> Friends</div>
-            <div class="sidebar-item"> <div class="sidebar-icon" style="color: #f7b928;">⭐</div> Favorites</div>
-            <div class="sidebar-item"> <div class="sidebar-icon" style="color: #27c4f5;">📅</div> Events</div>
-            <hr>
-            <div class="card">
-                <h4>Settings</h4>
-                <input id="username" placeholder="Display Name" />
-                <label><input type="checkbox" id="verified" /> Blue Badge</label>
-                <button class="btn-primary" onclick="saveProfile()" style="margin-top:10px">Update</button>
+        <div class="sidebar left-side">
+            <div class="sidebar-item"> <div class="sidebar-icon" style="background:none"><img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" width="36"></div> <b id="display-name">User Name</b></div>
+            <div class="sidebar-item"> <div class="sidebar-icon">👥</div> Friends</div>
+            <div class="sidebar-item"> <div class="sidebar-icon">⏳</div> Memories</div>
+            <div class="sidebar-item"> <div class="sidebar-icon">🚩</div> Pages</div>
+            <hr style="border:0; border-top:1px solid #ced0d4; margin:10px">
+            <div class="card" style="box-shadow: none; background: transparent;">
+                <h4 style="margin:0 0 10px 0">Profile Settings</h4>
+                <input id="usernameInput" placeholder="Edit Display Name" style="width:100%; padding:8px; border-radius:5px; border:1px solid #ddd" />
+                <label style="font-size:13px; margin-top:5px; display:block">
+                    <input type="checkbox" id="verifiedCheck"> Apply Verified Badge
+                </label>
+                <button onclick="saveProfile()" style="margin-top:8px; width:100%; border:none; background:#e4e6eb; padding:8px; border-radius:5px; font-weight:600; cursor:pointer">Save Changes</button>
             </div>
         </div>
 
-        <div id="main-content">
+        <main>
             <div id="feed" class="tab">
-                <div class="stories">
-                    <div class="story" style="background: url('https://picsum.photos/200/300?1'); background-size: cover;"><span class="story-name">Create Story</span></div>
-                    <div class="story" style="background: url('https://picsum.photos/200/300?2'); background-size: cover;"><span class="story-name">John Doe</span></div>
-                    <div class="story" style="background: url('https://picsum.photos/200/300?3'); background-size: cover;"><span class="story-name">Sarah Jenkins</span></div>
-                </div>
-
                 <div class="card">
-                    <div style="display:flex; gap:10px">
+                    <div class="composer-top">
                         <div class="avatar"></div>
-                        <textarea id="postText" placeholder="What's on your mind?" style="background:#f0f2f5; border:none; resize:none;"></textarea>
+                        <textarea id="postText" class="composer-input" placeholder="What's on your mind?"></textarea>
                     </div>
-                    <hr>
-                    <div style="display:flex; justify-content: space-between; align-items:center">
-                        <input type="file" id="imageUpload" style="width: auto;" />
-                        <button class="btn-primary" onclick="createPost()" style="width:100px">Post</button>
+                    <hr style="border:0; border-top:1px solid #eee">
+                    <div style="display:flex; justify-content: space-around;">
+                        <input type="file" id="imageUpload" style="display:none" onchange="createPost()">
+                        <button class="action-btn" onclick="document.getElementById('imageUpload').click()">🖼️ Photo/video</button>
+                        <button class="action-btn" onclick="createPost()">🚀 Post Now</button>
                     </div>
                 </div>
-                <div id="posts"></div>
+                <div id="posts-container"></div>
             </div>
 
             <div id="reels" class="tab hidden">
                 <div class="card">
-                    <h3>Reels</h3>
-                    <input type="file" id="videoUpload" accept="video/*" />
-                    <button class="btn-primary" onclick="uploadReel()">Upload Reel</button>
+                    <h3>Reels Feed</h3>
+                    <input type="file" id="reelUpload" accept="video/*">
+                    <button class="login-btn" onclick="uploadReel()" style="margin-top:10px">Upload Reel</button>
                 </div>
-                <div id="reelFeed"></div>
+                <div id="reels-container"></div>
             </div>
-        </div>
+        </main>
 
-        <div class="right-side">
+        <div class="sidebar right-side">
+            <h4 style="color:var(--fb-secondary); margin-bottom:10px">Sponsored</h4>
+            <div class="sidebar-item" style="font-size:13px">Project X - Build apps in minutes</div>
+            <hr style="border:0; border-top:1px solid #ced0d4; margin:15px 0">
             <h4 style="color:var(--fb-secondary)">Contacts</h4>
-            <div id="chat-box" style="height: 400px; overflow-y: auto; background:white; border-radius:8px; padding:10px; margin-bottom:10px"></div>
-            <input id="chatText" placeholder="Type a message..." />
-            <button class="btn-primary" onclick="sendMessage()">Send</button>
+            <div id="chat-list" style="max-height: 400px; overflow-y:auto"></div>
+            <div style="margin-top:10px">
+                <input id="chatInput" placeholder="Message everyone..." style="width:100%; padding:10px; border-radius:20px; border:1px solid #ddd">
+                <button onclick="sendMessage()" style="display:none"></button>
+            </div>
         </div>
 
     </div>
 </div>
 
 <script>
-// Firebase Config
-const firebaseConfig={
-    apiKey:"AIzaSyCDll8RH1kzGOf-ixJmSlHXGssOHSMlO3s",
-    authDomain:"vibely-5128e.firebaseapp.com",
-    projectId:"vibely-5128e",
-    storageBucket:"vibely-5128e.firebasestorage.app",
-    messagingSenderId:"1048550825812",
-    appId:"1:1048550825812:web:fc5bbba51e065807ffb2c1"
+// FIREBASE CONFIG
+const firebaseConfig = {
+    apiKey: "AIzaSyCDll8RH1kzGOf-ixJmSlHXGssOHSMlO3s",
+    authDomain: "vibely-5128e.firebaseapp.com",
+    projectId: "vibely-5128e",
+    storageBucket: "vibely-5128e.firebasestorage.app",
+    messagingSenderId: "1048550825812",
+    appId: "1:1048550825812:web:fc5bbba51e065807ffb2c1"
 };
 
 firebase.initializeApp(firebaseConfig);
-const auth=firebase.auth();
-const db=firebase.firestore();
-const storage=firebase.storage();
+const auth = firebase.auth();
+const db = firebase.firestore();
+const storage = firebase.storage();
 
-auth.onAuthStateChanged(user=>{
-    if(user){
+// AUTH STATE
+auth.onAuthStateChanged(user => {
+    if(user) {
         document.getElementById('auth').classList.add('hidden');
         document.getElementById('app').classList.remove('hidden');
-        document.getElementById('app-nav').classList.remove('hidden');
-        loadUserData(); loadFeed(); loadChat();
+        document.getElementById('main-header').classList.remove('hidden');
+        loadUserData(); loadFeed(); loadChat(); loadReels();
     } else {
         document.getElementById('auth').classList.remove('hidden');
         document.getElementById('app').classList.add('hidden');
+        document.getElementById('main-header').classList.add('hidden');
     }
 });
 
-function showTab(t){
-    document.querySelectorAll('.tab').forEach(x=>x.classList.add('hidden'));
+function login(){ auth.signInWithEmailAndPassword(email.value, password.value).catch(e => authError.innerText = e.message); }
+function register(){ auth.createUserWithEmailAndPassword(email.value, password.value).catch(e => authError.innerText = e.message); }
+function logout(){ auth.signOut(); }
+
+function showTab(t) {
+    document.querySelectorAll('.tab').forEach(el => el.classList.add('hidden'));
     document.getElementById(t).classList.remove('hidden');
 }
 
-function register(){ auth.createUserWithEmailAndPassword(email.value, password.value).catch(e=>authError.innerText=e.message); }
-function login(){ auth.signInWithEmailAndPassword(email.value, password.value).catch(e=>authError.innerText=e.message); }
-function logout(){ auth.signOut(); }
-
+// PROFILE
 function loadUserData() {
     db.collection('users').doc(auth.currentUser.uid).get().then(doc => {
         if(doc.exists) {
-            document.getElementById('username').value = doc.data().username || "";
-            document.getElementById('verified').checked = doc.data().verified || false;
-            document.getElementById('sidebar-name').innerText = doc.data().username || "Profile";
+            const data = doc.data();
+            document.getElementById('display-name').innerText = data.username || "Vibely User";
+            document.getElementById('usernameInput').value = data.username || "";
+            document.getElementById('verifiedCheck').checked = data.verified || false;
         }
     });
 }
 
-function saveProfile(){
+function saveProfile() {
     db.collection('users').doc(auth.currentUser.uid).set({
-        username: username.value, verified: verified.checked
-    }, {merge:true}).then(()=>location.reload());
+        username: usernameInput.value,
+        verified: verifiedCheck.checked
+    }, {merge:true}).then(() => location.reload());
 }
 
+// FEED LOGIC
 async function createPost() {
     const text = postText.value;
     const file = imageUpload.files[0];
-    const userDoc = await db.collection('users').doc(auth.currentUser.uid).get();
-    const uData = userDoc.data() || {username: "User"};
-    
+    const uDoc = await db.collection('users').doc(auth.currentUser.uid).get();
+    const u = uDoc.data() || {username: "User"};
+
     let imgUrl = null;
     if(file) {
-        const ref = storage.ref('posts/'+Date.now()+file.name);
+        const ref = storage.ref('posts/'+Date.now());
         await ref.put(file);
         imgUrl = await ref.getDownloadURL();
     }
 
+    if(!text && !imgUrl) return;
+
     db.collection('posts').add({
-        text, image: imgUrl, 
-        uid: auth.currentUser.uid, 
-        username: uData.username, 
-        isVerified: uData.verified,
-        likes: 0, 
+        text, image: imgUrl,
+        uid: auth.currentUser.uid,
+        username: u.username,
+        verified: u.verified,
+        likes: 0,
         created: firebase.firestore.FieldValue.serverTimestamp()
     });
-    postText.value = ''; imageUpload.value = '';
+    postText.value = ""; imageUpload.value = "";
 }
 
 function loadFeed() {
-    db.collection('posts').orderBy('created','desc').onSnapshot(s=>{
-        posts.innerHTML = '';
-        s.forEach(d=>{
-            const p = d.data();
-            posts.innerHTML += `
+    db.collection('posts').orderBy('created','desc').onSnapshot(snap => {
+        const container = document.getElementById('posts-container');
+        container.innerHTML = '';
+        snap.forEach(doc => {
+            const p = doc.data();
+            container.innerHTML += `
                 <div class="card">
                     <div class="post-header">
-                        <div class="avatar"></div>
-                        <div class="user-info">
-                            <b>${p.username} ${p.isVerified ? '<span style="color:#1877f2">✔</span>' : ''}</b>
-                            <span>Just now · 🌎</span>
+                        <div class="post-user">
+                            <div class="avatar"></div>
+                            <div class="user-meta">
+                                <b>${p.username} ${p.verified ? '<span style="color:#1877f2">✔</span>' : ''}</b>
+                                <span>Just now · 🌎</span>
+                            </div>
                         </div>
+                        <div style="color:#65676b">...</div>
                     </div>
-                    <div class="post-text">${p.text}</div>
-                    ${p.image ? `<img src="${p.image}" class="post-img">` : ''}
-                    <div class="action-bar">
-                        <button class="action-btn" onclick="likePost('${d.id}')">👍 Like (${p.likes || 0})</button>
+                    <div class="post-content">${p.text || ''}</div>
+                    ${p.image ? `<img src="${p.image}" class="post-media">` : ''}
+                    <div style="font-size:13px; color:#65676b; padding:10px 0">👍 ${p.likes || 0}</div>
+                    <div class="action-row">
+                        <button class="action-btn" onclick="like('${doc.id}')">👍 Like</button>
                         <button class="action-btn">💬 Comment</button>
-                        <button class="action-btn">↪ Share</button>
+                        <button class="action-btn">↪️ Share</button>
                     </div>
                 </div>`;
         });
     });
 }
 
-function likePost(id){ db.collection('posts').doc(id).update({likes: firebase.firestore.FieldValue.increment(1)}); }
+function like(id) { db.collection('posts').doc(id).update({likes: firebase.firestore.FieldValue.increment(1)}); }
 
-function sendMessage(){
-    if(!chatText.value) return;
-    db.collection('chat').add({text: chatText.value, user: auth.currentUser.email, created: firebase.firestore.FieldValue.serverTimestamp()});
-    chatText.value = '';
+// CHAT
+function sendMessage() {
+    if(!chatInput.value) return;
+    db.collection('chat').add({
+        text: chatInput.value,
+        user: auth.currentUser.email.split('@')[0],
+        created: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    chatInput.value = '';
 }
 
 function loadChat() {
-    db.collection('chat').orderBy('created').onSnapshot(s=>{
-        const box = document.getElementById('chat-box');
-        box.innerHTML = '';
-        s.forEach(d=> box.innerHTML += `<div style="margin-bottom:8px"><b>${d.data().user.split('@')[0]}:</b> ${d.data().text}</div>`);
-        box.scrollTop = box.scrollHeight;
+    db.collection('chat').orderBy('created').onSnapshot(snap => {
+        const list = document.getElementById('chat-list');
+        list.innerHTML = '';
+        snap.forEach(doc => {
+            list.innerHTML += `<div class="sidebar-item" style="font-size:13px"><b>${doc.data().user}:</b> ${doc.data().text}</div>`;
+        });
+        list.scrollTop = list.scrollHeight;
     });
 }
+
+// REELS
+async function uploadReel() {
+    const file = reelUpload.files[0];
+    if(!file) return;
+    const ref = storage.ref('reels/'+Date.now());
+    await ref.put(file);
+    const url = await ref.getDownloadURL();
+    db.collection('reels').add({url, created: firebase.firestore.FieldValue.serverTimestamp()});
+    reelUpload.value = '';
+}
+
+function loadReels() {
+    db.collection('reels').orderBy('created','desc').onSnapshot(snap => {
+        const cont = document.getElementById('reels-container');
+        cont.innerHTML = '';
+        snap.forEach(doc => {
+            cont.innerHTML += `<div class="card" style="padding:0; overflow:hidden"><video src="${doc.data().url}" controls style="width:100%"></video></div>`;
+        });
+    });
+}
+
+// Press Enter to Send Chat
+document.getElementById('chatInput').addEventListener('keypress', e => { if(e.key==='Enter') sendMessage(); });
+
 </script>
 </body>
 </html>
