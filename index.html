@@ -1,272 +1,129 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vibely | Professional Social Network</title>
-
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
-
-    <style>
-        :root {
-            --primary: #1877f2;
-            --bg: #f0f2f5;
-            --card-bg: #ffffff;
-            --text: #1c1e21;
-            --text-gray: #65676b;
-            --divider: #dadde1;
-            --hover: #f2f2f2;
-        }
-
-        body { margin: 0; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background: var(--bg); color: var(--text); }
-        
-        /* HEADER */
-        header { 
-            background: var(--card-bg); height: 60px; padding: 0 20px; 
-            display: flex; justify-content: space-between; align-items: center; 
-            box-shadow: 0 2px 4px rgba(0,0,0,.08); position: sticky; top: 0; z-index: 1000;
-        }
-        .logo { color: var(--primary); font-size: 30px; font-weight: 800; text-decoration: none; letter-spacing: -1.5px; }
-        
-        nav { display: flex; gap: 8px; }
-        nav button { 
-            background: none; border: none; width: 110px; height: 50px; 
-            font-size: 24px; cursor: pointer; color: var(--text-gray); 
-            border-radius: 8px; transition: 0.2s; position: relative;
-        }
-        nav button:hover { background: var(--hover); }
-        nav button.active { color: var(--primary); }
-        nav button.active::after { content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 3px; background: var(--primary); }
-
-        /* CONTAINER */
-        .main-layout { display: grid; grid-template-columns: 320px 1fr 320px; gap: 40px; padding: 20px; max-width: 1300px; margin: auto; }
-
-        /* CARDS */
-        .card { background: var(--card-bg); border-radius: 10px; padding: 16px; margin-bottom: 20px; box-shadow: 0 1px 2px rgba(0,0,0,.1); border: 1px solid rgba(0,0,0,.05); }
-
-        /* COMPOSER */
-        .composer-box { display: flex; gap: 12px; }
-        .avatar { width: 40px; height: 40px; border-radius: 50%; background: #ddd; background-size: cover; flex-shrink: 0; }
-        .fake-input { 
-            background: #f0f2f5; border-radius: 20px; padding: 10px 16px; flex: 1; 
-            color: var(--text-gray); cursor: pointer; transition: 0.2s; border: none; font-size: 15px;
-        }
-        .fake-input:hover { background: #e4e6eb; }
-
-        /* POSTS */
-        .post-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
-        .post-user b { font-size: 15px; color: var(--text); }
-        .post-user span { font-size: 13px; color: var(--text-gray); display: block; }
-        .post-text { font-size: 15px; line-height: 1.5; margin-bottom: 12px; }
-        .post-img { width: calc(100% + 32px); margin-left: -16px; border-top: 1px solid #eee; border-bottom: 1px solid #eee; display: block; }
-        
-        .post-stats { padding: 10px 0; display: flex; justify-content: space-between; font-size: 14px; color: var(--text-gray); }
-        .post-actions { display: flex; border-top: 1px solid var(--divider); padding-top: 4px; }
-        .action-btn { 
-            flex: 1; background: none; border: none; padding: 10px; 
-            color: var(--text-gray); font-weight: 600; cursor: pointer; 
-            border-radius: 4px; transition: 0.2s;
-        }
-        .action-btn:hover { background: var(--hover); }
-
-        /* AUTH (The Professional Look) */
-        .auth-wrapper { display: flex; min-height: 90vh; align-items: center; justify-content: center; gap: 80px; }
-        .auth-brand { max-width: 400px; }
-        .auth-brand h1 { color: var(--primary); font-size: 58px; margin: 0; }
-        .auth-brand p { font-size: 26px; line-height: 1.2; font-weight: 500; }
-        .auth-form { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,.15); width: 396px; }
-        .auth-form input { width: 100%; padding: 14px; margin-bottom: 12px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; font-size: 17px; }
-        .btn-login { width: 100%; background: var(--primary); color: white; border: none; padding: 14px; border-radius: 6px; font-size: 20px; font-weight: bold; cursor: pointer; }
-
-        .hidden { display: none; }
-        @media (max-width: 1000px) { .main-layout { grid-template-columns: 1fr; } .side { display: none; } }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Adult TagCards - 18+</title>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<style>
+body {margin:0; font-family:system-ui; background:#1e1e2f; color:#fff;}
+header{display:flex; justify-content:space-between; align-items:center; padding:16px; background:#ff3c5f;}
+button{padding:8px 12px; margin-top:6px; border-radius:8px; border:none; cursor:pointer;}
+input{width:100%; padding:10px; margin-top:6px; border-radius:8px; border:1px solid #ccc;}
+.card{background:#2e2e3f; border-radius:14px; padding:16px; margin:16px auto; max-width:400px; box-shadow:0 2px 6px rgba(0,0,0,.5);}
+.tag{display:inline-block; background:#ff3c5f; color:#fff; padding:4px 8px; border-radius:6px; margin:4px; font-size:14px;}
+#cardsContainer{display:flex; flex-wrap:wrap; gap:12px; margin:16px;}
+.userCard{background:#3e3e50; border-radius:12px; padding:12px; width:180px; box-shadow:0 2px 4px rgba(0,0,0,.5);}
+.vipBadge{background:gold; color:#000; padding:2px 6px; border-radius:4px; font-weight:bold; font-size:12px; margin-left:4px;}
+</style>
 </head>
 <body>
 
-<header id="app-header" class="hidden">
-    <a href="#" class="logo">vibely</a>
-    <nav>
-        <button class="active" onclick="showTab('feed')">🏠</button>
-        <button onclick="showTab('reels')">📺</button>
-        <button onclick="logout()">👋</button>
-    </nav>
-    <div style="width: 40px; height: 40px;" class="avatar"></div>
+<header>
+<h1>Adult TagCards</h1>
+<div id="userControls"><button onclick="showAuth()">Login/Register</button></div>
 </header>
 
-<div id="auth" class="auth-wrapper">
-    <div class="auth-brand">
-        <h1>vibely</h1>
-        <p>Connect with people who matter to you.</p>
-    </div>
-    <div class="auth-form">
-        <input id="email" type="email" placeholder="Email address" />
-        <input id="password" type="password" placeholder="Password" />
-        <button class="btn-login" onclick="login()">Log In</button>
-        <hr style="margin: 20px 0; border: 0; border-top: 1px solid #ddd">
-        <button onclick="register()" style="background:#42b72a; color:white; border:none; padding:12px 20px; border-radius:6px; font-weight:bold; cursor:pointer; width:60%; margin:0 auto; display:block">Create New Account</button>
-        <p id="authError" style="color:red; text-align:center; font-size:14px; margin-top:10px"></p>
-    </div>
+<!-- Login/Register -->
+<div id="authDiv" class="card">
+<h3>Login / Register</h3>
+<input id="email" placeholder="Email">
+<input id="password" type="password" placeholder="Password">
+<input id="age" placeholder="Age (must be 18+)" type="number">
+<button onclick="register()">Register</button>
+<button onclick="login()">Login</button>
+<p id="authError" style="color:red"></p>
 </div>
 
-<div id="app" class="hidden">
-    <div class="main-layout">
-        
-        <div class="side">
-            <div class="card" style="box-shadow:none; background:transparent">
-                <h3>Settings</h3>
-                <input id="uName" placeholder="Edit Display Name" style="width:100%; padding:10px; border-radius:8px; border:1px solid #ccc; margin-bottom:10px" />
-                <label style="font-size:14px"><input type="checkbox" id="vBadge"> Verified Badge</label>
-                <button onclick="updateProfile()" style="width:100%; margin-top:10px; padding:8px; border-radius:5px; border:none; background:var(--primary); color:white; font-weight:600; cursor:pointer">Save Profile</button>
-            </div>
-        </div>
+<!-- Profile Card -->
+<div id="profileDiv" class="card" style="display:none">
+<h3>My Profile Card</h3>
+<input id="username" placeholder="Your Name">
+<input id="avatar" placeholder="Avatar URL">
+<input id="newTag" placeholder="Add a tag">
+<button onclick="addTag()">Add Tag</button>
+<div id="tagsContainer"></div>
+<label><input type="checkbox" id="vipCheckbox"> VIP Badge (Premium)</label>
+<button onclick="saveProfile()">Save Profile</button>
+<button onclick="showExplore()">Explore Users</button>
+</div>
 
-        <main>
-            <div class="card">
-                <div class="composer-box">
-                    <div class="avatar"></div>
-                    <textarea id="pText" class="fake-input" placeholder="What's on your mind?"></textarea>
-                </div>
-                <hr style="border:0; border-top:1px solid #eee; margin: 15px 0">
-                <div style="display:flex; justify-content:space-around">
-                    <input type="file" id="iUpload" style="display:none" onchange="postContent()">
-                    <button class="action-btn" onclick="document.getElementById('iUpload').click()">📷 Photo</button>
-                    <button class="action-btn" onclick="postContent()" style="color:var(--primary)">🚀 Post</button>
-                </div>
-            </div>
-            <div id="feed-items"></div>
-        </main>
-
-        <div class="side">
-            <div class="card">
-                <h4>Global Chat</h4>
-                <div id="chat-messages" style="height:350px; overflow-y:auto; font-size:14px; border-bottom:1px solid #eee; margin-bottom:10px"></div>
-                <input id="chatIn" placeholder="Aa" style="width:100%; border:none; background:#f0f2f5; padding:8px 12px; border-radius:20px" />
-            </div>
-        </div>
-
-    </div>
+<!-- Explore Users -->
+<div id="exploreDiv" style="display:none">
+<h3 style="margin-left:16px">Explore Users</h3>
+<div id="cardsContainer"></div>
+<button onclick="showProfile()">Back to Profile</button>
 </div>
 
 <script>
-// USE YOUR FIREBASE CONFIG HERE
+// Firebase Config
 const firebaseConfig = {
-    apiKey: "AIzaSyCDll8RH1kzGOf-ixJmSlHXGssOHSMlO3s",
-    authDomain: "vibely-5128e.firebaseapp.com",
-    projectId: "vibely-5128e",
-    storageBucket: "vibely-5128e.firebasestorage.app",
-    messagingSenderId: "1048550825812",
-    appId: "1:1048550825812:web:fc5bbba51e065807ffb2c1"
+  apiKey: "AIzaSyCDll8RH1kzGOf-ixJmSlHXGssOHSMlO3s",
+  authDomain: "vibely-5128e.firebaseapp.com",
+  projectId: "vibely-5128e",
+  storageBucket: "vibely-5128e.firebasestorage.app",
+  messagingSenderId: "1048550825812",
+  appId: "1:1048550825812:web:fc5bbba51e065807ffb2c1"
 };
-
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
-const storage = firebase.storage();
 
-// Auth Control
-auth.onAuthStateChanged(user => {
-    if(user) {
-        document.getElementById('auth').classList.add('hidden');
-        document.getElementById('app').classList.remove('hidden');
-        document.getElementById('app-header').classList.remove('hidden');
-        syncProfile(); loadPosts(); loadGlobalChat();
-    } else {
-        document.getElementById('auth').classList.remove('hidden');
-        document.getElementById('app').classList.add('hidden');
-        document.getElementById('app-header').classList.add('hidden');
-    }
+let myTags = [];
+
+// Show/hide auth
+function showAuth(){document.getElementById('authDiv').style.display='block'; document.getElementById('profileDiv').style.display='none'; document.getElementById('exploreDiv').style.display='none';}
+
+// Auth
+function register(){
+  const email = document.getElementById('email').value;
+  const password = document.getElementById('password').value;
+  const age = parseInt(document.getElementById('age').value);
+  if(age < 18){document.getElementById('authError').innerText='You must be 18+'; return;}
+  auth.createUserWithEmailAndPassword(email,password)
+    .then(userCred=>db.collection('users').doc(userCred.user.uid).set({age:age, vip:false}))
+    .catch(e=>document.getElementById('authError').innerText=e.message);
+}
+function login(){
+  const email = document.getElementById('email').value;
+  const password = document.getElementById('password').value;
+  auth.signInWithEmailAndPassword(email,password)
+    .catch(e=>document.getElementById('authError').innerText=e.message);
+}
+function logout(){auth.signOut(); showAuth();}
+
+// Profile
+function addTag(){const t=document.getElementById('newTag').value.trim(); if(t&&!myTags.includes(t)){myTags.push(t); renderTags(); document.getElementById('newTag').value='';}}
+function renderTags(){const c=document.getElementById('tagsContainer'); c.innerHTML=''; myTags.forEach(t=>{const s=document.createElement('span'); s.className='tag'; s.innerText=t; c.appendChild(s);});}
+function saveProfile(){const user=auth.currentUser; if(!user) return; const name=document.getElementById('username').value; const avatar=document.getElementById('avatar').value; const vip=document.getElementById('vipCheckbox').checked; db.collection('users').doc(user.uid).set({name, avatar, tags:myTags, vip},{merge:true}); alert('Profile saved!'); showExplore();}
+function showExplore(){document.getElementById('authDiv').style.display='none'; document.getElementById('profileDiv').style.display='none'; document.getElementById('exploreDiv').style.display='block'; loadUsers();}
+function showProfile(){document.getElementById('profileDiv').style.display='block'; document.getElementById('exploreDiv').style.display='none';}
+
+// Explore
+function loadUsers(){
+  db.collection('users').onSnapshot(snapshot=>{
+    const c=document.getElementById('cardsContainer'); c.innerHTML='';
+    snapshot.forEach(doc=>{
+      const u=doc.data();
+      const card=document.createElement('div'); card.className='userCard';
+      card.innerHTML=`<div style="text-align:center"><img src="${u.avatar||'https://via.placeholder.com/80'}" width="80" height="80" style="border-radius:50%"><h4>${u.name||'Anonymous'}${u.vip?'<span class="vipBadge">VIP</span>':''}</h4></div><div>${(u.tags||[]).map(t=>`<span class="tag">${t}</span>`).join('')}</div>`;
+      c.appendChild(card);
+    });
+  });
+}
+
+// Auth listener
+auth.onAuthStateChanged(user=>{
+  if(user){
+    document.getElementById('authDiv').style.display='none';
+    document.getElementById('profileDiv').style.display='block';
+    document.getElementById('userControls').innerHTML=`<span>Hello, ${user.email}</span> <button onclick="logout()">Logout</button>`;
+    db.collection('users').doc(user.uid).get().then(doc=>{if(doc.exists){const d=doc.data(); document.getElementById('username').value=d.name||''; document.getElementById('avatar').value=d.avatar||''; document.getElementById('vipCheckbox').checked=d.vip||false; myTags=d.tags||[]; renderTags();}});
+  } else {showAuth();}
 });
-
-function login(){ auth.signInWithEmailAndPassword(email.value, password.value).catch(e => authError.innerText = e.message); }
-function register(){ auth.createUserWithEmailAndPassword(email.value, password.value).catch(e => authError.innerText = e.message); }
-function logout(){ auth.signOut(); }
-
-// Profile logic
-function syncProfile() {
-    db.collection('users').doc(auth.currentUser.uid).get().then(doc => {
-        if(doc.exists) {
-            uName.value = doc.data().username || "";
-            vBadge.checked = doc.data().verified || false;
-        }
-    });
-}
-function updateProfile() {
-    db.collection('users').doc(auth.currentUser.uid).set({username: uName.value, verified: vBadge.checked}, {merge:true}).then(()=>alert("Saved"));
-}
-
-// Feed logic
-async function postContent() {
-    const text = pText.value;
-    const file = iUpload.files[0];
-    const uDoc = await db.collection('users').doc(auth.currentUser.uid).get();
-    const u = uDoc.data() || {username: "Vibely User"};
-    
-    let url = null;
-    if(file) {
-        const ref = storage.ref('p/'+Date.now());
-        await ref.put(file);
-        url = await ref.getDownloadURL();
-    }
-    if(!text && !url) return;
-
-    db.collection('posts').add({
-        text, img: url, uid: auth.currentUser.uid,
-        name: u.username, v: u.verified, likes: 0,
-        ts: firebase.firestore.FieldValue.serverTimestamp()
-    });
-    pText.value = ''; iUpload.value = '';
-}
-
-function loadPosts() {
-    db.collection('posts').orderBy('ts', 'desc').onSnapshot(snap => {
-        const box = document.getElementById('feed-items');
-        box.innerHTML = '';
-        snap.forEach(d => {
-            const p = d.data();
-            box.innerHTML += `
-                <div class="card">
-                    <div class="post-header">
-                        <div class="avatar"></div>
-                        <div class="post-user">
-                            <b>${p.name || 'User'} ${p.v ? '<span style="color:#1877f2">✔</span>' : ''}</b>
-                            <span>Just now · 🌎</span>
-                        </div>
-                    </div>
-                    <div class="post-text">${p.text || ''}</div>
-                    ${p.img ? `<img src="${p.img}" class="post-img">` : ''}
-                    <div class="post-stats"><span>👍 ${p.likes || 0} likes</span></div>
-                    <div class="post-actions">
-                        <button class="action-btn" onclick="likePost('${d.id}')">👍 Like</button>
-                        <button class="action-btn">💬 Comment</button>
-                        <button class="action-btn">↪️ Share</button>
-                    </div>
-                </div>`;
-        });
-    });
-}
-function likePost(id) { db.collection('posts').doc(id).update({likes: firebase.firestore.FieldValue.increment(1)}); }
-
-// Chat logic
-function loadGlobalChat() {
-    db.collection('chat').orderBy('ts').onSnapshot(s => {
-        const c = document.getElementById('chat-messages');
-        c.innerHTML = '';
-        s.forEach(d => c.innerHTML += `<div style="margin-bottom:8px"><b>${d.data().u}:</b> ${d.data().t}</div>`);
-        c.scrollTop = c.scrollHeight;
-    });
-}
-chatIn.addEventListener('keypress', e => {
-    if(e.key==='Enter' && chatIn.value) {
-        db.collection('chat').add({t: chatIn.value, u: auth.currentUser.email.split('@')[0], ts: firebase.firestore.FieldValue.serverTimestamp()});
-        chatIn.value = '';
-    }
-});
-
-function showTab(t) { /* Simple tab logic */ }
 </script>
+
 </body>
 </html>
