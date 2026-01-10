@@ -14,88 +14,74 @@
     <style>
         :root {
             --gold: #d4af37;
-            --gold-gradient: linear-gradient(135deg, #d4af37 0%, #fceabb 50%, #af9500 100%);
-            --obsidian: #05050a;
-            --border: rgba(212, 175, 55, 0.2);
-            --glass: rgba(255, 255, 255, 0.05);
             --ice-blue: #a5f3fc;
-            --snow: #ffffff;
+            --obsidian: #05050a;
+            --glass: rgba(255, 255, 255, 0.05);
         }
 
         * { box-sizing: border-box; transition: all 0.3s ease; }
         body { margin: 0; font-family: 'Inter', sans-serif; background: #080a12; color: #fff; height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
 
-        /* --- WINTER EFFECTS --- */
-        .snow-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 999; }
-        .snowflake { color: #fff; font-size: 1em; font-family: Arial, sans-serif; text-shadow: 0 0 5px rgba(255,255,255,0.8); position: fixed; top: -10%; z-index: 999; user-select: none; cursor: default; animation-name: snowflakes-fall, snowflakes-shake; animation-duration: 10s, 3s; animation-timing-function: linear, ease-in-out; animation-iteration-count: infinite, infinite; animation-play-state: running, running; }
-        @keyframes snowflakes-fall { 0% { top: -10%; } 100% { top: 100%; } }
-        @keyframes snowflakes-shake { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(80px); } }
-        
-        /* Snowy Card Effect */
-        .snowy-aura { border-color: var(--ice-blue) !important; box-shadow: 0 0 15px rgba(165, 243, 252, 0.5); background: linear-gradient(180deg, rgba(165, 243, 252, 0.1) 0%, rgba(0,0,0,0.9) 100%) !important; }
-        .snowy-aura::before { content: "❄"; position: absolute; top: 5px; left: 5px; color: var(--ice-blue); font-size: 0.8rem; opacity: 0.6; }
+        /* Snow Particles */
+        .snowflake { color: #fff; position: fixed; top: -10%; z-index: 999; animation: fall linear infinite; pointer-events: none; }
+        @keyframes fall { to { transform: translateY(110vh) rotate(360deg); } }
 
-        /* --- UI SHELL --- */
-        header { padding: 15px 40px; background: rgba(5, 5, 10, 0.95); border-bottom: 1px solid rgba(165, 243, 252, 0.2); display: flex; justify-content: space-between; align-items: center; z-index: 100; }
-        .logo { font-family: 'Cinzel', serif; letter-spacing: 8px; font-size: 1.1rem; color: var(--ice-blue); margin: 0; text-shadow: 0 0 10px rgba(165, 243, 252, 0.5); }
-        
+        /* UI Shell */
+        header { padding: 15px 40px; background: rgba(5, 5, 10, 0.95); border-bottom: 1px solid rgba(165, 243, 252, 0.2); display: flex; justify-content: space-between; align-items: center; }
         .main-layout { display: grid; grid-template-columns: 240px 1fr 320px; flex-grow: 1; overflow: hidden; }
-        .nav-sidebar { padding: 25px 15px; background: rgba(0,0,0,0.5); border-right: 1px solid var(--border); display: flex; flex-direction: column; gap: 10px; }
-        .nav-btn { background: var(--glass); border: 1px solid transparent; color: #aaa; padding: 12px 20px; font-family: 'Cinzel', serif; cursor: pointer; border-radius: 4px; text-align: left; font-size: 0.85rem; }
-        .nav-btn:hover, .nav-btn.active { background: rgba(165, 243, 252, 0.1); color: var(--ice-blue); border-color: var(--ice-blue); }
+        .nav-sidebar { padding: 25px 15px; background: rgba(0,0,0,0.5); border-right: 1px solid rgba(255,255,255,0.1); display: flex; flex-direction: column; gap: 10px; }
+        .nav-btn { background: var(--glass); border: 1px solid transparent; color: #aaa; padding: 12px 20px; font-family: 'Cinzel', serif; cursor: pointer; border-radius: 4px; font-size: 0.8rem; }
+        .nav-btn:hover, .nav-btn.active { color: var(--ice-blue); border-color: var(--ice-blue); background: rgba(165, 243, 252, 0.05); }
 
         #centerContent { overflow-y: auto; padding: 40px; background: radial-gradient(circle at top, #0c1220 0%, #05050a 100%); }
         .view-section { display: none; max-width: 900px; margin: 0 auto; }
 
-        /* User Cards */
-        .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 25px; }
-        .user-card { background: rgba(255,255,255,0.02); border: 1px solid var(--border); border-radius: 15px; padding: 30px; text-align: center; position: relative; overflow: hidden; }
-        .card-lvl { position: absolute; top: 15px; right: 15px; background: var(--gold-gradient); color: #000; font-size: 0.6rem; padding: 2px 8px; border-radius: 10px; font-weight: bold; }
-        .card-avatar { width: 90px; height: 90px; margin: 0 auto 15px; border: 2px solid var(--ice-blue); border-radius: 50%; padding: 3px; background: #000; }
-        .card-avatar img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
-        
-        /* Shop */
-        .shop-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; }
-        .shop-item { background: var(--glass); border: 1px solid var(--border); padding: 25px; border-radius: 12px; text-align: center; }
-        .price-tag { color: var(--ice-blue); font-weight: bold; font-family: 'Cinzel'; display: block; margin: 10px 0; }
-        
-        /* Right Sidebar Chat */
-        .right-sidebar { background: #000; border-left: 1px solid var(--border); display: flex; flex-direction: column; padding: 20px; }
-        #chatBox { flex-grow: 1; overflow-y: auto; font-size: 0.85rem; margin-bottom: 15px; }
-        .chat-msg { margin-bottom: 10px; padding: 10px; background: rgba(165, 243, 252, 0.05); border-radius: 6px; border-left: 2px solid var(--ice-blue); }
-        input { background: #111; border: 1px solid #333; color: #fff; padding: 12px; margin-bottom: 10px; width: 100%; border-radius: 5px; }
+        /* The Wheel */
+        .wheel-box { position: relative; width: 320px; height: 320px; margin: 20px auto; }
+        #wheel { width: 100%; height: 100%; border-radius: 50%; border: 8px solid var(--ice-blue); position: relative; background: conic-gradient(#0c1220 0 45deg, #1e293b 45deg 90deg, #0c1220 90deg 135deg, #1e293b 135deg 180deg, #0c1220 180deg 225deg, #1e293b 225deg 270deg, #0c1220 270deg 315deg, #1e293b 315deg 360deg); transition: transform 5s cubic-bezier(0.15, 0, 0.15, 1); }
+        .wheel-segment { position: absolute; width: 100%; height: 100%; text-align: center; padding-top: 20px; font-weight: bold; font-size: 0.7rem; color: var(--ice-blue); font-family: 'Cinzel'; }
 
+        /* Cards */
+        .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 20px; }
+        .user-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(165,243,252,0.1); border-radius: 12px; padding: 25px; text-align: center; position: relative; }
+        .card-avatar { width: 80px; height: 80px; margin: 0 auto 10px; border: 2px solid var(--ice-blue); border-radius: 50%; overflow: hidden; }
+        .card-avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+        /* Profile Editor */
+        .edit-box { background: var(--glass); padding: 25px; border-radius: 12px; border: 1px solid rgba(165,243,252,0.2); }
+        input { background: #111; border: 1px solid #333; color: #fff; padding: 10px; margin: 10px 0; width: 100%; border-radius: 5px; }
+
+        .right-sidebar { background: #000; border-left: 1px solid rgba(255,255,255,0.1); display: flex; flex-direction: column; padding: 15px; }
+        #chatBox { flex-grow: 1; overflow-y: auto; font-size: 0.8rem; }
+        .chat-msg { margin-bottom: 8px; padding: 8px; background: rgba(255,255,255,0.03); border-radius: 4px; }
+        
         #loginOverlay { position: fixed; inset: 0; background: #000; z-index: 1000; display: flex; align-items: center; justify-content: center; }
-        .login-card { background: #080808; padding: 40px; border: 1px solid var(--ice-blue); border-radius: 15px; text-align: center; width: 350px; }
     </style>
 </head>
 <body>
 
-<div class="snow-container" id="snowContainer"></div>
-
 <div id="loginOverlay">
-    <div class="login-card">
-        <h1 style="font-family:'Cinzel'; color:var(--ice-blue);">WINTER LOUNGE</h1>
+    <div style="text-align:center; border: 1px solid var(--ice-blue); padding: 40px; border-radius: 15px;">
+        <h2 style="font-family:'Cinzel'; color:var(--ice-blue);">WINTER LOUNGE</h2>
         <input id="regName" placeholder="Username" style="display:none;">
         <input id="authEmail" type="email" placeholder="Email">
         <input id="authPass" type="password" placeholder="Password">
-        <div id="authErr" style="color:crimson; font-size:0.7rem; margin-bottom:10px;"></div>
-        <button class="nav-btn" style="width:100%; text-align:center;" onclick="handleAuth()">ENTER LOUNGE</button>
-        <p id="modeToggle" style="font-size:0.7rem; color:#666; cursor:pointer; margin-top:15px;" onclick="toggleMode()">New Member? Sign Up.</p>
+        <button class="nav-btn" style="width:100%;" onclick="handleAuth()">ENTER</button>
+        <p onclick="toggleMode()" style="font-size:0.7rem; cursor:pointer; color:#666; margin-top:10px;">Switch Mode</p>
     </div>
 </div>
 
 <header>
-    <div class="logo">❄ DIAMOND LOUNGE</div>
-    <div id="headerBalance" style="color: var(--ice-blue); border: 1px solid var(--ice-blue); padding: 5px 20px; border-radius: 20px; font-family: 'Cinzel'; font-weight: bold;">♦ 0</div>
+    <div style="font-family:'Cinzel'; color:var(--ice-blue); letter-spacing:5px;">❄ DIAMOND LOUNGE</div>
+    <div id="headerBalance" style="color:var(--ice-blue); font-weight:bold;">♦ 0</div>
 </header>
 
 <div id="mainView" class="main-layout" style="display:none">
     <nav class="nav-sidebar">
-        <button class="nav-btn active" id="btn-explore" onclick="switchTab('explore')">Lounge Floor</button>
-        <button class="nav-btn" id="btn-shop" onclick="switchTab('shop')">Winter Shop</button>
-        <button class="nav-btn" id="btn-profile" onclick="switchTab('profile')">My Identity</button>
-        <button class="nav-btn" style="margin-top:auto; color:crimson;" onclick="auth.signOut()">Exit</button>
+        <button class="nav-btn active" id="btn-explore" onclick="switchTab('explore')">Lounge</button>
+        <button class="nav-btn" id="btn-wheel" onclick="switchTab('wheel')">Frost Vault</button>
+        <button class="nav-btn" id="btn-profile" onclick="switchTab('profile')">Identity</button>
+        <button class="nav-btn" style="margin-top:auto; color:crimson;" onclick="auth.signOut()">Logout</button>
     </nav>
 
     <main id="centerContent">
@@ -103,46 +89,40 @@
             <div id="cardsContainer" class="card-grid"></div>
         </section>
 
-        <section id="view-shop" class="view-section">
-            <h2 style="font-family:'Cinzel'; color:var(--ice-blue); text-align:center;">WINTER COLLECTION</h2>
-            <div class="shop-grid">
-                <div class="shop-item">
-                    <span>❄</span><h3>Snowflake Aura</h3>
-                    <p style="font-size:0.6rem;">Icy blue border + Snow icon.</p>
-                    <span class="price-tag">♦ 60</span>
-                    <button class="nav-btn" onclick="buyItem('snowAura', 60)">Purchase</button>
-                </div>
-                <div class="shop-item">
-                    <span style="color:var(--ice-blue)">⬤</span><h3>Frozen Name</h3>
-                    <span class="price-tag">♦ 40</span>
-                    <button class="nav-btn" onclick="buyItem('colorIce', 40)">Purchase</button>
-                </div>
-                <div class="shop-item">
-                    <span>🔥</span><h3>XP Firewood</h3>
-                    <p style="font-size:0.6rem;">+250 XP Boost</p>
-                    <span class="price-tag">♦ 50</span>
-                    <button class="nav-btn" onclick="buyItem('xpBoost', 50)">Purchase</button>
+        <section id="view-wheel" class="view-section" style="text-align:center;">
+            <h2 style="font-family:'Cinzel'; color:var(--ice-blue);">FROST VAULT</h2>
+            <div class="wheel-box">
+                <div id="wheel">
+                    <div class="wheel-segment" style="transform:rotate(0deg)">♦ 5</div>
+                    <div class="wheel-segment" style="transform:rotate(45deg)">+50 XP</div>
+                    <div class="wheel-segment" style="transform:rotate(90deg)">♦ 10</div>
+                    <div class="wheel-segment" style="transform:rotate(135deg)">JACKPOT</div>
+                    <div class="wheel-segment" style="transform:rotate(180deg)">♦ 1</div>
+                    <div class="wheel-segment" style="transform:rotate(225deg)">+10 XP</div>
+                    <div class="wheel-segment" style="transform:rotate(270deg)">♦ 25</div>
+                    <div class="wheel-segment" style="transform:rotate(315deg)">SKIPPED</div>
                 </div>
             </div>
+            <button class="nav-btn" id="spinBtn" onclick="spinWheel()">ACTIVATE VAULT</button>
         </section>
 
         <section id="view-profile" class="view-section">
-            <div style="background:var(--glass); padding:30px; border-radius:15px; max-width:400px; margin:0 auto;">
-                <h3 style="font-family:'Cinzel'; color:var(--ice-blue);">Update Identity</h3>
-                <input id="newAvatar" placeholder="Image URL (png/jpg)">
-                <button class="nav-btn" style="width:100%; text-align:center;" onclick="updateAvatar()">Set Avatar</button>
+            <div class="edit-box">
+                <h3 style="font-family:'Cinzel'; color:var(--ice-blue);">Identity Editor</h3>
+                <input id="newAvatar" placeholder="Avatar URL">
+                <input id="newBadge" placeholder="Winter Badge (e.g. ❄️ Elite)">
+                <button class="nav-btn" style="width:100%;" onclick="updateProfile()">Save Identity</button>
             </div>
         </section>
     </main>
 
     <aside class="right-sidebar">
         <div id="chatBox"></div>
-        <input id="chatInput" placeholder="Message..." onkeypress="if(event.key==='Enter') sendChat()">
+        <input id="chatInput" placeholder="Chat..." onkeypress="if(event.key==='Enter') sendChat()">
     </aside>
 </div>
 
 <script>
-// --- FIREBASE (Using your config) ---
 const firebaseConfig = {
     apiKey: "AIzaSyCDll8RH1kzGOf-ixJmSlHXGssOHSMlO3s",
     authDomain: "vibely-5128e.firebaseapp.com",
@@ -158,55 +138,44 @@ const auth = firebase.auth();
 let isLogin = true;
 let myProfile = null;
 
-// Generate Snowflakes
-const snowContainer = document.getElementById('snowContainer');
-for (let i = 0; i < 50; i++) {
-    const flake = document.createElement('div');
-    flake.className = 'snowflake';
-    flake.innerHTML = '❄';
-    flake.style.left = Math.random() * 100 + '%';
-    flake.style.animationDelay = Math.random() * 10 + 's, ' + Math.random() * 3 + 's';
-    flake.style.opacity = Math.random();
-    snowContainer.appendChild(flake);
-}
+// Snow Effect
+setInterval(() => {
+    const s = document.createElement('div');
+    s.className = 'snowflake'; s.innerHTML = '❄';
+    s.style.left = Math.random() * 100 + 'vw';
+    s.style.fontSize = Math.random() * 20 + 10 + 'px';
+    s.style.animationDuration = Math.random() * 3 + 2 + 's';
+    document.body.appendChild(s);
+    setTimeout(() => s.remove(), 5000);
+}, 200);
 
-// Auth & App Logic
 function toggleMode() {
     isLogin = !isLogin;
     document.getElementById('regName').style.display = isLogin ? 'none' : 'block';
-    document.getElementById('modeToggle').innerText = isLogin ? "New Member? Sign Up." : "Have an account? Sign In.";
 }
 
 async function handleAuth() {
-    const email = document.getElementById('authEmail').value;
-    const pass = document.getElementById('authPass').value;
-    const name = document.getElementById('regName').value;
-    try {
-        if (isLogin) {
-            await auth.signInWithEmailAndPassword(email, pass);
-        } else {
-            const res = await auth.createUserWithEmailAndPassword(email, pass);
-            await db.collection('users').doc(res.user.uid).set({ 
-                name, vibes: 50, xp: 0, avatar: "", inventory: [] 
-            });
-        }
-    } catch (e) { document.getElementById('authErr').innerText = e.message; }
+    const e = document.getElementById('authEmail').value;
+    const p = document.getElementById('authPass').value;
+    const n = document.getElementById('regName').value;
+    if (isLogin) await auth.signInWithEmailAndPassword(e, p);
+    else {
+        const r = await auth.createUserWithEmailAndPassword(e, p);
+        await db.collection('users').doc(r.user.uid).set({ name: n, vibes: 50, xp: 0, avatar: "", badge: "❄️ Newcomer" });
+    }
 }
 
 auth.onAuthStateChanged(user => {
     if (user) {
         document.getElementById('loginOverlay').style.display = 'none';
         document.getElementById('mainView').style.display = 'grid';
-        startApp(user.uid);
-    } else {
-        document.getElementById('loginOverlay').style.display = 'flex';
-        document.getElementById('mainView').style.display = 'none';
+        loadApp(user.uid);
     }
 });
 
-function startApp(uid) {
-    db.collection('users').doc(uid).onSnapshot(doc => {
-        myProfile = doc.data();
+function loadApp(uid) {
+    db.collection('users').doc(uid).onSnapshot(d => {
+        myProfile = d.data();
         document.getElementById('headerBalance').innerText = `♦ ${myProfile.vibes}`;
     });
 
@@ -215,54 +184,55 @@ function startApp(uid) {
         cont.innerHTML = '';
         snap.forEach(d => {
             const u = d.data();
-            const inv = u.inventory || [];
-            const lvl = Math.floor((u.xp || 0) / 100) + 1;
-            
-            let nameStyle = 'color: #fff';
-            if(inv.includes('colorIce')) nameStyle = 'color: var(--ice-blue); text-shadow: 0 0 8px var(--ice-blue)';
-
             cont.innerHTML += `
-                <div class="user-card ${inv.includes('snowAura') ? 'snowy-aura' : ''}">
-                    <div class="card-lvl">LVL ${lvl}</div>
-                    <div class="card-avatar">
-                        <img src="${u.avatar || 'https://api.dicebear.com/7.x/adventurer/svg?seed='+u.name}">
-                    </div>
-                    <div style="font-family:'Cinzel'; font-weight:bold; ${nameStyle}">${u.name.toUpperCase()}</div>
-                    <div style="color:var(--ice-blue); font-size:0.8rem; margin-top:5px;">♦ ${u.vibes}</div>
+                <div class="user-card">
+                    <div class="card-avatar"><img src="${u.avatar || 'https://api.dicebear.com/7.x/bottts/svg?seed='+u.name}"></div>
+                    <div style="font-family:'Cinzel'; color:var(--ice-blue);">${u.name}</div>
+                    <div style="font-size:0.6rem; color:#888; margin-bottom:5px;">${u.badge || ''}</div>
+                    <div style="color:var(--gold); font-size:0.8rem;">♦ ${u.vibes}</div>
                 </div>`;
         });
     });
 }
 
-async function buyItem(id, cost) {
-    if (myProfile.vibes < cost) return alert("Not enough Diamonds!");
-    let update = {
-        vibes: firebase.firestore.FieldValue.increment(-cost),
-        inventory: firebase.firestore.FieldValue.arrayUnion(id)
-    };
-    if (id === 'xpBoost') update.xp = firebase.firestore.FieldValue.increment(250);
-    await db.collection('users').doc(auth.currentUser.uid).update(update);
-    alert("Equipped!");
+function spinWheel() {
+    // Prizes: 0: 5v, 1: 50x, 2: 10v, 3: JACKPOT (Impossible), 4: 1v, 5: 10x, 6: 25v, 7: 0
+    // Probability logic: Force index away from 3 (Jackpot)
+    let index;
+    do { index = Math.floor(Math.random() * 8); } while (index === 3); 
+    
+    const rot = 3600 + (index * 45);
+    document.getElementById('wheel').style.transform = `rotate(${rot}deg)`;
+    document.getElementById('spinBtn').disabled = true;
+
+    setTimeout(() => {
+        const rewards = [{v:5},{x:50},{v:10},{x:1000},{v:1},{x:10},{v:25},{v:0}];
+        const win = rewards[index];
+        const up = {};
+        if(win.v) up.vibes = firebase.firestore.FieldValue.increment(win.v);
+        if(win.x) up.xp = firebase.firestore.FieldValue.increment(win.x);
+        db.collection('users').doc(auth.currentUser.uid).update(up);
+        document.getElementById('spinBtn').disabled = false;
+    }, 5500);
 }
 
-async function updateAvatar() {
-    const url = document.getElementById('newAvatar').value;
-    if (!url) return;
-    await db.collection('users').doc(auth.currentUser.uid).update({ avatar: url });
+async function updateProfile() {
+    const avatar = document.getElementById('newAvatar').value;
+    const badge = document.getElementById('newBadge').value;
+    await db.collection('users').doc(auth.currentUser.uid).update({ avatar, badge });
+    alert("Identity Updated");
 }
 
 function sendChat() {
     const msg = document.getElementById('chatInput').value;
-    if(!msg || !myProfile) return;
+    if(!msg) return;
     db.collection('chat').add({ user: myProfile.name, msg, time: firebase.firestore.FieldValue.serverTimestamp() });
     document.getElementById('chatInput').value = '';
 }
 
 db.collection('chat').orderBy('time', 'desc').limit(15).onSnapshot(s => {
     const box = document.getElementById('chatBox'); box.innerHTML = '';
-    s.docs.reverse().forEach(d => {
-        box.innerHTML += `<div class="chat-msg"><b>${d.data().user}:</b> ${d.data().msg}</div>`;
-    });
+    s.docs.reverse().forEach(d => box.innerHTML += `<div class="chat-msg"><b>${d.data().user}:</b> ${d.data().msg}</div>`);
     box.scrollTop = box.scrollHeight;
 });
 
