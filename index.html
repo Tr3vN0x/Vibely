@@ -1,167 +1,272 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Vibely – Full Social App</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vibely – Full Social App</title>
 
-<!-- Firebase SDKs -->
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
 
-<style>
-:root{--blue:#1877f2}
-*{box-sizing:border-box}
-body{margin:0;font-family:system-ui;background:#f0f2f5}
-header{background:var(--blue);color:#fff;padding:12px 16px;display:flex;justify-content:space-between;align-items:center}
-nav{display:flex;gap:8px;flex-wrap:wrap}
-nav button{background:rgba(255,255,255,.15);color:#fff}
-button{cursor:pointer;border:none;border-radius:8px;padding:8px 12px}
-.primary{background:var(--blue);color:white}
-.container{display:grid;grid-template-columns:260px 1fr 320px;gap:14px;padding:14px}
-.card{background:#fff;border-radius:14px;padding:14px;margin-bottom:12px;box-shadow:0 2px 4px rgba(0,0,0,.05)}
-input,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid #ccc}
-.hidden{display:none}
-.avatar{width:40px;height:40px;border-radius:50%;background:#888;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:bold}
-.preview{display:flex;gap:10px;align-items:center}
-.badge{color:#1da1f2;font-weight:bold;margin-left:4px}
-.post img,.post video{max-width:100%;border-radius:10px;margin-top:8px}
-@media(max-width:900px){.container{grid-template-columns:1fr}}
-</style>
+    <style>
+        :root { --blue: #1877f2; --bg: #f0f2f5; }
+        * { box-sizing: border-box; }
+        body { margin: 0; font-family: system-ui, -apple-system, sans-serif; background: var(--bg); color: #1c1e21; }
+        header { background: var(--blue); color: #fff; padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
+        nav { display: flex; gap: 8px; }
+        nav button { background: rgba(255,255,255,.2); color: #fff; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; transition: 0.3s; }
+        nav button:hover { background: rgba(255,255,255,.4); }
+        .container { display: grid; grid-template-columns: 280px 1fr 300px; gap: 20px; padding: 20px; max-width: 1200px; margin: auto; }
+        .card { background: #fff; border-radius: 10px; padding: 16px; margin-bottom: 16px; box-shadow: 0 1px 2px rgba(0,0,0,.1); }
+        input, textarea { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: 1px solid #ddd; font-size: 14px; }
+        button.primary { background: var(--blue); color: white; width: 100%; font-weight: bold; border: none; padding: 10px; border-radius: 6px; cursor: pointer; }
+        .hidden { display: none; }
+        .post-header { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+        .badge { color: #1877f2; font-size: 12px; }
+        .post img, .post video { width: 100%; border-radius: 8px; margin-top: 10px; display: block; }
+        .reel-item { margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+        @media(max-width: 900px) { .container { grid-template-columns: 1fr; } }
+    </style>
 </head>
 <body>
 
 <header>
-<b>Vibely</b>
-<nav>
-<button onclick="showTab('feed')">Feed</button>
-<button onclick="showTab('friends')">Friends</button>
-<button onclick="showTab('reels')">Reels</button>
-<button onclick="showTab('notifications')">Notifications</button>
-<button onclick="logout()">Logout</button>
-</nav>
+    <b style="font-size: 1.5rem;">Vibely</b>
+    <nav id="nav-links" class="hidden">
+        <button onclick="showTab('feed')">Feed</button>
+        <button onclick="showTab('reels')">Reels</button>
+        <button onclick="logout()">Logout</button>
+    </nav>
 </header>
 
-<!-- AUTH -->
-<div id="auth" class="card" style="max-width:420px;margin:80px auto">
-<h3>Login / Register</h3>
-<input id="email" placeholder="Email" />
-<input id="password" type="password" placeholder="Password" />
-<button class="primary" onclick="login()">Login</button>
-<button class="primary" onclick="register()">Register</button>
-<p id="authError" style="color:red"></p>
+<div id="auth" class="card" style="max-width: 400px; margin: 80px auto;">
+    <h2 style="text-align: center;">Welcome to Vibely</h2>
+    <input id="email" type="email" placeholder="Email" />
+    <input id="password" type="password" placeholder="Password" />
+    <button class="primary" onclick="login()" style="margin-bottom: 10px;">Login</button>
+    <button onclick="register()" style="width: 100%; background: none; color: var(--blue); border: none; cursor: pointer;">Create new account</button>
+    <p id="authError" style="color: red; font-size: 12px; text-align: center;"></p>
 </div>
 
-<!-- APP -->
 <div id="app" class="hidden">
-<div class="container">
+    <div class="container">
+        
+        <aside>
+            <div class="card">
+                <h3>Profile</h3>
+                <input id="username" placeholder="Display Name" />
+                <label style="font-size: 13px; display: block; margin-bottom: 10px;">
+                    <input type="checkbox" id="verified" /> Verified Account
+                </label>
+                <button class="primary" onclick="saveProfile()">Update Profile</button>
+            </div>
+        </aside>
 
-<!-- LEFT -->
-<div>
-<div class="card">
-<h4>Profile</h4>
-<input id="username" placeholder="Username" />
-<label><input type="checkbox" id="verified" /> Premium Verified</label>
-<button onclick="saveProfile()">Save</button>
-</div>
-</div>
+        <main>
+            <div id="feed" class="tab">
+                <div class="card">
+                    <textarea id="postText" placeholder="What's happening?"></textarea>
+                    <input type="file" id="imageUpload" accept="image/*" />
+                    <button class="primary" onclick="createPost()">Post</button>
+                </div>
+                <div id="posts"></div>
+            </div>
 
-<!-- CENTER -->
-<div>
+            <div id="reels" class="tab hidden">
+                <div class="card">
+                    <h3>Upload Reel</h3>
+                    <input type="file" id="videoUpload" accept="video/*" />
+                    <button class="primary" onclick="uploadReel()">Upload Video</button>
+                </div>
+                <div id="reelFeed"></div>
+            </div>
+        </main>
 
-<div id="feed" class="tab">
-<div class="card">
-<textarea id="postText" placeholder="What's on your mind?"></textarea>
-<input type="file" id="imageUpload" />
-<button class="primary" onclick="createPost()">Post</button>
-</div>
-<div id="posts"></div>
-</div>
+        <aside>
+            <div class="card">
+                <h4>Global Chat</h4>
+                <div id="chat" style="height: 300px; overflow-y: auto; border: 1px solid #eee; padding: 10px; margin-bottom: 10px; font-size: 14px;"></div>
+                <input id="chatText" placeholder="Type a message..." />
+                <button class="primary" onclick="sendMessage()">Send</button>
+            </div>
+        </aside>
 
-<div id="friends" class="tab hidden">
-<div class="card"><h4>Friend Requests</h4><div id="requests"></div></div>
-<div class="card"><h4>Followers</h4><div id="followers"></div></div>
-</div>
-
-<div id="reels" class="tab hidden">
-<div class="card">
-<input type="file" id="videoUpload" />
-<button onclick="uploadReel()">Upload Reel</button>
-</div>
-<div id="reelFeed"></div>
-</div>
-
-<div id="notifications" class="tab hidden">
-<div class="card" id="notify"></div>
-</div>
-
-</div>
-
-<!-- RIGHT -->
-<div>
-<div class="card">
-<h4>Chat</h4>
-<div id="chat" style="height:260px;overflow:auto"></div>
-<input id="chatText" placeholder="Message" />
-<button onclick="sendMessage()">Send</button>
-</div>
-</div>
-
-</div>
+    </div>
 </div>
 
 <script>
-// Firebase Config
-const firebaseConfig={
-apiKey:"AIzaSyCDll8RH1kzGOf-ixJmSlHXGssOHSMlO3s",
-authDomain:"vibely-5128e.firebaseapp.com",
-projectId:"vibely-5128e",
-storageBucket:"vibely-5128e.firebasestorage.app",
-messagingSenderId:"1048550825812",
-appId:"1:1048550825812:web:fc5bbba51e065807ffb2c1"
+// REPLACE WITH YOUR ACTUAL CONFIG IF DIFFERENT
+const firebaseConfig = {
+    apiKey: "AIzaSyCDll8RH1kzGOf-ixJmSlHXGssOHSMlO3s",
+    authDomain: "vibely-5128e.firebaseapp.com",
+    projectId: "vibely-5128e",
+    storageBucket: "vibely-5128e.firebasestorage.app",
+    messagingSenderId: "1048550825812",
+    appId: "1:1048550825812:web:fc5bbba51e065807ffb2c1"
 };
 
 firebase.initializeApp(firebaseConfig);
-const auth=firebase.auth();
-const db=firebase.firestore();
-const storage=firebase.storage();
+const auth = firebase.auth();
+const db = firebase.firestore();
+const storage = firebase.storage();
 
-const authDiv=document.getElementById('auth');
-const appDiv=document.getElementById('app');
-const authError=document.getElementById('authError');
-
-auth.onAuthStateChanged(user=>{
-if(user){authDiv.style.display='none';appDiv.classList.remove('hidden');loadFeed();loadChat();loadNotifications();}
-else{authDiv.style.display='block';appDiv.classList.add('hidden');}
+// Auth Listener
+auth.onAuthStateChanged(user => {
+    if(user) {
+        document.getElementById('auth').classList.add('hidden');
+        document.getElementById('app').classList.remove('hidden');
+        document.getElementById('nav-links').classList.remove('hidden');
+        loadUserData();
+        loadFeed();
+        loadChat();
+        loadReels();
+    } else {
+        document.getElementById('auth').classList.remove('hidden');
+        document.getElementById('app').classList.add('hidden');
+        document.getElementById('nav-links').classList.add('hidden');
+    }
 });
 
-function showTab(tab){document.querySelectorAll('.tab').forEach(t=>t.classList.add('hidden'));document.getElementById(tab).classList.remove('hidden')}
+function showTab(tabId) {
+    document.querySelectorAll('.tab').forEach(t => t.classList.add('hidden'));
+    document.getElementById(tabId).classList.remove('hidden');
+}
 
-function register(){auth.createUserWithEmailAndPassword(email.value,password.value).catch(e=>authError.innerText=e.message)}
-function login(){auth.signInWithEmailAndPassword(email.value,password.value).catch(e=>authError.innerText=e.message)}
-function logout(){auth.signOut()}
+// Authentication
+function register() {
+    auth.createUserWithEmailAndPassword(email.value, password.value).catch(e => authError.innerText = e.message);
+}
+function login() {
+    auth.signInWithEmailAndPassword(email.value, password.value).catch(e => authError.innerText = e.message);
+}
+function logout() { auth.signOut(); }
 
-function saveProfile(){db.collection('users').doc(auth.currentUser.uid).set({username:username.value,verified:verified.checked},{merge:true})}
+// Profile Management
+function loadUserData() {
+    db.collection('users').doc(auth.currentUser.uid).get().then(doc => {
+        if(doc.exists) {
+            document.getElementById('username').value = doc.data().username || "";
+            document.getElementById('verified').checked = doc.data().verified || false;
+        }
+    });
+}
 
-function createPost(){
-const text=postText.value;const file=imageUpload.files[0];
-if(file){const ref=storage.ref('images/'+Date.now()+file.name);ref.put(file).then(r=>r.ref.getDownloadURL().then(url=>savePost(text,url)))}
-else savePost(text,null);
-postText.value='';imageUpload.value='';}
+function saveProfile() {
+    db.collection('users').doc(auth.currentUser.uid).set({
+        username: document.getElementById('username').value,
+        verified: document.getElementById('verified').checked
+    }, {merge: true}).then(() => alert("Profile Saved!"));
+}
 
-function savePost(text,image){db.collection('posts').add({text,image,uid:auth.currentUser.uid,likes:0,created:firebase.firestore.FieldValue.serverTimestamp()})}
+// Feed Logic
+async function createPost() {
+    const text = postText.value;
+    const file = imageUpload.files[0];
+    const userDoc = await db.collection('users').doc(auth.currentUser.uid).get();
+    const userData = userDoc.data() || {username: "Anonymous"};
 
-function loadFeed(){db.collection('posts').orderBy('created','desc').onSnapshot(s=>{posts.innerHTML='';s.forEach(d=>{const p=d.data();posts.innerHTML+=`<div class='card post'><p>${p.text||''}</p>${p.image?`<img src='${p.image}'>`:''}<button onclick="likePost('${d.id}')">❤️ ${p.likes||0}</button></div>`})})}
-function likePost(id){db.collection('posts').doc(id).update({likes:firebase.firestore.FieldValue.increment(1)})}
+    let url = null;
+    if(file) {
+        const ref = storage.ref('images/' + Date.now() + "_" + file.name);
+        const upload = await ref.put(file);
+        url = await upload.ref.getDownloadURL();
+    }
 
-function sendMessage(){if(!chatText.value)return;db.collection('chat').add({text:chatText.value,created:firebase.firestore.FieldValue.serverTimestamp()});chatText.value=''}
-function loadChat(){db.collection('chat').orderBy('created').onSnapshot(s=>{chat.innerHTML='';s.forEach(d=>chat.innerHTML+=`<div>${d.data().text}</div>`)});}
+    db.collection('posts').add({
+        text,
+        image: url,
+        uid: auth.currentUser.uid,
+        username: userData.username,
+        isVerified: userData.verified || false,
+        likes: 0,
+        created: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    
+    postText.value = '';
+    imageUpload.value = '';
+}
 
-function loadNotifications(){db.collection('notifications').onSnapshot(s=>{notify.innerHTML='';s.forEach(d=>notify.innerHTML+=`<div>${d.data().text}</div>`)});}
+function loadFeed() {
+    db.collection('posts').orderBy('created', 'desc').onSnapshot(snapshot => {
+        const postsDiv = document.getElementById('posts');
+        postsDiv.innerHTML = '';
+        snapshot.forEach(doc => {
+            const p = doc.data();
+            postsDiv.innerHTML += `
+                <div class="card post">
+                    <div class="post-header">
+                        <strong>${p.username || 'User'}</strong> 
+                        ${p.isVerified ? '<span class="badge">✔ Verified</span>' : ''}
+                    </div>
+                    <p>${p.text || ''}</p>
+                    ${p.image ? `<img src="${p.image}">` : ''}
+                    <hr>
+                    <button onclick="likePost('${doc.id}')">❤️ ${p.likes || 0}</button>
+                </div>`;
+        });
+    });
+}
 
-function uploadReel(){const f=videoUpload.files[0];if(!f)return;const ref=storage.ref('reels/'+Date.now()+f.name);ref.put(f).then(r=>r.ref.getDownloadURL().then(url=>db.collection('reels').add({url,created:firebase.firestore.FieldValue.serverTimestamp()})))}
+function likePost(id) {
+    db.collection('posts').doc(id).update({ likes: firebase.firestore.FieldValue.increment(1) });
+}
+
+// Reels Logic
+async function uploadReel() {
+    const file = videoUpload.files[0];
+    if(!file) return alert("Select a video");
+    
+    const ref = storage.ref('reels/' + Date.now() + "_" + file.name);
+    const upload = await ref.put(file);
+    const url = await upload.ref.getDownloadURL();
+    
+    db.collection('reels').add({
+        url,
+        uid: auth.currentUser.uid,
+        created: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    videoUpload.value = '';
+}
+
+function loadReels() {
+    db.collection('reels').orderBy('created', 'desc').onSnapshot(snapshot => {
+        const reelFeed = document.getElementById('reelFeed');
+        reelFeed.innerHTML = '';
+        snapshot.forEach(doc => {
+            const r = doc.data();
+            reelFeed.innerHTML += `
+                <div class="card reel-item">
+                    <video src="${r.url}" controls style="max-height: 400px; background: #000;"></video>
+                </div>`;
+        });
+    });
+}
+
+// Chat Logic
+function sendMessage() {
+    const txt = chatText.value;
+    if(!txt) return;
+    db.collection('chat').add({
+        text: txt,
+        user: auth.currentUser.email,
+        created: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    chatText.value = '';
+}
+
+function loadChat() {
+    db.collection('chat').orderBy('created').limitToLast(20).onSnapshot(snapshot => {
+        const chatDiv = document.getElementById('chat');
+        chatDiv.innerHTML = '';
+        snapshot.forEach(doc => {
+            const c = doc.data();
+            chatDiv.innerHTML += `<div><b>${c.user?.split('@')[0]}:</b> ${c.text}</div>`;
+        });
+        chatDiv.scrollTop = chatDiv.scrollHeight;
+    });
+}
 </script>
 </body>
 </html>
