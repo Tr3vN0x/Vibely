@@ -8,59 +8,146 @@
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Inter:wght@300;600&display=swap" rel="stylesheet">
+
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
 
     <style>
         :root {
             --gold: #d4af37;
             --diamond: #e0f7fa;
             --obsidian: #050505;
-            --border: rgba(212,175,55,0.3);
+            --border: rgba(212, 175, 55, 0.3);
             --glass: rgba(255, 255, 255, 0.03);
+            --neon-blue: #00f2ff;
         }
+
+        * { box-sizing: border-box; }
 
         body {
-            margin: 0; font-family: 'Inter', sans-serif;
-            background: var(--obsidian); color: #fff;
-            display: flex; flex-direction: column; height: 100vh; overflow: hidden;
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+            background: var(--obsidian);
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
         }
 
+        /* Luxury Header */
         header {
-            padding: 15px 40px; background: #000; border-bottom: 1px solid var(--border);
-            display: flex; justify-content: space-between; align-items: center; z-index: 100;
+            padding: 15px 40px;
+            background: #000;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.8);
+            z-index: 100;
         }
         h1 { font-family: 'Cinzel', serif; letter-spacing: 10px; font-size: 1.2rem; margin: 0; color: var(--gold); }
 
-        .main-layout { display: grid; grid-template-columns: 250px 1fr 350px; flex-grow: 1; overflow: hidden; }
+        /* Main Layout */
+        .main-layout {
+            display: grid;
+            grid-template-columns: 250px 1fr 350px;
+            flex-grow: 1;
+            overflow: hidden;
+        }
 
-        .nav-sidebar { border-right: 1px solid var(--border); padding: 20px; display: flex; flex-direction: column; gap: 12px; background: rgba(0,0,0,0.5); }
+        /* Sidebar Navigation */
+        .nav-sidebar {
+            border-right: 1px solid var(--border);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            background: rgba(0,0,0,0.5);
+        }
 
-        .btn { background: var(--gold); color: #000; border: none; padding: 12px; font-family: 'Cinzel', serif; font-weight: bold; cursor: pointer; transition: 0.3s; text-transform: uppercase; }
-        .btn:hover { filter: brightness(1.2); transform: translateY(-2px); }
+        .btn {
+            background: var(--gold);
+            color: #000;
+            border: none;
+            padding: 12px;
+            font-family: 'Cinzel', serif;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .btn:hover:not(:disabled) { filter: brightness(1.2); transform: translateY(-2px); }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
         .btn-outline { background: transparent; color: var(--gold); border: 1px solid var(--gold); }
 
-        #centerContent { overflow-y: auto; background: radial-gradient(circle at center, #111 0%, #050505 100%); }
+        /* Content Area */
+        #centerContent { 
+            overflow-y: auto; 
+            background: radial-gradient(circle at center, #111 0%, #050505 100%);
+            scroll-behavior: smooth;
+        }
 
-        .editor-container { padding: 40px; display: none; }
-        .editor-card { background: var(--glass); padding: 30px; border: 1px solid var(--border); max-width: 600px; margin: 0 auto; }
+        .view-section { padding: 40px; display: none; }
+        .card-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; padding: 20px; }
 
-        #cardsContainer { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; padding: 30px; }
-        .userCard { background: #0a0a0a; border: 1px solid var(--border); padding: 30px; text-align: center; transition: 0.5s; position: relative; }
+        /* User Cards */
+        .userCard {
+            background: #0a0a0a;
+            border: 1px solid var(--border);
+            padding: 30px;
+            text-align: center;
+            transition: 0.5s;
+            position: relative;
+        }
+        .userCard:hover { box-shadow: 0 0 20px rgba(212, 175, 55, 0.2); }
         
-        .avatar-frame { width: 110px; height: 110px; margin: 0 auto 20px; border: 2px solid var(--gold); transform: rotate(45deg); overflow: hidden; background: #111; }
+        .avatar-frame {
+            width: 100px; height: 100px;
+            margin: 0 auto 20px;
+            border: 2px solid var(--gold);
+            transform: rotate(45deg);
+            overflow: hidden;
+            background: #111;
+        }
         .avatar-frame img { width: 100%; transform: rotate(-45deg) scale(1.4); }
 
-        .right-sidebar { border-left: 1px solid var(--border); padding: 20px; display: flex; flex-direction: column; background: #080808; }
-        #leaderboard { background: rgba(212, 175, 55, 0.05); padding: 15px; border-radius: 5px; margin-bottom: 20px; }
-        #leaderboard h3 { font-family: 'Cinzel'; font-size: 0.8rem; color: var(--gold); margin-top: 0; text-align: center; }
+        /* Wheel Styles */
+        #wheelContainer {
+            position: relative;
+            width: 240px; height: 240px;
+            margin: 30px auto;
+            border: 8px solid var(--gold);
+            border-radius: 50%;
+            overflow: hidden;
+            transition: transform 4s cubic-bezier(0.15, 0, 0.15, 1);
+            background: #000;
+        }
+        .wheel-segment {
+            position: absolute; width: 100%; height: 100%;
+            clip-path: polygon(50% 50%, 50% 0%, 100% 0%, 100% 50%); /* Simplified segment */
+        }
 
-        #chatBox { flex-grow: 1; overflow-y: auto; font-size: 0.85rem; padding: 10px 0; }
-        .chat-entry { margin-bottom: 8px; border-bottom: 1px solid #111; padding-bottom: 4px; }
-        .system-msg { color: var(--gold); font-style: italic; font-size: 0.75rem; }
+        /* Right Sidebar (Chat) */
+        .right-sidebar {
+            border-left: 1px solid var(--border);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            background: #080808;
+        }
+        #chatBox { flex-grow: 1; overflow-y: auto; font-size: 0.85rem; margin-bottom: 10px; }
+        .chat-entry { margin-bottom: 10px; padding-bottom: 5px; border-bottom: 1px solid #111; }
+        .chat-user { color: var(--gold); font-weight: bold; margin-right: 5px; }
+        .system-msg { color: var(--neon-blue); font-size: 0.8rem; font-style: italic; }
 
-        input, select { width: 100%; padding: 12px; margin: 10px 0; background: #000; border: 1px solid #333; color: #fff; }
+        input, select {
+            width: 100%; padding: 12px; margin: 10px 0;
+            background: #000; border: 1px solid #333; color: #fff;
+        }
 
-        .theme-ice { border-color: #00f2ff !important; box-shadow: 0 0 15px rgba(0, 242, 255, 0.2); }
+        /* Profile Themes */
+        .theme-ice { border-color: var(--neon-blue) !important; box-shadow: 0 0 15px rgba(0, 242, 255, 0.2); }
         .theme-royal { border-color: #ff00ff !important; box-shadow: 0 0 15px rgba(255, 0, 255, 0.2); }
     </style>
 </head>
@@ -68,59 +155,81 @@
 
 <header>
     <h1>DIAMOND LOUNGE</h1>
-    <div id="userBalance" style="color:var(--gold); font-family:'Cinzel'; font-weight: bold;">♦ 0</div>
+    <div id="userBalance" style="color:var(--gold); font-family:'Cinzel'; font-weight: bold; font-size: 1.1rem;">♦ 0</div>
 </header>
 
 <div id="mainView" class="main-layout" style="display:none">
     <div class="nav-sidebar">
         <button class="btn" onclick="switchTab('explore')">The Lounge</button>
+        <button class="btn btn-outline" onclick="switchTab('wheel')">Daily Spin</button>
         <button class="btn btn-outline" onclick="switchTab('editor')">Identity Vault</button>
         <button class="btn btn-outline" onclick="switchTab('shop')">Luxury Shop</button>
         <button class="btn btn-outline" style="margin-top:auto; border-color:#ff4444; color:#ff4444;" onclick="auth.signOut()">Exit</button>
     </div>
 
     <div id="centerContent">
-        <div id="exploreTab">
-            <div id="cardsContainer"></div>
+        <div id="exploreTab" class="view-section" style="display:block;">
+            <h3 style="font-family:'Cinzel'; color:var(--gold); text-align:center; letter-spacing:5px;">ACTIVE ELITE</h3>
+            <div id="cardsContainer" class="card-container"></div>
         </div>
 
-        <div id="editorTab" class="editor-container">
-            <div class="editor-card">
-                <h3 style="font-family:'Cinzel'; color:var(--gold);">EDIT IDENTITY</h3>
-                <input id="editName" placeholder="Display Alias">
-                <input id="editAvatar" placeholder="Avatar URL">
+        <div id="wheelTab" class="view-section">
+            <div style="max-width: 500px; margin: 0 auto; text-align: center; background: var(--glass); padding: 40px; border: 1px solid var(--border);">
+                <h2 style="font-family:'Cinzel'; color:var(--gold);">DAILY VAULT</h2>
+                <p>Spin for your daily allowance of diamonds.</p>
+                <div id="wheelContainer">
+                    <div style="position: absolute; width: 100%; height: 100%; background: conic-gradient(#050505 0deg 120deg, #111 120deg 240deg, #1a1a1a 240deg 360deg);"></div>
+                    <div style="position:absolute; top:20px; left:50%; transform:translateX(-50%); color:var(--gold); font-weight:bold;">1</div>
+                    <div style="position:absolute; bottom:30px; left:40px; color:var(--gold); font-weight:bold;">2</div>
+                    <div style="position:absolute; bottom:30px; right:40px; color:var(--gold); font-weight:bold;">3</div>
+                </div>
+                <button id="spinBtn" class="btn" style="width: 100%;" onclick="spinWheel()">SPIN THE VAULT</button>
+            </div>
+        </div>
+
+        <div id="editorTab" class="view-section">
+            <div style="max-width: 500px; margin: 0 auto; background: var(--glass); padding: 40px; border: 1px solid var(--border);">
+                <h2 style="font-family:'Cinzel'; color:var(--gold);">IDENTITY VAULT</h2>
+                <label>Display Alias</label>
+                <input id="editName" placeholder="Enter name...">
+                <label>Avatar URL</label>
+                <input id="editAvatar" placeholder="Image link...">
+                <label>Card Aura</label>
                 <select id="editTheme">
                     <option value="default">Classic Obsidian</option>
                     <option value="ice">Diamond Ice</option>
                     <option value="royal">Royal Amethyst</option>
                 </select>
-                <button class="btn" style="width: 100%;" onclick="saveIdentity()">Confirm</button>
+                <button class="btn" style="width: 100%; margin-top: 20px;" onclick="saveIdentity()">Save Identity</button>
             </div>
         </div>
 
-        <div id="shopTab" class="editor-container">
-            <h2 style="text-align: center; font-family: 'Cinzel';">LUXURY SHOP</h2>
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;">
-                <div style="background:var(--glass); padding:20px; border:1px solid var(--border); text-align:center;">
-                    <h4>👑 VIP CROWN</h4>
-                    <button class="btn" onclick="buyItem('vip', 50)">♦ 50</button>
+        <div id="shopTab" class="view-section">
+            <h2 style="font-family:'Cinzel'; text-align: center;">PREMIUM UPGRADES</h2>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 20px; max-width: 600px; margin: 40px auto;">
+                <div style="background:var(--glass); padding: 30px; border: 1px solid var(--border); text-align: center;">
+                    <h3>👑 VIP</h3>
+                    <p>♦ 50</p>
+                    <button class="btn btn-outline" onclick="buyItem('vip', 50)">Purchase</button>
                 </div>
-                <div style="background:var(--glass); padding:20px; border:1px solid var(--border); text-align:center;">
-                    <h4>✨ GOLD NAME</h4>
-                    <button class="btn" onclick="buyItem('goldName', 30)">♦ 30</button>
+                <div style="background:var(--glass); padding: 30px; border: 1px solid var(--border); text-align: center;">
+                    <h3>✨ GLOW</h3>
+                    <p>♦ 30</p>
+                    <button class="btn btn-outline" onclick="buyItem('goldName', 30)">Purchase</button>
                 </div>
             </div>
         </div>
     </div>
 
     <div class="right-sidebar">
-        <div id="leaderboard"></div>
+        <div id="leaderboard" style="margin-bottom: 20px;"></div>
         <div id="chatBox"></div>
-        <input id="chatInput" placeholder="Message..." onkeypress="if(event.key==='Enter') sendChat()">
+        <input id="chatInput" placeholder="Send a message..." onkeypress="if(event.key==='Enter') sendChat()">
     </div>
 </div>
 
 <script>
+// --- YOUR FIREBASE CONFIG ---
 const firebaseConfig = {
   apiKey: "AIzaSyCDll8RH1kzGOf-ixJmSlHXGssOHSMlO3s",
   authDomain: "vibely-5128e.firebaseapp.com",
@@ -135,13 +244,14 @@ firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 
-function switchTab(tab){
-    document.getElementById('exploreTab').style.display = tab==='explore'?'block':'none';
-    document.getElementById('editorTab').style.display = tab==='editor'?'block':'none';
-    document.getElementById('shopTab').style.display = tab==='shop'?'block':'none';
+// --- TAB SYSTEM ---
+function switchTab(tab) {
+    document.querySelectorAll('.view-section').forEach(s => s.style.display = 'none');
+    document.getElementById(tab + 'Tab').style.display = 'block';
 }
 
-function saveIdentity(){
+// --- IDENTITY ---
+function saveIdentity() {
     db.collection('users').doc(auth.currentUser.uid).update({
         name: document.getElementById('editName').value,
         avatar: document.getElementById('editAvatar').value,
@@ -149,16 +259,52 @@ function saveIdentity(){
     }).then(() => switchTab('explore'));
 }
 
-function buyItem(item, cost){
+// --- DAILY WHEEL LOGIC ---
+function spinWheel() {
+    const userRef = db.collection('users').doc(auth.currentUser.uid);
+    userRef.get().then(doc => {
+        const data = doc.data();
+        const now = Date.now();
+        if (data.lastSpin && (now - data.lastSpin < 86400000)) {
+            alert("The vault is locked. Return tomorrow.");
+            return;
+        }
+
+        const reward = Math.floor(Math.random() * 3) + 1; 
+        const rotation = 1440 + (reward * 120); // 4 full spins + target
+        
+        document.getElementById('wheelContainer').style.transform = `rotate(${rotation}deg)`;
+        document.getElementById('spinBtn').disabled = true;
+
+        setTimeout(() => {
+            userRef.update({
+                vibes: firebase.firestore.FieldValue.increment(reward),
+                lastSpin: now
+            });
+            db.collection('chat').add({
+                msg: `💎 [DAILY] Secured ${reward} diamonds from the vault!`,
+                user: "VAULT",
+                time: firebase.firestore.FieldValue.serverTimestamp()
+            });
+            alert(`You earned ♦ ${reward}!`);
+            document.getElementById('spinBtn').innerText = "CLAIMED";
+        }, 4100);
+    });
+}
+
+// --- SHOP ---
+function buyItem(item, cost) {
     const ref = db.collection('users').doc(auth.currentUser.uid);
     ref.get().then(doc => {
-        if(doc.data().vibes >= cost){
+        if(doc.data().vibes >= cost) {
             ref.update({ vibes: firebase.firestore.FieldValue.increment(-cost), [item]: true });
+            alert("Luxury item acquired!");
         } else alert("Insufficient diamonds.");
     });
 }
 
-function loadUsers(){
+// --- LOUNGE RENDERING ---
+function loadUsers() {
     db.collection('users').onSnapshot(snap => {
         const container = document.getElementById('cardsContainer');
         container.innerHTML = '';
@@ -166,35 +312,41 @@ function loadUsers(){
             const u = doc.data();
             const id = doc.id;
             const themeClass = u.theme === 'ice' ? 'theme-ice' : (u.theme === 'royal' ? 'theme-royal' : '');
+            
             const card = document.createElement('div');
             card.className = `userCard ${themeClass}`;
             card.innerHTML = `
                 <div class="avatar-frame"><img src="${u.avatar || 'https://api.dicebear.com/7.x/initials/svg?seed='+id}"></div>
-                <h4 style="color:${u.goldName ? 'var(--gold)' : 'white'};">${u.name || 'GUEST'} ${u.vip ? '👑' : ''}</h4>
-                <div style="color:var(--gold); margin:10px 0;">♦ ${u.vibes || 0}</div>
-                ${id !== auth.currentUser.uid ? `<button class="btn btn-outline" style="width:100%" onclick="giftWithNote('${id}','${u.name}')">GIFT</button>` : '<small>YOU</small>'}
+                <h4 style="color:${u.goldName ? 'var(--gold)' : 'white'};">${u.name || 'ANONYMOUS'} ${u.vip ? '👑' : ''}</h4>
+                <div style="color:var(--gold); font-family:'Cinzel'; font-size: 1.2rem; margin: 10px 0;">♦ ${u.vibes || 0}</div>
+                ${id !== auth.currentUser.uid ? `<button class="btn btn-outline" style="width:100%" onclick="giftDiamond('${id}','${u.name}')">GIFT</button>` : '<small>YOU</small>'}
             `;
             container.appendChild(card);
         });
     });
 }
 
-function giftWithNote(id, name) {
-    const note = prompt(`Send a diamond to ${name}? Add a message:`, "Best vibes!");
-    if (note !== null) {
+function giftDiamond(id, name) {
+    const note = prompt(`Send a diamond to ${name}? Add a short note:`, "Respect!");
+    if (note) {
         db.collection('users').doc(id).update({ vibes: firebase.firestore.FieldValue.increment(1) });
         db.collection('chat').add({ 
-            msg: `💎 [${note}] — Diamond gifted to ${name}!`, 
+            msg: `💎 "${note}" — Gifted to ${name}`, 
             user: "VAULT", 
             time: firebase.firestore.FieldValue.serverTimestamp() 
         });
     }
 }
 
-function sendChat(){
+// --- CHAT ---
+function sendChat() {
     const val = document.getElementById('chatInput').value;
     if(!val) return;
-    db.collection('chat').add({ msg: val, user: auth.currentUser.email.split('@')[0].toUpperCase(), time: firebase.firestore.FieldValue.serverTimestamp() });
+    db.collection('chat').add({
+        msg: val,
+        user: auth.currentUser.email.split('@')[0].toUpperCase(),
+        time: firebase.firestore.FieldValue.serverTimestamp()
+    });
     document.getElementById('chatInput').value = '';
 }
 
@@ -203,35 +355,39 @@ db.collection('chat').orderBy('time', 'desc').limit(25).onSnapshot(snap => {
     chatBox.innerHTML = '';
     snap.docs.reverse().forEach(doc => {
         const d = doc.data();
-        chatBox.innerHTML += `<div class="chat-entry ${d.user === 'VAULT' ? 'system-msg' : ''}"><b>${d.user}:</b> ${d.msg}</div>`;
+        chatBox.innerHTML += `<div class="chat-entry ${d.user === 'VAULT' ? 'system-msg' : ''}"><span class="chat-user">${d.user}:</span> ${d.msg}</div>`;
         chatBox.scrollTop = chatBox.scrollHeight;
     });
 });
 
-function loadLeaderboard(){
-    db.collection('users').orderBy('vibes','desc').limit(5).onSnapshot(snap => {
-        const lb = document.getElementById('leaderboard');
-        lb.innerHTML = '<h3>ELITE HOLDERS</h3>';
-        snap.forEach(doc => {
-            const u = doc.data();
-            lb.innerHTML += `<div style="font-size:0.8rem; margin:2px 0;">♦ ${u.vibes || 0} — ${u.name || 'GUEST'}</div>`;
-        });
-    });
-}
-
+// --- AUTH & INIT ---
 auth.onAuthStateChanged(user => {
-    if(user){
+    if(user) {
         document.getElementById('mainView').style.display = 'grid';
-        loadUsers(); loadLeaderboard();
+        loadUsers();
+        
         const userRef = db.collection('users').doc(user.uid);
-        userRef.get().then(doc => { if(!doc.exists) userRef.set({ vibes: 0, name: user.email.split('@')[0], theme: 'default' }); });
-        userRef.onSnapshot(doc => {
-            const data = doc.data();
-            document.getElementById('userBalance').innerText = `♦ ${data.vibes || 0}`;
-            document.getElementById('editName').value = data.name || '';
-            document.getElementById('editAvatar').value = data.avatar || '';
+        userRef.get().then(doc => {
+            if(!doc.exists) userRef.set({ vibes: 0, name: user.email.split('@')[0], theme: 'default' });
         });
-    } else { auth.signInAnonymously(); }
+
+        userRef.onSnapshot(doc => {
+            const d = doc.data();
+            if(!d) return;
+            document.getElementById('userBalance').innerText = `♦ ${d.vibes || 0}`;
+            document.getElementById('editName').value = d.name || '';
+            document.getElementById('editAvatar').value = d.avatar || '';
+            
+            // Check spin button status
+            const now = Date.now();
+            if (d.lastSpin && (now - d.lastSpin < 86400000)) {
+                document.getElementById('spinBtn').innerText = "LOCKED";
+                document.getElementById('spinBtn').disabled = true;
+            }
+        });
+    } else {
+        auth.signInAnonymously();
+    }
 });
 </script>
 </body>
