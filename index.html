@@ -11,14 +11,15 @@
     <style>
         :root {
             --diamond: #e0f7fa;
-            --gold: #af9500;
-            --obsidian: #05050a;
+            --gold: #d4af37;
+            --obsidian: #050505;
             --glass: rgba(255, 255, 255, 0.03);
+            --border: rgba(212, 175, 55, 0.3);
         }
 
         body {
             margin: 0;
-            font-family: 'Inter', 'Garamond', serif;
+            font-family: 'Cinzel', serif; /* Elegant, classic luxury font */
             background: var(--obsidian);
             color: #fff;
             display: flex;
@@ -27,151 +28,136 @@
             overflow: hidden;
         }
 
-        /* Layout Grid */
+        header {
+            padding: 15px 40px;
+            background: #000;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.1);
+        }
+
         .main-layout {
             display: grid;
-            grid-template-columns: 1fr 350px;
+            grid-template-columns: 1fr 380px;
             flex-grow: 1;
             overflow: hidden;
         }
 
-        header {
-            padding: 20px 60px;
-            background: #000;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
+        /* Leaderboard Style */
+        .leaderboard {
+            background: rgba(212, 175, 55, 0.05);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .leader-item {
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            z-index: 10;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            font-size: 0.85rem;
         }
 
-        h1 { letter-spacing: 10px; font-weight: 200; color: var(--diamond); margin: 0; }
+        .leader-item:last-child { border: none; }
+        .rank-gold { color: var(--gold); font-weight: bold; }
 
-        /* Left Side: Explore */
-        #exploreDiv {
-            overflow-y: auto;
-            padding: 40px;
-            border-right: 1px solid rgba(255,255,255,0.05);
-        }
-
-        #cardsContainer {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 25px;
-        }
-
-        /* Right Side: Live Chat & Activity */
-        .sidebar {
-            background: rgba(255, 255, 255, 0.01);
-            display: flex;
-            flex-direction: column;
-            padding: 20px;
-        }
-
-        #chatBox {
-            flex-grow: 1;
-            overflow-y: auto;
-            margin-bottom: 20px;
-            font-size: 0.9rem;
-        }
-
-        .chat-msg {
-            margin-bottom: 10px;
-            padding: 10px;
-            background: var(--glass);
-            border-left: 2px solid var(--diamond);
-        }
-
-        .chat-msg b { color: var(--gold); }
-
-        /* Diamond Cards */
+        /* Card Shimmer */
         .userCard {
-            background: var(--glass);
-            border: 1px solid rgba(255,255,255,0.05);
-            padding: 30px;
+            background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(0,0,0,0.5) 100%);
+            border: 1px solid var(--border);
+            padding: 25px;
             text-align: center;
-            transition: 0.4s;
             position: relative;
+            overflow: hidden;
+            transition: 0.5s;
         }
 
-        .online-dot {
-            width: 10px;
-            height: 10px;
-            background: #00ff88;
-            border-radius: 50%;
-            display: inline-block;
-            box-shadow: 0 0 10px #00ff88;
-            margin-right: 5px;
+        /* Diamond Shimmer Animation */
+        .userCard::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+            transform: rotate(45deg);
+            transition: 0.5s;
+        }
+
+        .userCard:hover::before {
+            animation: shimmer 1.5s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) rotate(45deg); }
         }
 
         .avatar-frame {
-            width: 100px;
-            height: 100px;
+            width: 90px;
+            height: 90px;
             margin: 0 auto 15px;
-            border: 1px solid var(--gold);
+            border: 2px solid var(--gold);
+            outline: 1px solid var(--diamond);
             transform: rotate(45deg);
             overflow: hidden;
         }
 
-        .avatar-frame img {
-            width: 100%;
-            transform: rotate(-45deg) scale(1.4);
+        .sidebar {
+            background: #080808;
+            border-left: 1px solid var(--border);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
         }
+
+        #chatBox { flex-grow: 1; overflow-y: auto; font-family: sans-serif; }
+        .chat-msg { font-size: 0.8rem; margin-bottom: 8px; color: #ccc; }
+        .chat-msg b { color: var(--gold); letter-spacing: 1px; }
 
         .btn {
-            background: transparent;
-            border: 1px solid var(--diamond);
-            color: var(--diamond);
+            background: var(--gold);
+            color: black;
+            border: none;
             padding: 10px;
+            font-family: 'Cinzel', serif;
+            font-weight: bold;
             cursor: pointer;
-            text-transform: uppercase;
             letter-spacing: 2px;
-            width: 100%;
-        }
-
-        .btn:hover { background: #fff; color: #000; }
-
-        input {
-            background: #111;
-            border: 1px solid #333;
-            color: white;
-            padding: 10px;
-            width: 100%;
-            box-sizing: border-box;
         }
     </style>
 </head>
 <body>
 
 <header>
-    <h1>VIBELY</h1>
+    <h1 style="letter-spacing: 15px; font-weight: 100; font-size: 1.2rem;">THE DIAMOND LOUNGE</h1>
     <div id="userControls"></div>
 </header>
 
-<div id="authDiv" style="max-width:400px; margin:100px auto; padding:40px; border:1px solid var(--glass);">
-    <h2 style="text-align:center;">ACCESS LOUNGE</h2>
-    <input id="email" type="email" placeholder="EMAIL">
-    <input id="password" type="password" placeholder="PASSWORD">
-    <button class="btn" onclick="login()">ENTER</button>
-</div>
-
 <div id="mainView" class="main-layout" style="display:none">
-    <div id="exploreDiv">
-        <h3 style="letter-spacing:3px; margin-bottom:30px;">ACTIVE MEMBERS</h3>
-        <div id="cardsContainer"></div>
+    <div id="exploreDiv" style="overflow-y:auto; padding:40px;">
+        <div id="cardsContainer" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(250px, 1fr)); gap:20px;"></div>
     </div>
 
     <div class="sidebar">
-        <h4 style="letter-spacing:2px; border-bottom:1px solid #333; padding-bottom:10px;">LOUNGE CHAT</h4>
-        <div id="chatBox"></div>
-        <div class="chat-input-area">
-            <input id="chatInput" placeholder="Say something..." onkeypress="if(event.key==='Enter') sendChat()">
+        <div class="leaderboard">
+            <h4 style="margin:0 0 10px 0; text-align:center; color:var(--gold); font-size:0.7rem; letter-spacing:3px;">ELITE MEMBERS</h4>
+            <div id="leaderboardList"></div>
         </div>
+
+        <h4 style="font-size:0.7rem; letter-spacing:3px; opacity:0.5;">LIVE LOUNGE FEED</h4>
+        <div id="chatBox"></div>
+        <input id="chatInput" style="background:#000; border:1px solid #222; color:white; padding:10px;" placeholder="SEND MESSAGE..." onkeypress="if(event.key==='Enter') sendChat()">
     </div>
 </div>
 
 <script>
-// --- FIREBASE CONFIG ---
+// --- YOUR FIREBASE CONFIG HERE ---
 const firebaseConfig = {
     apiKey: "AIzaSyCDll8RH1kzGOf-ixJmSlHXGssOHSMlO3s",
     authDomain: "vibely-5128e.firebaseapp.com",
@@ -185,52 +171,46 @@ firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 
-// --- LIVE CHAT LOGIC ---
+// --- LEADERBOARD LOGIC ---
+function loadLeaderboard() {
+    db.collection('users').orderBy('vibes', 'desc').limit(3).onSnapshot(snap => {
+        const list = document.getElementById('leaderboardList');
+        list.innerHTML = '';
+        let rank = 1;
+        snap.forEach(doc => {
+            const u = doc.data();
+            list.innerHTML += `
+                <div class="leader-item">
+                    <span class="${rank === 1 ? 'rank-gold' : ''}">${rank}. ${u.name || 'ANON'}</span>
+                    <span>♦ ${u.vibes || 0}</span>
+                </div>`;
+            rank++;
+        });
+    });
+}
+
+function giftDiamond(id, name) {
+    if(auth.currentUser.uid === id) return;
+    db.collection('users').doc(id).update({vibes: firebase.firestore.FieldValue.increment(1)});
+    db.collection('chat').add({
+        msg: `transferred 1.0 CT Diamond to ${name}`,
+        user: "VAULT",
+        time: firebase.firestore.FieldValue.serverTimestamp()
+    });
+}
+
 function sendChat() {
     const text = document.getElementById('chatInput').value;
-    const user = auth.currentUser;
     if(!text) return;
-    
     db.collection('chat').add({
         msg: text,
-        user: user.email.split('@')[0],
+        user: auth.currentUser.email.split('@')[0].toUpperCase(),
         time: firebase.firestore.FieldValue.serverTimestamp()
     });
     document.getElementById('chatInput').value = '';
 }
 
-function loadChat() {
-    db.collection('chat').orderBy('time', 'desc').limit(20).onSnapshot(snap => {
-        const box = document.getElementById('chatBox');
-        box.innerHTML = '';
-        snap.forEach(doc => {
-            const d = doc.data();
-            box.innerHTML += `<div class="chat-msg"><b>${d.user}:</b> ${d.msg}</div>`;
-        });
-    });
-}
-
-// --- CORE FUNCTIONS ---
-function login() {
-    auth.signInWithEmailAndPassword(document.getElementById('email').value, document.getElementById('password').value);
-}
-
-function giftDiamond(id, name) {
-    if(auth.currentUser.uid === id) return alert("Self-gifting is prohibited.");
-    
-    // Increment points
-    db.collection('users').doc(id).update({vibes: firebase.firestore.FieldValue.increment(1)});
-    
-    // Add to chat as an activity notification
-    db.collection('chat').add({
-        msg: `💎 gifted a diamond to ${name}!`,
-        user: "SYSTEM",
-        time: firebase.firestore.FieldValue.serverTimestamp()
-    });
-}
-
 function loadUsers() {
-    const currentUid = auth.currentUser.uid;
     db.collection('users').onSnapshot(snap => {
         const container = document.getElementById('cardsContainer');
         container.innerHTML = '';
@@ -240,29 +220,33 @@ function loadUsers() {
             const card = document.createElement('div');
             card.className = 'userCard';
             card.innerHTML = `
-                <div class="avatar-frame">
-                    <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=${id}">
-                </div>
-                <h4><span class="online-dot"></span> ${u.name || 'Anonymous'}</h4>
-                <div style="font-size:1.2rem; color:var(--gold); margin:10px 0;">♦ ${u.vibes || 0}</div>
-                ${id !== currentUid ? `<button class="btn" onclick="giftDiamond('${id}', '${u.name}')">Gift Diamond</button>` : `<small>YOU</small>`}
+                <div class="avatar-frame"><img src="https://api.dicebear.com/7.x/miniavs/svg?seed=${id}"></div>
+                <h5 style="margin:10px 0; letter-spacing:2px;">${u.name || 'GUEST'}</h5>
+                <div style="color:var(--gold); font-size:1.4rem; margin-bottom:15px;">♦ ${u.vibes || 0}</div>
+                ${id !== auth.currentUser.uid ? `<button class="btn" onclick="giftDiamond('${id}', '${u.name}')">GIFT</button>` : `<small style="opacity:0.3">YOU</small>`}
             `;
             container.appendChild(card);
         });
     });
 }
 
-// --- SESSION ---
+function loadChat() {
+    db.collection('chat').orderBy('time', 'desc').limit(15).onSnapshot(snap => {
+        const box = document.getElementById('chatBox');
+        box.innerHTML = '';
+        snap.forEach(doc => {
+            const d = doc.data();
+            box.innerHTML += `<div class="chat-msg"><b>${d.user}:</b> ${d.msg}</div>`;
+        });
+    });
+}
+
 auth.onAuthStateChanged(user => {
     if(user) {
-        document.getElementById('authDiv').style.display = 'none';
         document.getElementById('mainView').style.display = 'grid';
-        document.getElementById('userControls').innerHTML = `<button class="btn" style="border:none" onclick="auth.signOut()">LOGOUT</button>`;
-        loadUsers();
-        loadChat();
+        loadUsers(); loadChat(); loadLeaderboard();
     } else {
-        document.getElementById('authDiv').style.display = 'block';
-        document.getElementById('mainView').style.display = 'none';
+        // Simple redirect to a login prompt if not authenticated
     }
 });
 </script>
