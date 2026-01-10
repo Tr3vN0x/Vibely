@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vibely – Full Social App</title>
+    <title>Vibely | Facebook Clone</title>
 
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
@@ -11,260 +11,256 @@
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
 
     <style>
-        :root { --blue: #1877f2; --bg: #f0f2f5; }
-        * { box-sizing: border-box; }
-        body { margin: 0; font-family: system-ui, -apple-system, sans-serif; background: var(--bg); color: #1c1e21; }
-        header { background: var(--blue); color: #fff; padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
-        nav { display: flex; gap: 8px; }
-        nav button { background: rgba(255,255,255,.2); color: #fff; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; transition: 0.3s; }
-        nav button:hover { background: rgba(255,255,255,.4); }
-        .container { display: grid; grid-template-columns: 280px 1fr 300px; gap: 20px; padding: 20px; max-width: 1200px; margin: auto; }
-        .card { background: #fff; border-radius: 10px; padding: 16px; margin-bottom: 16px; box-shadow: 0 1px 2px rgba(0,0,0,.1); }
-        input, textarea { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: 1px solid #ddd; font-size: 14px; }
-        button.primary { background: var(--blue); color: white; width: 100%; font-weight: bold; border: none; padding: 10px; border-radius: 6px; cursor: pointer; }
+        :root {
+            --fb-blue: #1877f2;
+            --fb-bg: #f0f2f5;
+            --fb-card: #ffffff;
+            --fb-text: #050505;
+            --fb-secondary: #65676b;
+        }
+
+        body { margin: 0; font-family: Helvetica, Arial, sans-serif; background: var(--fb-bg); color: var(--fb-text); }
+        
+        /* HEADER */
+        header { 
+            background: var(--fb-card); height: 56px; padding: 0 16px; 
+            display: flex; justify-content: space-between; align-items: center; 
+            box-shadow: 0 2px 4px rgba(0,0,0,.1); position: sticky; top: 0; z-index: 1000;
+        }
+        .logo { color: var(--fb-blue); font-size: 28px; font-weight: bold; letter-spacing: -1px; }
+        nav button { background: none; border: none; padding: 10px 20px; font-size: 20px; cursor: pointer; color: var(--fb-secondary); border-radius: 8px; }
+        nav button:hover { background: #f2f2f2; }
+
+        /* LAYOUT */
+        .container { display: grid; grid-template-columns: 280px 1fr 280px; gap: 32px; padding: 16px; max-width: 1250px; margin: auto; }
+
+        /* SIDEBARS */
+        .sidebar-item { display: flex; align-items: center; gap: 12px; padding: 10px; border-radius: 8px; cursor: pointer; transition: 0.2s; font-weight: 500; }
+        .sidebar-item:hover { background: #e4e6eb; }
+        .sidebar-icon { width: 36px; height: 36px; background: #ddd; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+
+        /* CARDS & POSTS */
+        .card { background: var(--fb-card); border-radius: 8px; padding: 16px; margin-bottom: 16px; box-shadow: 0 1px 2px rgba(0,0,0,.1); }
+        .post-header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+        .avatar { width: 40px; height: 40px; border-radius: 50%; background: #ccc; }
+        .user-info b { display: block; font-size: 15px; }
+        .user-info span { font-size: 13px; color: var(--fb-secondary); }
+        .post-text { margin-bottom: 12px; line-height: 1.4; }
+        .post-img { width: calc(100% + 32px); margin-left: -16px; border-top: 1px solid #eee; border-bottom: 1px solid #eee; }
+        
+        /* BUTTONS */
+        .action-bar { display: flex; border-top: 1px solid #eee; margin-top: 10px; padding-top: 4px; }
+        .action-btn { flex: 1; background: none; border: none; padding: 8px; color: var(--fb-secondary); font-weight: 600; cursor: pointer; border-radius: 4px; }
+        .action-btn:hover { background: #f2f2f2; }
+        .btn-primary { background: var(--fb-blue); color: white; border: none; padding: 8px 16px; border-radius: 6px; font-weight: bold; cursor: pointer; width: 100%; }
+
+        /* STORIES */
+        .stories { display: flex; gap: 8px; margin-bottom: 16px; overflow-x: auto; padding-bottom: 8px; }
+        .story { width: 110px; height: 190px; background: #ddd; border-radius: 10px; flex-shrink: 0; position: relative; }
+        .story-name { position: absolute; bottom: 8px; left: 8px; color: white; font-size: 12px; font-weight: bold; text-shadow: 0 1px 4px rgba(0,0,0,.8); }
+
         .hidden { display: none; }
-        .post-header { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
-        .badge { color: #1877f2; font-size: 12px; }
-        .post img, .post video { width: 100%; border-radius: 8px; margin-top: 10px; display: block; }
-        .reel-item { margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
-        @media(max-width: 900px) { .container { grid-template-columns: 1fr; } }
+        @media(max-width: 900px) { .container { grid-template-columns: 1fr; } .left-side, .right-side { display: none; } }
     </style>
 </head>
 <body>
 
 <header>
-    <b style="font-size: 1.5rem;">Vibely</b>
-    <nav id="nav-links" class="hidden">
-        <button onclick="showTab('feed')">Feed</button>
-        <button onclick="showTab('reels')">Reels</button>
-        <button onclick="logout()">Logout</button>
+    <div class="logo">vibely</div>
+    <nav id="app-nav" class="hidden">
+        <button onclick="showTab('feed')">🏠</button>
+        <button onclick="showTab('reels')">📺</button>
+        <button onclick="logout()">👋</button>
     </nav>
 </header>
 
-<div id="auth" class="card" style="max-width: 400px; margin: 80px auto;">
-    <h2 style="text-align: center;">Welcome to Vibely</h2>
-    <input id="email" type="email" placeholder="Email" />
+<div id="auth" class="card" style="max-width: 400px; margin: 100px auto; text-align: center;">
+    <h1 style="color:var(--fb-blue)">vibely</h1>
+    <p>Connect with friends and the world around you.</p>
+    <input id="email" type="email" placeholder="Email address" />
     <input id="password" type="password" placeholder="Password" />
-    <button class="primary" onclick="login()" style="margin-bottom: 10px;">Login</button>
-    <button onclick="register()" style="width: 100%; background: none; color: var(--blue); border: none; cursor: pointer;">Create new account</button>
-    <p id="authError" style="color: red; font-size: 12px; text-align: center;"></p>
+    <button class="btn-primary" onclick="login()" style="font-size: 18px; padding: 12px;">Log In</button>
+    <hr style="margin: 20px 0">
+    <button onclick="register()" style="background:#42b72a; color:white; border:none; padding:12px 16px; border-radius:6px; font-weight:bold; cursor:pointer;">Create New Account</button>
+    <p id="authError" style="color:red; margin-top:10px"></p>
 </div>
 
 <div id="app" class="hidden">
     <div class="container">
         
-        <aside>
+        <div class="left-side">
+            <div class="sidebar-item"> <div class="sidebar-icon">👤</div> <span id="sidebar-name">Profile</span></div>
+            <div class="sidebar-item"> <div class="sidebar-icon" style="color: #1877f2;">👥</div> Friends</div>
+            <div class="sidebar-item"> <div class="sidebar-icon" style="color: #f7b928;">⭐</div> Favorites</div>
+            <div class="sidebar-item"> <div class="sidebar-icon" style="color: #27c4f5;">📅</div> Events</div>
+            <hr>
             <div class="card">
-                <h3>Profile</h3>
+                <h4>Settings</h4>
                 <input id="username" placeholder="Display Name" />
-                <label style="font-size: 13px; display: block; margin-bottom: 10px;">
-                    <input type="checkbox" id="verified" /> Verified Account
-                </label>
-                <button class="primary" onclick="saveProfile()">Update Profile</button>
+                <label><input type="checkbox" id="verified" /> Blue Badge</label>
+                <button class="btn-primary" onclick="saveProfile()" style="margin-top:10px">Update</button>
             </div>
-        </aside>
+        </div>
 
-        <main>
+        <div id="main-content">
             <div id="feed" class="tab">
+                <div class="stories">
+                    <div class="story" style="background: url('https://picsum.photos/200/300?1'); background-size: cover;"><span class="story-name">Create Story</span></div>
+                    <div class="story" style="background: url('https://picsum.photos/200/300?2'); background-size: cover;"><span class="story-name">John Doe</span></div>
+                    <div class="story" style="background: url('https://picsum.photos/200/300?3'); background-size: cover;"><span class="story-name">Sarah Jenkins</span></div>
+                </div>
+
                 <div class="card">
-                    <textarea id="postText" placeholder="What's happening?"></textarea>
-                    <input type="file" id="imageUpload" accept="image/*" />
-                    <button class="primary" onclick="createPost()">Post</button>
+                    <div style="display:flex; gap:10px">
+                        <div class="avatar"></div>
+                        <textarea id="postText" placeholder="What's on your mind?" style="background:#f0f2f5; border:none; resize:none;"></textarea>
+                    </div>
+                    <hr>
+                    <div style="display:flex; justify-content: space-between; align-items:center">
+                        <input type="file" id="imageUpload" style="width: auto;" />
+                        <button class="btn-primary" onclick="createPost()" style="width:100px">Post</button>
+                    </div>
                 </div>
                 <div id="posts"></div>
             </div>
 
             <div id="reels" class="tab hidden">
                 <div class="card">
-                    <h3>Upload Reel</h3>
+                    <h3>Reels</h3>
                     <input type="file" id="videoUpload" accept="video/*" />
-                    <button class="primary" onclick="uploadReel()">Upload Video</button>
+                    <button class="btn-primary" onclick="uploadReel()">Upload Reel</button>
                 </div>
                 <div id="reelFeed"></div>
             </div>
-        </main>
+        </div>
 
-        <aside>
-            <div class="card">
-                <h4>Global Chat</h4>
-                <div id="chat" style="height: 300px; overflow-y: auto; border: 1px solid #eee; padding: 10px; margin-bottom: 10px; font-size: 14px;"></div>
-                <input id="chatText" placeholder="Type a message..." />
-                <button class="primary" onclick="sendMessage()">Send</button>
-            </div>
-        </aside>
+        <div class="right-side">
+            <h4 style="color:var(--fb-secondary)">Contacts</h4>
+            <div id="chat-box" style="height: 400px; overflow-y: auto; background:white; border-radius:8px; padding:10px; margin-bottom:10px"></div>
+            <input id="chatText" placeholder="Type a message..." />
+            <button class="btn-primary" onclick="sendMessage()">Send</button>
+        </div>
 
     </div>
 </div>
 
 <script>
-// REPLACE WITH YOUR ACTUAL CONFIG IF DIFFERENT
-const firebaseConfig = {
-    apiKey: "AIzaSyCDll8RH1kzGOf-ixJmSlHXGssOHSMlO3s",
-    authDomain: "vibely-5128e.firebaseapp.com",
-    projectId: "vibely-5128e",
-    storageBucket: "vibely-5128e.firebasestorage.app",
-    messagingSenderId: "1048550825812",
-    appId: "1:1048550825812:web:fc5bbba51e065807ffb2c1"
+// Firebase Config
+const firebaseConfig={
+    apiKey:"AIzaSyCDll8RH1kzGOf-ixJmSlHXGssOHSMlO3s",
+    authDomain:"vibely-5128e.firebaseapp.com",
+    projectId:"vibely-5128e",
+    storageBucket:"vibely-5128e.firebasestorage.app",
+    messagingSenderId:"1048550825812",
+    appId:"1:1048550825812:web:fc5bbba51e065807ffb2c1"
 };
 
 firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
-const db = firebase.firestore();
-const storage = firebase.storage();
+const auth=firebase.auth();
+const db=firebase.firestore();
+const storage=firebase.storage();
 
-// Auth Listener
-auth.onAuthStateChanged(user => {
-    if(user) {
+auth.onAuthStateChanged(user=>{
+    if(user){
         document.getElementById('auth').classList.add('hidden');
         document.getElementById('app').classList.remove('hidden');
-        document.getElementById('nav-links').classList.remove('hidden');
-        loadUserData();
-        loadFeed();
-        loadChat();
-        loadReels();
+        document.getElementById('app-nav').classList.remove('hidden');
+        loadUserData(); loadFeed(); loadChat();
     } else {
         document.getElementById('auth').classList.remove('hidden');
         document.getElementById('app').classList.add('hidden');
-        document.getElementById('nav-links').classList.add('hidden');
     }
 });
 
-function showTab(tabId) {
-    document.querySelectorAll('.tab').forEach(t => t.classList.add('hidden'));
-    document.getElementById(tabId).classList.remove('hidden');
+function showTab(t){
+    document.querySelectorAll('.tab').forEach(x=>x.classList.add('hidden'));
+    document.getElementById(t).classList.remove('hidden');
 }
 
-// Authentication
-function register() {
-    auth.createUserWithEmailAndPassword(email.value, password.value).catch(e => authError.innerText = e.message);
-}
-function login() {
-    auth.signInWithEmailAndPassword(email.value, password.value).catch(e => authError.innerText = e.message);
-}
-function logout() { auth.signOut(); }
+function register(){ auth.createUserWithEmailAndPassword(email.value, password.value).catch(e=>authError.innerText=e.message); }
+function login(){ auth.signInWithEmailAndPassword(email.value, password.value).catch(e=>authError.innerText=e.message); }
+function logout(){ auth.signOut(); }
 
-// Profile Management
 function loadUserData() {
     db.collection('users').doc(auth.currentUser.uid).get().then(doc => {
         if(doc.exists) {
             document.getElementById('username').value = doc.data().username || "";
             document.getElementById('verified').checked = doc.data().verified || false;
+            document.getElementById('sidebar-name').innerText = doc.data().username || "Profile";
         }
     });
 }
 
-function saveProfile() {
+function saveProfile(){
     db.collection('users').doc(auth.currentUser.uid).set({
-        username: document.getElementById('username').value,
-        verified: document.getElementById('verified').checked
-    }, {merge: true}).then(() => alert("Profile Saved!"));
+        username: username.value, verified: verified.checked
+    }, {merge:true}).then(()=>location.reload());
 }
 
-// Feed Logic
 async function createPost() {
     const text = postText.value;
     const file = imageUpload.files[0];
     const userDoc = await db.collection('users').doc(auth.currentUser.uid).get();
-    const userData = userDoc.data() || {username: "Anonymous"};
-
-    let url = null;
+    const uData = userDoc.data() || {username: "User"};
+    
+    let imgUrl = null;
     if(file) {
-        const ref = storage.ref('images/' + Date.now() + "_" + file.name);
-        const upload = await ref.put(file);
-        url = await upload.ref.getDownloadURL();
+        const ref = storage.ref('posts/'+Date.now()+file.name);
+        await ref.put(file);
+        imgUrl = await ref.getDownloadURL();
     }
 
     db.collection('posts').add({
-        text,
-        image: url,
-        uid: auth.currentUser.uid,
-        username: userData.username,
-        isVerified: userData.verified || false,
-        likes: 0,
+        text, image: imgUrl, 
+        uid: auth.currentUser.uid, 
+        username: uData.username, 
+        isVerified: uData.verified,
+        likes: 0, 
         created: firebase.firestore.FieldValue.serverTimestamp()
     });
-    
-    postText.value = '';
-    imageUpload.value = '';
+    postText.value = ''; imageUpload.value = '';
 }
 
 function loadFeed() {
-    db.collection('posts').orderBy('created', 'desc').onSnapshot(snapshot => {
-        const postsDiv = document.getElementById('posts');
-        postsDiv.innerHTML = '';
-        snapshot.forEach(doc => {
-            const p = doc.data();
-            postsDiv.innerHTML += `
-                <div class="card post">
+    db.collection('posts').orderBy('created','desc').onSnapshot(s=>{
+        posts.innerHTML = '';
+        s.forEach(d=>{
+            const p = d.data();
+            posts.innerHTML += `
+                <div class="card">
                     <div class="post-header">
-                        <strong>${p.username || 'User'}</strong> 
-                        ${p.isVerified ? '<span class="badge">✔ Verified</span>' : ''}
+                        <div class="avatar"></div>
+                        <div class="user-info">
+                            <b>${p.username} ${p.isVerified ? '<span style="color:#1877f2">✔</span>' : ''}</b>
+                            <span>Just now · 🌎</span>
+                        </div>
                     </div>
-                    <p>${p.text || ''}</p>
-                    ${p.image ? `<img src="${p.image}">` : ''}
-                    <hr>
-                    <button onclick="likePost('${doc.id}')">❤️ ${p.likes || 0}</button>
+                    <div class="post-text">${p.text}</div>
+                    ${p.image ? `<img src="${p.image}" class="post-img">` : ''}
+                    <div class="action-bar">
+                        <button class="action-btn" onclick="likePost('${d.id}')">👍 Like (${p.likes || 0})</button>
+                        <button class="action-btn">💬 Comment</button>
+                        <button class="action-btn">↪ Share</button>
+                    </div>
                 </div>`;
         });
     });
 }
 
-function likePost(id) {
-    db.collection('posts').doc(id).update({ likes: firebase.firestore.FieldValue.increment(1) });
-}
+function likePost(id){ db.collection('posts').doc(id).update({likes: firebase.firestore.FieldValue.increment(1)}); }
 
-// Reels Logic
-async function uploadReel() {
-    const file = videoUpload.files[0];
-    if(!file) return alert("Select a video");
-    
-    const ref = storage.ref('reels/' + Date.now() + "_" + file.name);
-    const upload = await ref.put(file);
-    const url = await upload.ref.getDownloadURL();
-    
-    db.collection('reels').add({
-        url,
-        uid: auth.currentUser.uid,
-        created: firebase.firestore.FieldValue.serverTimestamp()
-    });
-    videoUpload.value = '';
-}
-
-function loadReels() {
-    db.collection('reels').orderBy('created', 'desc').onSnapshot(snapshot => {
-        const reelFeed = document.getElementById('reelFeed');
-        reelFeed.innerHTML = '';
-        snapshot.forEach(doc => {
-            const r = doc.data();
-            reelFeed.innerHTML += `
-                <div class="card reel-item">
-                    <video src="${r.url}" controls style="max-height: 400px; background: #000;"></video>
-                </div>`;
-        });
-    });
-}
-
-// Chat Logic
-function sendMessage() {
-    const txt = chatText.value;
-    if(!txt) return;
-    db.collection('chat').add({
-        text: txt,
-        user: auth.currentUser.email,
-        created: firebase.firestore.FieldValue.serverTimestamp()
-    });
+function sendMessage(){
+    if(!chatText.value) return;
+    db.collection('chat').add({text: chatText.value, user: auth.currentUser.email, created: firebase.firestore.FieldValue.serverTimestamp()});
     chatText.value = '';
 }
 
 function loadChat() {
-    db.collection('chat').orderBy('created').limitToLast(20).onSnapshot(snapshot => {
-        const chatDiv = document.getElementById('chat');
-        chatDiv.innerHTML = '';
-        snapshot.forEach(doc => {
-            const c = doc.data();
-            chatDiv.innerHTML += `<div><b>${c.user?.split('@')[0]}:</b> ${c.text}</div>`;
-        });
-        chatDiv.scrollTop = chatDiv.scrollHeight;
+    db.collection('chat').orderBy('created').onSnapshot(s=>{
+        const box = document.getElementById('chat-box');
+        box.innerHTML = '';
+        s.forEach(d=> box.innerHTML += `<div style="margin-bottom:8px"><b>${d.data().user.split('@')[0]}:</b> ${d.data().text}</div>`);
+        box.scrollTop = box.scrollHeight;
     });
 }
 </script>
