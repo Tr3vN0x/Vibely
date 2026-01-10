@@ -1,62 +1,81 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vibely | Winter Diamond Lounge</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vibely | Winter Diamond Lounge</title>
 
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
 
-    <style>
-        :root {
-            --gold: #d4af37;
-            --ice-blue: #a5f3fc;
-            --obsidian: #05050a;
-            --glass: rgba(255, 255, 255, 0.05);
-        }
+<style>
+:root {
+    --gold: #d4af37;
+    --ice-blue: #a5f3fc;
+    --obsidian: #05050a;
+    --glass: rgba(255, 255, 255, 0.05);
+}
 
-        * { box-sizing: border-box; transition: all 0.3s ease; }
-        body { margin: 0; font-family: 'Inter', sans-serif; background: #080a12; color: #fff; height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
+* { box-sizing: border-box; transition: all 0.3s ease; }
+body { 
+    margin: 0; font-family: 'Inter', sans-serif; background: #080a12; color: #fff; height: 100vh; overflow: hidden; display: flex; flex-direction: column;
+}
 
-        /* Snow Particles */
-        .snowflake { color: #fff; position: fixed; top: -10%; z-index: 999; animation: fall linear infinite; pointer-events: none; }
-        @keyframes fall { to { transform: translateY(110vh) rotate(360deg); } }
+/* Ambient frost overlay */
+body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background: radial-gradient(circle at top, rgba(165,243,252,0.05), transparent 70%);
+    pointer-events: none;
+    z-index: 1;
+}
 
-        /* UI Shell */
-        header { padding: 15px 40px; background: rgba(5, 5, 10, 0.95); border-bottom: 1px solid rgba(165, 243, 252, 0.2); display: flex; justify-content: space-between; align-items: center; }
-        .main-layout { display: grid; grid-template-columns: 240px 1fr 320px; flex-grow: 1; overflow: hidden; }
-        .nav-sidebar { padding: 25px 15px; background: rgba(0,0,0,0.5); border-right: 1px solid rgba(255,255,255,0.1); display: flex; flex-direction: column; gap: 10px; }
-        .nav-btn { background: var(--glass); border: 1px solid transparent; color: #aaa; padding: 12px 20px; font-family: 'Cinzel', serif; cursor: pointer; border-radius: 4px; font-size: 0.8rem; }
-        .nav-btn:hover, .nav-btn.active { color: var(--ice-blue); border-color: var(--ice-blue); background: rgba(165, 243, 252, 0.05); }
+/* Snow & Sparkles */
+.snowflake { 
+    color: #a5f3fc; text-shadow: 0 0 8px #a5f3fc, 0 0 12px #fff; position: fixed; top: -10%; z-index: 999; animation: fall linear infinite, sway 3s ease-in-out infinite alternate; pointer-events: none; opacity: 0.8; 
+}
+@keyframes fall { to { transform: translateY(110vh) rotate(360deg); } }
+@keyframes sway { 0% { transform: translateX(0) rotate(0deg); } 100% { transform: translateX(20px) rotate(45deg); } }
 
-        #centerContent { overflow-y: auto; padding: 40px; background: radial-gradient(circle at top, #0c1220 0%, #05050a 100%); }
-        .view-section { display: none; max-width: 900px; margin: 0 auto; }
+/* UI Shell */
+header { padding: 15px 40px; background: rgba(5, 5, 10, 0.95); border-bottom: 1px solid rgba(165, 243, 252, 0.2); display: flex; justify-content: space-between; align-items: center; z-index:2; }
+.main-layout { display: grid; grid-template-columns: 240px 1fr 320px; flex-grow: 1; overflow: hidden; position: relative; }
+.nav-sidebar { padding: 25px 15px; background: rgba(0,0,0,0.5); border-right: 1px solid rgba(255,255,255,0.1); display: flex; flex-direction: column; gap: 10px; backdrop-filter: blur(8px); }
+.nav-btn { background: var(--glass); border: 1px solid transparent; color: #aaa; padding: 12px 20px; font-family: 'Cinzel', serif; cursor: pointer; border-radius: 4px; font-size: 0.8rem; transition: all 0.3s ease; }
+.nav-btn:hover, .nav-btn.active { color: var(--ice-blue); border-color: var(--ice-blue); background: rgba(165, 243, 252, 0.1); box-shadow: 0 0 10px var(--ice-blue); }
 
-        /* The Wheel */
-        .wheel-box { position: relative; width: 320px; height: 320px; margin: 20px auto; }
-        #wheel { width: 100%; height: 100%; border-radius: 50%; border: 8px solid var(--ice-blue); position: relative; background: conic-gradient(#0c1220 0 45deg, #1e293b 45deg 90deg, #0c1220 90deg 135deg, #1e293b 135deg 180deg, #0c1220 180deg 225deg, #1e293b 225deg 270deg, #0c1220 270deg 315deg, #1e293b 315deg 360deg); transition: transform 5s cubic-bezier(0.15, 0, 0.15, 1); }
-        .wheel-segment { position: absolute; width: 100%; height: 100%; text-align: center; padding-top: 20px; font-weight: bold; font-size: 0.7rem; color: var(--ice-blue); font-family: 'Cinzel'; }
+#centerContent { overflow-y: auto; padding: 40px; background: radial-gradient(circle at top, #0c1220 0%, #05050a 100%); position: relative; z-index:1; }
+.view-section { display: none; max-width: 900px; margin: 0 auto; }
 
-        /* Cards */
-        .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 20px; }
-        .user-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(165,243,252,0.1); border-radius: 12px; padding: 25px; text-align: center; position: relative; }
-        .card-avatar { width: 80px; height: 80px; margin: 0 auto 10px; border: 2px solid var(--ice-blue); border-radius: 50%; overflow: hidden; }
-        .card-avatar img { width: 100%; height: 100%; object-fit: cover; }
+/* Wheel */
+.wheel-box { position: relative; width: 320px; height: 320px; margin: 20px auto; }
+#wheel { width: 100%; height: 100%; border-radius: 50%; border: 8px solid var(--ice-blue); position: relative; background: conic-gradient(#0c1220 0 45deg, #1e293b 45deg 90deg, #0c1220 90deg 135deg, #1e293b 135deg 180deg, #0c1220 180deg 225deg, #1e293b 225deg 270deg, #0c1220 270deg 315deg, #1e293b 315deg 360deg); transition: transform 5s cubic-bezier(0.15, 0, 0.15, 1); box-shadow: 0 0 20px rgba(165,243,252,0.4), inset 0 0 15px rgba(165,243,252,0.2); }
+.wheel-segment { position: absolute; width: 100%; height: 100%; text-align: center; padding-top: 20px; font-weight: bold; font-size: 0.7rem; color: var(--ice-blue); font-family: 'Cinzel'; text-shadow: 0 0 5px #a5f3fc; }
 
-        /* Profile Editor */
-        .edit-box { background: var(--glass); padding: 25px; border-radius: 12px; border: 1px solid rgba(165,243,252,0.2); }
-        input { background: #111; border: 1px solid #333; color: #fff; padding: 10px; margin: 10px 0; width: 100%; border-radius: 5px; }
+/* Cards */
+.card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 20px; }
+.user-card { background: rgba(255,255,255,0.05); border: 1px solid rgba(165,243,252,0.2); border-radius: 12px; padding: 25px; text-align: center; position: relative; box-shadow: 0 0 15px rgba(165,243,252,0.2); transition: transform 0.3s ease, box-shadow 0.3s ease; }
+.user-card:hover { transform: translateY(-5px); box-shadow: 0 0 25px rgba(165,243,252,0.5); }
+.card-avatar { width: 80px; height: 80px; margin: 0 auto 10px; border: 2px solid var(--ice-blue); border-radius: 50%; overflow: hidden; }
+.card-avatar img { width: 100%; height: 100%; object-fit: cover; }
 
-        .right-sidebar { background: #000; border-left: 1px solid rgba(255,255,255,0.1); display: flex; flex-direction: column; padding: 15px; }
-        #chatBox { flex-grow: 1; overflow-y: auto; font-size: 0.8rem; }
-        .chat-msg { margin-bottom: 8px; padding: 8px; background: rgba(255,255,255,0.03); border-radius: 4px; }
-        
-        #loginOverlay { position: fixed; inset: 0; background: #000; z-index: 1000; display: flex; align-items: center; justify-content: center; }
-    </style>
+/* Profile Editor */
+.edit-box { background: var(--glass); padding: 25px; border-radius: 12px; border: 1px solid rgba(165,243,252,0.2); }
+input { background: #111; border: 1px solid #333; color: #fff; padding: 10px; margin: 10px 0; width: 100%; border-radius: 5px; }
+
+/* Right Sidebar Chat */
+.right-sidebar { background: #000; border-left: 1px solid rgba(255,255,255,0.1); display: flex; flex-direction: column; padding: 15px; }
+#chatBox { flex-grow: 1; overflow-y: auto; font-size: 0.8rem; }
+.chat-msg { margin-bottom: 8px; padding: 8px; background: rgba(165,243,252,0.05); border-radius: 8px; border: 1px solid rgba(165,243,252,0.2); box-shadow: 0 0 5px rgba(165,243,252,0.3); }
+
+/* Login Overlay */
+#loginOverlay { position: fixed; inset: 0; background: #000; z-index: 1000; display: flex; align-items: center; justify-content: center; }
+#loginOverlay input { margin-bottom: 10px; }
+#loginOverlay button { margin-top: 10px; }
+</style>
 </head>
 <body>
 
@@ -141,18 +160,18 @@ let myProfile = null;
 // Snow Effect
 setInterval(() => {
     const s = document.createElement('div');
-    s.className = 'snowflake'; s.innerHTML = '❄';
+    s.className = 'snowflake';
+    s.innerHTML = Math.random() < 0.8 ? '❄' : '✨';
     s.style.left = Math.random() * 100 + 'vw';
-    s.style.fontSize = Math.random() * 20 + 10 + 'px';
-    s.style.animationDuration = Math.random() * 3 + 2 + 's';
+    s.style.fontSize = Math.random() * 25 + 10 + 'px';
+    s.style.opacity = Math.random() * 0.5 + 0.5;
+    s.style.animationDuration = (Math.random() * 3 + 2) + 's';
+    s.style.transform = `rotate(${Math.random()*360}deg)`;
     document.body.appendChild(s);
-    setTimeout(() => s.remove(), 5000);
-}, 200);
+    setTimeout(() => s.remove(), 7000);
+}, 150);
 
-function toggleMode() {
-    isLogin = !isLogin;
-    document.getElementById('regName').style.display = isLogin ? 'none' : 'block';
-}
+function toggleMode() { isLogin = !isLogin; document.getElementById('regName').style.display = isLogin ? 'none' : 'block'; }
 
 async function handleAuth() {
     const e = document.getElementById('authEmail').value;
@@ -196,15 +215,24 @@ function loadApp(uid) {
 }
 
 function spinWheel() {
-    // Prizes: 0: 5v, 1: 50x, 2: 10v, 3: JACKPOT (Impossible), 4: 1v, 5: 10x, 6: 25v, 7: 0
-    // Probability logic: Force index away from 3 (Jackpot)
     let index;
-    do { index = Math.floor(Math.random() * 8); } while (index === 3); 
-    
+    do { index = Math.floor(Math.random() * 8); } while (index === 3);
     const rot = 3600 + (index * 45);
-    document.getElementById('wheel').style.transform = `rotate(${rot}deg)`;
-    document.getElementById('spinBtn').disabled = true;
+    const wheel = document.getElementById('wheel');
+    wheel.style.transform = `rotate(${rot}deg)`;
 
+    // Sparkle effect
+    const sparkle = document.createElement('div');
+    sparkle.innerHTML = '❄✨';
+    sparkle.style.position = 'absolute';
+    sparkle.style.left = '50%';
+    sparkle.style.top = '50%';
+    sparkle.style.fontSize = '40px';
+    sparkle.style.transform = 'translate(-50%, -50%)';
+    wheel.appendChild(sparkle);
+    setTimeout(() => sparkle.remove(), 1500);
+
+    document.getElementById('spinBtn').disabled = true;
     setTimeout(() => {
         const rewards = [{v:5},{x:50},{v:10},{x:1000},{v:1},{x:10},{v:25},{v:0}];
         const win = rewards[index];
