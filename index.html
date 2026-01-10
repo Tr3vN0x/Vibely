@@ -3,57 +3,58 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>TagCards - Express Yourself</title>
-<!-- Firebase SDKs -->
+<title>Adult TagCards - 18+</title>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 <style>
-body { margin:0; font-family:system-ui; background:#f0f2f5; }
-.card { background:#fff; border-radius:14px; padding:16px; margin:16px auto; max-width:400px; box-shadow:0 2px 6px rgba(0,0,0,.1); }
-header { display:flex; justify-content:space-between; align-items:center; padding:16px; background:#4a90e2; color:#fff; }
-button { padding:8px 12px; border:none; border-radius:8px; cursor:pointer; margin-top:6px; }
-input { width:100%; padding:10px; margin-top:6px; border-radius:8px; border:1px solid #ccc; }
-.tag { display:inline-block; background:#4a90e2; color:#fff; padding:4px 8px; border-radius:6px; margin:4px; font-size:14px; }
-#cardsContainer { display:flex; flex-wrap:wrap; gap:12px; margin:16px; }
-.userCard { background:#fff; border-radius:12px; padding:12px; width:180px; box-shadow:0 2px 4px rgba(0,0,0,.1); }
+body {margin:0; font-family:system-ui; background:#1e1e2f; color:#fff;}
+header{display:flex; justify-content:space-between; align-items:center; padding:16px; background:#ff3c5f;}
+button{padding:8px 12px; margin-top:6px; border-radius:8px; border:none; cursor:pointer;}
+input{width:100%; padding:10px; margin-top:6px; border-radius:8px; border:1px solid #ccc;}
+.card{background:#2e2e3f; border-radius:14px; padding:16px; margin:16px auto; max-width:400px; box-shadow:0 2px 6px rgba(0,0,0,.5);}
+.tag{display:inline-block; background:#ff3c5f; color:#fff; padding:4px 8px; border-radius:6px; margin:4px; font-size:14px;}
+#cardsContainer{display:flex; flex-wrap:wrap; gap:12px; margin:16px;}
+.userCard{background:#3e3e50; border-radius:12px; padding:12px; width:180px; box-shadow:0 2px 4px rgba(0,0,0,.5);}
+.vipBadge{background:gold; color:#000; padding:2px 6px; border-radius:4px; font-weight:bold; font-size:12px; margin-left:4px;}
 </style>
 </head>
 <body>
 
-<!-- Header -->
 <header>
-  <h1>TagCards</h1>
-  <div id="userControls">
-    <button onclick="showLogin()">Login/Register</button>
-  </div>
+<h1>Adult TagCards</h1>
+<div id="userControls"><button onclick="showAuth()">Login/Register</button></div>
 </header>
 
 <!-- Login/Register -->
 <div id="authDiv" class="card">
-  <h3>Login / Register</h3>
-  <input id="email" placeholder="Email">
-  <input id="password" type="password" placeholder="Password">
-  <button onclick="login()">Login</button>
-  <button onclick="register()">Register</button>
-  <p id="authError" style="color:red"></p>
+<h3>Login / Register</h3>
+<input id="email" placeholder="Email">
+<input id="password" type="password" placeholder="Password">
+<input id="age" placeholder="Age (must be 18+)" type="number">
+<button onclick="register()">Register</button>
+<button onclick="login()">Login</button>
+<p id="authError" style="color:red"></p>
 </div>
 
 <!-- Profile Card -->
 <div id="profileDiv" class="card" style="display:none">
-  <h3>My Profile Card</h3>
-  <input id="username" placeholder="Your Name">
-  <input id="avatar" placeholder="Avatar URL">
-  <input id="newTag" placeholder="Add a tag">
-  <button onclick="addTag()">Add Tag</button>
-  <div id="tagsContainer"></div>
-  <button onclick="saveProfile()">Save Profile</button>
+<h3>My Profile Card</h3>
+<input id="username" placeholder="Your Name">
+<input id="avatar" placeholder="Avatar URL">
+<input id="newTag" placeholder="Add a tag">
+<button onclick="addTag()">Add Tag</button>
+<div id="tagsContainer"></div>
+<label><input type="checkbox" id="vipCheckbox"> VIP Badge (Premium)</label>
+<button onclick="saveProfile()">Save Profile</button>
+<button onclick="showExplore()">Explore Users</button>
 </div>
 
 <!-- Explore Users -->
 <div id="exploreDiv" style="display:none">
-  <h3 style="margin-left:16px">Explore Users</h3>
-  <div id="cardsContainer"></div>
+<h3 style="margin-left:16px">Explore Users</h3>
+<div id="cardsContainer"></div>
+<button onclick="showProfile()">Back to Profile</button>
 </div>
 
 <script>
@@ -70,117 +71,57 @@ firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 
-// Global tag list
 let myTags = [];
 
-// Show/hide login
-function showLogin() {
-  document.getElementById('authDiv').style.display = 'block';
-  document.getElementById('profileDiv').style.display = 'none';
-  document.getElementById('exploreDiv').style.display = 'none';
-}
+// Show/hide auth
+function showAuth(){document.getElementById('authDiv').style.display='block'; document.getElementById('profileDiv').style.display='none'; document.getElementById('exploreDiv').style.display='none';}
 
 // Auth
-function register() {
+function register(){
   const email = document.getElementById('email').value;
   const password = document.getElementById('password').value;
-  auth.createUserWithEmailAndPassword(email, password)
-    .catch(e => document.getElementById('authError').innerText = e.message);
+  const age = parseInt(document.getElementById('age').value);
+  if(age < 18){document.getElementById('authError').innerText='You must be 18+'; return;}
+  auth.createUserWithEmailAndPassword(email,password)
+    .then(userCred=>db.collection('users').doc(userCred.user.uid).set({age:age, vip:false}))
+    .catch(e=>document.getElementById('authError').innerText=e.message);
 }
-
-function login() {
+function login(){
   const email = document.getElementById('email').value;
   const password = document.getElementById('password').value;
-  auth.signInWithEmailAndPassword(email, password)
-    .catch(e => document.getElementById('authError').innerText = e.message);
+  auth.signInWithEmailAndPassword(email,password)
+    .catch(e=>document.getElementById('authError').innerText=e.message);
 }
+function logout(){auth.signOut(); showAuth();}
 
-function logout() {
-  auth.signOut();
-  showLogin();
-}
+// Profile
+function addTag(){const t=document.getElementById('newTag').value.trim(); if(t&&!myTags.includes(t)){myTags.push(t); renderTags(); document.getElementById('newTag').value='';}}
+function renderTags(){const c=document.getElementById('tagsContainer'); c.innerHTML=''; myTags.forEach(t=>{const s=document.createElement('span'); s.className='tag'; s.innerText=t; c.appendChild(s);});}
+function saveProfile(){const user=auth.currentUser; if(!user) return; const name=document.getElementById('username').value; const avatar=document.getElementById('avatar').value; const vip=document.getElementById('vipCheckbox').checked; db.collection('users').doc(user.uid).set({name, avatar, tags:myTags, vip},{merge:true}); alert('Profile saved!'); showExplore();}
+function showExplore(){document.getElementById('authDiv').style.display='none'; document.getElementById('profileDiv').style.display='none'; document.getElementById('exploreDiv').style.display='block'; loadUsers();}
+function showProfile(){document.getElementById('profileDiv').style.display='block'; document.getElementById('exploreDiv').style.display='none';}
 
-// Profile logic
-function addTag() {
-  const tagInput = document.getElementById('newTag');
-  const tag = tagInput.value.trim();
-  if(tag && !myTags.includes(tag)) {
-    myTags.push(tag);
-    renderTags();
-    tagInput.value = '';
-  }
-}
-
-function renderTags() {
-  const container = document.getElementById('tagsContainer');
-  container.innerHTML = '';
-  myTags.forEach(t => {
-    const el = document.createElement('span');
-    el.className = 'tag';
-    el.innerText = t;
-    container.appendChild(el);
-  });
-}
-
-function saveProfile() {
-  const user = auth.currentUser;
-  if(!user) return;
-  const name = document.getElementById('username').value;
-  const avatar = document.getElementById('avatar').value;
-  db.collection('users').doc(user.uid).set({
-    name, avatar, tags: myTags
-  }, { merge:true });
-  alert('Profile saved!');
-  showExplore();
-}
-
-// Explore logic
-function showExplore() {
-  document.getElementById('authDiv').style.display = 'none';
-  document.getElementById('profileDiv').style.display = 'none';
-  document.getElementById('exploreDiv').style.display = 'block';
-  loadUsers();
-}
-
-function loadUsers() {
-  db.collection('users').onSnapshot(snapshot => {
-    const container = document.getElementById('cardsContainer');
-    container.innerHTML = '';
-    snapshot.forEach(doc => {
-      const u = doc.data();
-      const card = document.createElement('div');
-      card.className = 'userCard';
-      card.innerHTML = `
-        <div style="text-align:center">
-          <img src="${u.avatar || 'https://via.placeholder.com/80'}" width="80" height="80" style="border-radius:50%">
-          <h4>${u.name || 'Anonymous'}</h4>
-        </div>
-        <div>${(u.tags||[]).map(t=>`<span class="tag">${t}</span>`).join('')}</div>
-      `;
-      container.appendChild(card);
+// Explore
+function loadUsers(){
+  db.collection('users').onSnapshot(snapshot=>{
+    const c=document.getElementById('cardsContainer'); c.innerHTML='';
+    snapshot.forEach(doc=>{
+      const u=doc.data();
+      const card=document.createElement('div'); card.className='userCard';
+      card.innerHTML=`<div style="text-align:center"><img src="${u.avatar||'https://via.placeholder.com/80'}" width="80" height="80" style="border-radius:50%"><h4>${u.name||'Anonymous'}${u.vip?'<span class="vipBadge">VIP</span>':''}</h4></div><div>${(u.tags||[]).map(t=>`<span class="tag">${t}</span>`).join('')}</div>`;
+      c.appendChild(card);
     });
   });
 }
 
-// Auth state listener
+// Auth listener
 auth.onAuthStateChanged(user=>{
-  if(user) {
-    document.getElementById('authDiv').style.display = 'none';
-    document.getElementById('profileDiv').style.display = 'block';
-    document.getElementById('userControls').innerHTML = `<span>Hello, ${user.email}</span> <button onclick="logout()">Logout</button>`;
-    // load existing profile
-    db.collection('users').doc(user.uid).get().then(doc=>{
-      if(doc.exists){
-        const data = doc.data();
-        document.getElementById('username').value = data.name||'';
-        document.getElementById('avatar').value = data.avatar||'';
-        myTags = data.tags || [];
-        renderTags();
-      }
-    });
-  } else {
-    showLogin();
-  }
+  if(user){
+    document.getElementById('authDiv').style.display='none';
+    document.getElementById('profileDiv').style.display='block';
+    document.getElementById('userControls').innerHTML=`<span>Hello, ${user.email}</span> <button onclick="logout()">Logout</button>`;
+    db.collection('users').doc(user.uid).get().then(doc=>{if(doc.exists){const d=doc.data(); document.getElementById('username').value=d.name||''; document.getElementById('avatar').value=d.avatar||''; document.getElementById('vipCheckbox').checked=d.vip||false; myTags=d.tags||[]; renderTags();}});
+  } else {showAuth();}
 });
 </script>
 
