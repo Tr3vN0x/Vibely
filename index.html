@@ -1,310 +1,374 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Vibely | Diamond Lounge</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vibely | Diamond Lounge</title>
 
-<!-- Firebase -->
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
-<!-- Fonts -->
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Inter:wght@300;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Inter:wght@300;600&display=swap" rel="stylesheet">
 
-<style>
-:root {
-    --gold: #d4af37;
-    --diamond: #e0f7fa;
-    --obsidian: #050505;
-    --border: rgba(212,175,55,0.3);
-}
+    <style>
+        :root {
+            --gold: #d4af37;
+            --diamond: #e0f7fa;
+            --obsidian: #050505;
+            --border: rgba(212,175,55,0.3);
+            --glass: rgba(255, 255, 255, 0.03);
+        }
 
-body {
-    margin: 0;
-    font-family: 'Inter', sans-serif;
-    background: var(--obsidian);
-    color: #fff;
-    display: flex;
-    flex-direction: column;
-    height: 100vh;
-    overflow: hidden;
-}
+        body {
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+            background: var(--obsidian);
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+        }
 
-/* Header */
-header {
-    padding: 15px 40px;
-    background: #000;
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-h1 { font-family: 'Cinzel', serif; letter-spacing: 10px; font-size: 1.2rem; margin: 0; color: var(--gold); }
+        /* Header */
+        header {
+            padding: 15px 40px;
+            background: #000;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+        }
+        h1 { font-family: 'Cinzel', serif; letter-spacing: 10px; font-size: 1.2rem; margin: 0; color: var(--gold); }
 
-/* Layout */
-.main-layout { display: grid; grid-template-columns: 250px 1fr 350px; flex-grow: 1; overflow: hidden; }
+        /* Layout */
+        .main-layout { display: grid; grid-template-columns: 250px 1fr 350px; flex-grow: 1; overflow: hidden; }
 
-/* Left Sidebar */
-.nav-sidebar {
-    border-right: 1px solid var(--border);
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
+        /* Left Sidebar Nav */
+        .nav-sidebar {
+            border-right: 1px solid var(--border);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            background: rgba(0,0,0,0.5);
+        }
 
-/* Buttons */
-.btn {
-    background: var(--gold);
-    color: #000;
-    border: none;
-    padding: 10px 15px;
-    font-family: 'Cinzel', serif;
-    font-weight: bold;
-    cursor: pointer;
-    width: 100%;
-}
-.btn-outline { background: transparent; color: var(--gold); border: 1px solid var(--gold); }
+        .btn {
+            background: var(--gold);
+            color: #000;
+            border: none;
+            padding: 12px;
+            font-family: 'Cinzel', serif;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+            text-transform: uppercase;
+        }
+        .btn:hover { filter: brightness(1.2); transform: translateY(-2px); }
+        .btn-outline { background: transparent; color: var(--gold); border: 1px solid var(--gold); }
 
-/* Editor */
-.editor-container { padding:30px; overflow-y:auto; display:none; }
-.editor-card { background: rgba(255,255,255,0.03); padding: 25px; border: 1px solid var(--border); max-width: 500px; }
+        /* Center Content Area */
+        #centerContent { overflow-y: auto; background: radial-gradient(circle at center, #111 0%, #050505 100%); }
 
-/* Shop */
-.shop-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px; }
-.shop-item { border: 1px solid var(--border); padding: 15px; text-align:center; background: rgba(212,175,55,0.05); }
+        /* Identity/Editor Section */
+        .editor-container { padding: 40px; display: none; }
+        .editor-card { 
+            background: var(--glass); 
+            padding: 30px; 
+            border: 1px solid var(--border); 
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .avatar-picker {
+            display: flex;
+            gap: 10px;
+            margin: 15px 0;
+            flex-wrap: wrap;
+        }
+        .picker-img {
+            width: 60px; height: 60px; border: 2px solid transparent; 
+            cursor: pointer; border-radius: 50%; transition: 0.2s;
+        }
+        .picker-img.active { border-color: var(--gold); transform: scale(1.1); }
 
-/* Cards */
-#cardsContainer {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px,1fr));
-    gap: 20px;
-    padding: 30px;
-}
-.userCard {
-    background: #0a0a0a;
-    border: 1px solid var(--border);
-    padding: 25px;
-    text-align: center;
-    transition: 0.5s;
-    position: relative;
-}
-.avatar-frame {
-    width: 100px;
-    height: 100px;
-    margin: 0 auto 15px;
-    border: 2px solid var(--gold);
-    transform: rotate(45deg);
-    overflow: hidden;
-}
-.avatar-frame img { width:100%; transform: rotate(-45deg) scale(1.4); }
+        /* Card Displays */
+        #cardsContainer { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; padding: 30px; }
+        .userCard {
+            background: #0a0a0a;
+            border: 1px solid var(--border);
+            padding: 30px;
+            text-align: center;
+            transition: 0.5s;
+        }
+        .userCard:hover { box-shadow: 0 0 20px rgba(212, 175, 55, 0.2); }
+        
+        .avatar-frame {
+            width: 110px; height: 110px;
+            margin: 0 auto 20px;
+            border: 2px solid var(--gold);
+            transform: rotate(45deg);
+            overflow: hidden;
+            background: #111;
+        }
+        .avatar-frame img { width: 100%; transform: rotate(-45deg) scale(1.4); }
 
-/* Right Sidebar */
-#chatBox { flex-grow:1; overflow-y:auto; font-size:0.8rem; border-top:1px solid #222; padding-top:10px; }
-#chatInput { width:100%; padding:10px; margin-top:5px; background:#000; border:1px solid #333; color:#fff; }
+        /* Right Sidebar (Chat/Leaderboard) */
+        .right-sidebar {
+            border-left: 1px solid var(--border);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            background: #080808;
+        }
+        #leaderboard {
+            background: rgba(212, 175, 55, 0.05);
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+        }
+        #leaderboard h3 { font-family: 'Cinzel'; font-size: 0.8rem; color: var(--gold); margin-top: 0; }
 
-/* Inputs */
-input, select {
-    width: 100%;
-    padding: 10px;
-    margin: 10px 0;
-    background: #000;
-    border: 1px solid #333;
-    color: #fff;
-    box-sizing: border-box;
-}
-.hidden { display:none !important; }
-</style>
+        #chatBox { flex-grow: 1; overflow-y: auto; font-size: 0.85rem; padding: 10px 0; }
+        .chat-entry { margin-bottom: 8px; line-height: 1.4; border-bottom: 1px solid #111; padding-bottom: 4px; }
+        .chat-user { color: var(--gold); font-weight: bold; }
+
+        /* Inputs */
+        input, select {
+            width: 100%; padding: 12px; margin: 10px 0;
+            background: #000; border: 1px solid #333; color: #fff;
+        }
+
+        /* Themes */
+        .theme-ice { border-color: #00f2ff !important; box-shadow: 0 0 15px rgba(0, 242, 255, 0.1); }
+        .theme-royal { border-color: #ff00ff !important; box-shadow: 0 0 15px rgba(255, 0, 255, 0.1); }
+    </style>
 </head>
 <body>
 
 <header>
     <h1>DIAMOND LOUNGE</h1>
-    <div id="userBalance" style="color:var(--gold); font-family:'Cinzel';">♦ 0</div>
+    <div id="userBalance" style="color:var(--gold); font-family:'Cinzel'; font-weight: bold;">♦ 0</div>
 </header>
 
 <div id="mainView" class="main-layout" style="display:none">
-    <!-- Sidebar -->
     <div class="nav-sidebar">
         <button class="btn" onclick="switchTab('explore')">The Lounge</button>
-        <button class="btn btn-outline" onclick="switchTab('editor')">Edit Identity</button>
-        <button class="btn btn-outline" onclick="switchTab('shop')">Diamond Shop</button>
-        <button class="btn btn-outline" style="margin-top:auto; border-color:red; color:red;" onclick="auth.signOut()">Exit</button>
+        <button class="btn btn-outline" onclick="switchTab('editor')">Identity Vault</button>
+        <button class="btn btn-outline" onclick="switchTab('shop')">Luxury Shop</button>
+        <button class="btn btn-outline" style="margin-top:auto; border-color:#ff4444; color:#ff4444;" onclick="auth.signOut()">Exit Lounge</button>
     </div>
 
-    <!-- Center Content -->
-    <div id="centerContent" style="overflow-y:auto;">
+    <div id="centerContent">
         <div id="exploreTab">
             <div id="cardsContainer"></div>
         </div>
 
         <div id="editorTab" class="editor-container">
             <div class="editor-card">
-                <h3 style="font-family:'Cinzel'; color:var(--gold);">IDENTITY VAULT</h3>
-                <label>Display Name</label>
-                <input id="editName" placeholder="Enter Alias...">
-                <label>Avatar URL</label>
-                <input id="editAvatar" placeholder="Link to image...">
+                <h3 style="font-family:'Cinzel'; color:var(--gold); margin-top:0;">EDIT YOUR IDENTITY</h3>
+                
+                <label>Display Alias</label>
+                <input id="editName" placeholder="How shall we address you?">
+
+                <label>Select Master Avatar</label>
+                <div class="avatar-picker" id="avatarPicker">
+                    </div>
+                <label>Or Custom Avatar URL</label>
+                <input id="editAvatar" placeholder="https://image-link.com/photo.jpg" oninput="updateAvatarPreview(this.value)">
+
                 <label>Card Aura (Theme)</label>
                 <select id="editTheme">
                     <option value="default">Classic Obsidian</option>
-                    <option value="gold">Royal Gold</option>
-                    <option value="ice">Diamond Ice</option>
+                    <option value="ice">Diamond Ice (Cyan)</option>
+                    <option value="royal">Royal Amethyst (Purple)</option>
                 </select>
-                <button class="btn" style="margin-top:20px;" onclick="saveIdentity()">Update Identity</button>
+
+                <button class="btn" style="margin-top:20px; width: 100%;" onclick="saveIdentity()">Confirm Changes</button>
             </div>
         </div>
 
         <div id="shopTab" class="editor-container">
-            <h2 style="font-family:'Cinzel';">PREMIUM UPGRADES</h2>
-            <p>Spend your earned Diamonds on exclusive status.</p>
-            <div class="shop-grid">
-                <div class="shop-item">
-                    <h4>VIP BADGE</h4>
-                    <p>♦ 50 Diamonds</p>
-                    <button class="btn" onclick="buyItem('vip',50)">Purchase</button>
+            <h2 style="font-family:'Cinzel'; text-align: center;">THE LUXURY SHOP</h2>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 30px;">
+                <div style="background:var(--glass); padding: 20px; border: 1px solid var(--border); text-align: center;">
+                    <h4>👑 VIP STATUS</h4>
+                    <p>Get a crown next to your name.</p>
+                    <button class="btn" onclick="buyItem('vip', 50)">♦ 50</button>
                 </div>
-                <div class="shop-item">
-                    <h4>GOLDEN NAME</h4>
-                    <p>♦ 25 Diamonds</p>
-                    <button class="btn" onclick="buyItem('goldName',25)">Purchase</button>
+                <div style="background:var(--glass); padding: 20px; border: 1px solid var(--border); text-align: center;">
+                    <h4>✨ GOLDEN ALIAS</h4>
+                    <p>Your name glows gold in the lounge.</p>
+                    <button class="btn" onclick="buyItem('goldName', 30)">♦ 30</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Right Sidebar -->
-    <div style="border-left:1px solid var(--border); padding:20px; display:flex; flex-direction:column; background:#080808;">
-        <div id="leaderboard" style="margin-bottom:20px;"></div>
+    <div class="right-sidebar">
+        <div id="leaderboard"></div>
         <div id="chatBox"></div>
-        <input id="chatInput" placeholder="Message..." onkeypress="if(event.key==='Enter') sendChat()">
+        <input id="chatInput" placeholder="Send a message..." onkeypress="if(event.key==='Enter') sendChat()">
     </div>
 </div>
 
 <script>
-// Firebase Config
+// REPLACE THESE WITH YOUR FIREBASE PROJECT DETAILS
 const firebaseConfig = {
     apiKey: "YOUR_API_KEY",
-    authDomain: "YOUR_DOMAIN",
+    authDomain: "YOUR_PROJECT.firebaseapp.com",
     projectId: "YOUR_PROJECT_ID",
-    storageBucket: "YOUR_BUCKET",
-    messagingSenderId: "YOUR_SENDER_ID",
-    appId: "YOUR_APP_ID"
+    storageBucket: "YOUR_PROJECT.appspot.com",
+    messagingSenderId: "SENDER_ID",
+    appId: "APP_ID"
 };
+
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 
-// Tabs
+// Avatar Library
+const avatarList = ["adventurer", "avataaars", "bottts", "fun-emoji", "pixel-art"];
+const picker = document.getElementById('avatarPicker');
+avatarList.forEach(style => {
+    const img = document.createElement('img');
+    img.src = `https://api.dicebear.com/7.x/${style}/svg?seed=Vibely`;
+    img.className = 'picker-img';
+    img.onclick = () => {
+        document.querySelectorAll('.picker-img').forEach(i => i.classList.remove('active'));
+        img.classList.add('active');
+        document.getElementById('editAvatar').value = img.src;
+    };
+    picker.appendChild(img);
+});
+
+// Navigation
 function switchTab(tab){
     document.getElementById('exploreTab').style.display = tab==='explore'?'block':'none';
     document.getElementById('editorTab').style.display = tab==='editor'?'block':'none';
     document.getElementById('shopTab').style.display = tab==='shop'?'block':'none';
 }
 
-// Identity
+// User Profile Actions
 function saveIdentity(){
     const user = auth.currentUser;
     db.collection('users').doc(user.uid).update({
         name: document.getElementById('editName').value,
         avatar: document.getElementById('editAvatar').value,
         theme: document.getElementById('editTheme').value
-    }).then(()=>alert("Identity Updated."));
-}
-
-// Shop
-function buyItem(item,cost){
-    const userRef = db.collection('users').doc(auth.currentUser.uid);
-    userRef.get().then(doc=>{
-        if(doc.data().vibes>=cost){
-            userRef.update({ vibes: firebase.firestore.FieldValue.increment(-cost), [item]: true });
-            alert("Purchased!");
-        } else alert("Not enough Diamonds.");
+    }).then(() => {
+        alert("Your identity has been secured.");
+        switchTab('explore');
     });
 }
 
-// Load Users
+function buyItem(item, cost){
+    const userRef = db.collection('users').doc(auth.currentUser.uid);
+    userRef.get().then(doc => {
+        if(doc.data().vibes >= cost){
+            userRef.update({ vibes: firebase.firestore.FieldValue.increment(-cost), [item]: true });
+            alert("Luxury item equipped!");
+        } else alert("You require more diamonds.");
+    });
+}
+
+// Lounge Rendering
 function loadUsers(){
-    db.collection('users').onSnapshot(snap=>{
+    db.collection('users').onSnapshot(snap => {
         const container = document.getElementById('cardsContainer');
-        container.innerHTML='';
-        snap.forEach(doc=>{
+        container.innerHTML = '';
+        snap.forEach(doc => {
             const u = doc.data();
             const id = doc.id;
-            let borderStyle = u.theme==='gold'?'2px solid gold':(u.theme==='ice'?'2px solid #00f2ff':'1px solid var(--border)');
+            const themeClass = u.theme === 'ice' ? 'theme-ice' : (u.theme === 'royal' ? 'theme-royal' : '');
+            
             const card = document.createElement('div');
-            card.className='userCard';
-            card.style.border=borderStyle;
-            card.innerHTML=`
-                <div class="avatar-frame"><img src="${u.avatar||'https://api.dicebear.com/7.x/bottts/svg?seed='+id}"></div>
-                <h4 style="color:${u.goldName?'gold':'white'}">${u.name||'GUEST'} ${u.vip?'👑':''}</h4>
-                <div style="color:var(--gold); margin:10px 0;">♦ ${u.vibes||0}</div>
-                ${id!==auth.currentUser.uid?`<button class="btn" onclick="giftDiamond('${id}','${u.name}')">GIFT DIAMOND</button>`:'<small>YOU</small>'}
+            card.className = `userCard ${themeClass}`;
+            card.innerHTML = `
+                <div class="avatar-frame"><img src="${u.avatar || 'https://api.dicebear.com/7.x/initials/svg?seed='+id}"></div>
+                <h4 style="color:${u.goldName ? 'var(--gold)' : 'white'}; margin:0;">${u.name || 'GUEST'} ${u.vip ? '👑' : ''}</h4>
+                <div style="color:var(--gold); margin:12px 0; font-family:'Cinzel';">♦ ${u.vibes || 0}</div>
+                ${id !== auth.currentUser.uid ? `<button class="btn btn-outline" style="width:100%" onclick="giftDiamond('${id}','${u.name}')">Gift Diamond</button>` : '<small style="opacity:0.5">VAULT OWNER</small>'}
             `;
             container.appendChild(card);
         });
     });
 }
 
-// Gift Diamond
-function giftDiamond(id,name){
+function giftDiamond(id, name){
     db.collection('users').doc(id).update({ vibes: firebase.firestore.FieldValue.increment(1) });
-    db.collection('chat').add({ msg:`sent a diamond to ${name}`, user:"SYSTEM", time:firebase.firestore.FieldValue.serverTimestamp() });
+    db.collection('chat').add({ 
+        msg: `sent a diamond to ${name}`, 
+        user: "SYSTEM", 
+        time: firebase.firestore.FieldValue.serverTimestamp() 
+    });
 }
 
-// Chat
+// Real-time Chat
 function sendChat(){
     const val = document.getElementById('chatInput').value;
     if(!val) return;
     db.collection('chat').add({
         msg: val,
-        user: auth.currentUser.email.split('@')[0],
+        user: auth.currentUser.email.split('@')[0].toUpperCase(),
         time: firebase.firestore.FieldValue.serverTimestamp()
     });
-    document.getElementById('chatInput').value='';
+    document.getElementById('chatInput').value = '';
 }
-db.collection('chat').orderBy('time').onSnapshot(snap=>{
-    const chatBox=document.getElementById('chatBox');
-    chatBox.innerHTML='';
-    snap.forEach(doc=>{
-        const data=doc.data();
-        const div=document.createElement('div');
-        div.innerText=`[${data.user}] ${data.msg}`;
+
+db.collection('chat').orderBy('time', 'desc').limit(30).onSnapshot(snap => {
+    const chatBox = document.getElementById('chatBox');
+    chatBox.innerHTML = '';
+    snap.docs.reverse().forEach(doc => {
+        const data = doc.data();
+        const div = document.createElement('div');
+        div.className = 'chat-entry';
+        div.innerHTML = `<span class="chat-user">${data.user}:</span> ${data.msg}`;
         chatBox.appendChild(div);
-        chatBox.scrollTop=chatBox.scrollHeight;
+        chatBox.scrollTop = chatBox.scrollHeight;
     });
 });
 
 // Leaderboard
 function loadLeaderboard(){
-    db.collection('users').orderBy('vibes','desc').limit(5).onSnapshot(snap=>{
-        const lb=document.getElementById('leaderboard');
-        lb.innerHTML='<h3>Top Diamond Earners</h3>';
-        snap.forEach(doc=>{
-            const u=doc.data();
-            const div=document.createElement('div');
-            div.innerText=`${u.name||'GUEST'}: ♦ ${u.vibes||0}`;
+    db.collection('users').orderBy('vibes','desc').limit(5).onSnapshot(snap => {
+        const lb = document.getElementById('leaderboard');
+        lb.innerHTML = '<h3>ELITE HOLDERS</h3>';
+        snap.forEach(doc => {
+            const u = doc.data();
+            const div = document.createElement('div');
+            div.style.padding = "3px 0";
+            div.innerHTML = `<span style="color:#aaa">♦ ${u.vibes || 0}</span> — ${u.name || 'GUEST'}`;
             lb.appendChild(div);
         });
     });
 }
 
-// Auth
-auth.onAuthStateChanged(user=>{
+// Authentication Logic
+auth.onAuthStateChanged(user => {
     if(user){
-        document.getElementById('mainView').style.display='grid';
+        document.getElementById('mainView').style.display = 'grid';
         loadUsers();
         loadLeaderboard();
-        db.collection('users').doc(user.uid).onSnapshot(doc=>{
-            const data=doc.data();
-            document.getElementById('userBalance').innerText=`♦ ${data.vibes||0}`;
-            document.getElementById('editName').value=data.name||'';
-            document.getElementById('editAvatar').value=data.avatar||'';
+        
+        // Ensure user document exists
+        const userRef = db.collection('users').doc(user.uid);
+        userRef.get().then(doc => {
+            if(!doc.exists) userRef.set({ vibes: 0, name: user.email.split('@')[0], theme: 'default' });
+        });
+
+        userRef.onSnapshot(doc => {
+            const data = doc.data();
+            if(!data) return;
+            document.getElementById('userBalance').innerText = `♦ ${data.vibes || 0}`;
+            document.getElementById('editName').value = data.name || '';
+            document.getElementById('editAvatar').value = data.avatar || '';
         });
     } else {
-        auth.signInAnonymously();
+        auth.signInAnonymously().catch(alert);
     }
 });
 </script>
