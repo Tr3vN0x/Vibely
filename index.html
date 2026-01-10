@@ -10,7 +10,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
 <style>
 :root { --gold:#d4af37; --ice-blue:#a5f3fc; --obsidian:#05050a; --glass:rgba(255,255,255,0.05); }
-* { box-sizing:border-box; transition: all 0.3s ease; }
+* { box-sizing:border-box; transition:all 0.3s ease; }
 body { margin:0; font-family:'Inter',sans-serif; background:#080a12; color:#fff; height:100vh; overflow:hidden; display:flex; flex-direction:column; }
 header { padding:15px 40px; background:rgba(5,5,10,0.95); border-bottom:1px solid rgba(165,243,252,0.2); display:flex; justify-content:space-between; align-items:center; z-index:2; }
 .main-layout { display:grid; grid-template-columns:240px 1fr 320px; flex-grow:1; overflow:hidden; position:relative; }
@@ -99,7 +99,16 @@ input { background:#111; border:1px solid #333; color:#fff; padding:10px; margin
         <section id="view-wheel" class="view-section" style="text-align:center;">
             <h2 style="font-family:'Cinzel'; color:var(--ice-blue);">FROST VAULT</h2>
             <div class="wheel-box">
-                <div id="wheel"></div>
+                <div id="wheel">
+                    <div class="wheel-segment" style="transform:rotate(0deg)">♦ 5</div>
+                    <div class="wheel-segment" style="transform:rotate(45deg)">+50 XP</div>
+                    <div class="wheel-segment" style="transform:rotate(90deg)">♦ 10</div>
+                    <div class="wheel-segment" style="transform:rotate(135deg)">JACKPOT</div>
+                    <div class="wheel-segment" style="transform:rotate(180deg)">♦ 1</div>
+                    <div class="wheel-segment" style="transform:rotate(225deg)">+10 XP</div>
+                    <div class="wheel-segment" style="transform:rotate(270deg)">♦ 25</div>
+                    <div class="wheel-segment" style="transform:rotate(315deg)">SKIPPED</div>
+                </div>
             </div>
             <button class="nav-btn" id="spinBtn" onclick="spinWheel()">ACTIVATE VAULT</button>
         </section>
@@ -131,24 +140,21 @@ input { background:#111; border:1px solid #333; color:#fff; padding:10px; margin
 </div>
 
 <script>
-// Firebase init
+// Firebase config
 const firebaseConfig={apiKey:"AIzaSyCDll8RH1kzGOf-ixJmSlHXGssOHSMlO3s",authDomain:"vibely-5128e.firebaseapp.com",projectId:"vibely-5128e",storageBucket:"vibely-5128e.firebasestorage.app",messagingSenderId:"1048550825812",appId:"1:1048550825812:web:fc5bbba51e065807ffb2c1"};
 firebase.initializeApp(firebaseConfig);
 const db=firebase.firestore(),auth=firebase.auth();
-let isLogin=true,myProfile=null;
+let isLogin=true,myProfile=null,lastSpinTime=0;
 
-// Snow
-setInterval(()=>{const s=document.createElement('div'); s.className='snowflake'; s.innerHTML=Math.random()<0.8?'❄':'✨'; s.style.left=Math.random()*100+'vw'; s.style.fontSize=Math.random()*25+10+'px'; s.style.opacity=Math.random()*0.5+0.5; s.style.animationDuration=(Math.random()*3+2)+'s'; s.style.transform=`rotate(${Math.random()*360}deg)`; document.body.appendChild(s); setTimeout(()=>s.remove(),7000);},150);
+// Snow effect
+setInterval(()=>{const s=document.createElement('div'); s.className='snowflake'; s.innerHTML=Math.random()<0.8?'❄':'✨'; s.style.left=Math.random()*100+'vw'; s.style.fontSize=Math.random()*25+10+'px'; s.style.opacity=Math.random()*0.5+0.5; s.style.animationDuration=(Math.random()*3+2)+'s'; document.body.appendChild(s); setTimeout(()=>s.remove(),7000);},150);
 
 // Login/Register
 function toggleMode(){ isLogin=!isLogin; document.getElementById('regName').style.display=isLogin?'none':'block'; }
 async function handleAuth(){ const e=document.getElementById('authEmail').value, p=document.getElementById('authPass').value, n=document.getElementById('regName').value; if(isLogin) await auth.signInWithEmailAndPassword(e,p); else { const r=await auth.createUserWithEmailAndPassword(e,p); await db.collection('users').doc(r.user.uid).set({name:n,vibes:50,xp:0,avatar:"",badge:"❄️ Newcomer",inventory:{},equipped:{},lastSpin:0}); } }
-
 auth.onAuthStateChanged(user=>{ if(user){ document.getElementById('loginOverlay').style.display='none'; document.getElementById('mainView').style.display='grid'; loadApp(user.uid); loadShop(); loadInventory(); } });
-function switchTab(t){ document.querySelectorAll('.view-section').forEach(v=>v.style.display='none'); document.getElementById('view-'+t).style.display='block'; document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active')); document.getElementById('btn-'+t).classList.add('active'); }
 
-// For brevity: Remaining functions for loadApp, renderCards, spinWheel, loadShop, loadInventory, equipItem, hover preview, chat are implemented exactly as described previously.
-
+// All core logic for loadApp, render cards, XP bars, levels, shop, inventory, equip, wheel (1/day), chat etc goes here
 </script>
 </body>
 </html>
