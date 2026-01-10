@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vibely | Diamond Lounge Prestige</title>
+    <title>Vibely | Prestige Leveling</title>
 
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
@@ -14,112 +14,59 @@
         :root {
             --gold: #d4af37;
             --gold-gradient: linear-gradient(135deg, #d4af37 0%, #fceabb 50%, #af9500 100%);
-            --diamond: #e0f7fa;
             --obsidian: #05050a;
-            --glass: rgba(255, 255, 255, 0.03);
-            --glass-heavy: rgba(255, 255, 255, 0.07);
             --border: rgba(212, 175, 55, 0.2);
-            --neon-blue: #00f2ff;
+            --xp-purple: #a33cf2;
         }
 
         * { box-sizing: border-box; transition: all 0.3s ease; }
-        ::-webkit-scrollbar { width: 5px; }
-        ::-webkit-scrollbar-track { background: #000; }
-        ::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 10px; }
+        body { margin: 0; font-family: 'Inter', sans-serif; background: var(--obsidian); color: #fff; height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
 
-        body {
-            margin: 0; font-family: 'Inter', sans-serif;
-            background: var(--obsidian); color: #fff;
-            height: 100vh; overflow: hidden;
-            display: flex; flex-direction: column;
-        }
-
-        /* --- UI COMPONENTS --- */
-        header {
-            padding: 10px 40px; background: rgba(0,0,0,0.8);
-            backdrop-filter: blur(10px); border-bottom: 1px solid var(--border);
-            display: flex; justify-content: space-between; align-items: center; z-index: 100;
-        }
+        header { padding: 10px 40px; background: rgba(0,0,0,0.8); border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; z-index: 100; }
         h1 { font-family: 'Cinzel', serif; letter-spacing: 8px; font-size: 1rem; color: var(--gold); margin: 0; }
 
         .main-layout { display: grid; grid-template-columns: 220px 1fr 320px; flex-grow: 1; overflow: hidden; }
 
-        .nav-sidebar { padding: 30px 15px; background: rgba(0,0,0,0.4); display: flex; flex-direction: column; gap: 10px; }
-        
-        .nav-btn {
-            background: var(--glass); border: 1px solid transparent; color: #aaa;
-            padding: 12px; font-family: 'Cinzel', serif; cursor: pointer; text-align: left;
-            font-size: 0.8rem; border-radius: 4px;
-        }
-        .nav-btn:hover, .nav-btn.active { background: var(--glass-heavy); color: var(--gold); border-color: var(--gold); }
+        /* Navigation */
+        .nav-sidebar { padding: 30px 15px; background: rgba(0,0,0,0.4); display: flex; flex-direction: column; gap: 10px; border-right: 1px solid var(--border); }
+        .nav-btn { background: rgba(255,255,255,0.03); border: 1px solid transparent; color: #aaa; padding: 12px; font-family: 'Cinzel', serif; cursor: pointer; border-radius: 4px; font-size: 0.8rem; }
+        .nav-btn:hover, .nav-btn.active { background: rgba(255,255,255,0.07); color: var(--gold); border-color: var(--gold); }
 
-        #centerContent { overflow-y: auto; background: radial-gradient(circle at top, #151515 0%, #050505 100%); padding: 30px; }
+        /* Level Badge */
+        .lvl-badge { background: var(--gold-gradient); color: #000; padding: 2px 8px; border-radius: 4px; font-weight: bold; font-size: 0.7rem; margin-left: 5px; vertical-align: middle; }
+        .xp-bar-container { width: 100%; height: 4px; background: #222; margin-top: 10px; border-radius: 2px; overflow: hidden; }
+        .xp-bar-fill { height: 100%; background: var(--xp-purple); width: 0%; transition: width 1s ease; }
 
-        /* --- PRESTIGE WHEEL --- */
-        .wheel-box {
-            background: var(--glass); border: 1px solid var(--border);
-            border-radius: 20px; padding: 50px; text-align: center;
-            max-width: 500px; margin: 0 auto; box-shadow: 0 10px 50px rgba(0,0,0,0.5);
-        }
-        .wheel-outer {
-            position: relative; width: 280px; height: 280px; margin: 0 auto 30px;
-            border: 10px solid #111; border-radius: 50%;
-            box-shadow: 0 0 30px var(--gold), inset 0 0 20px rgba(0,0,0,1);
-        }
-        #wheel {
-            width: 100%; height: 100%; border-radius: 50%;
+        /* Enhanced Wheel */
+        .wheel-outer { position: relative; width: 320px; height: 320px; margin: 0 auto 30px; border: 12px solid #111; border-radius: 50%; box-shadow: 0 0 40px var(--gold); }
+        #wheel { width: 100%; height: 100%; border-radius: 50%; position: relative; border: 2px solid var(--gold); transition: transform 4s cubic-bezier(0.15, 0, 0.15, 1);
             background: conic-gradient(
                 #000 0deg 60deg, #111 60deg 120deg, 
                 #000 120deg 180deg, #111 180deg 240deg, 
                 #000 240deg 300deg, #111 300deg 360deg
             );
-            position: relative; border: 2px solid var(--gold);
         }
-        .wheel-pointer {
-            position: absolute; top: -15px; left: 50%; transform: translateX(-50%);
-            width: 30px; height: 30px; background: var(--gold);
-            clip-path: polygon(50% 100%, 0 0, 100% 0); z-index: 10;
-        }
-        .wheel-label {
-            position: absolute; width: 100%; height: 100%; font-family: 'Cinzel';
-            color: var(--gold); font-weight: bold; font-size: 1.2rem;
-        }
+        .slice-text { position: absolute; width: 100%; height: 100%; text-align: center; font-family: 'Cinzel'; color: var(--gold); font-size: 0.8rem; padding-top: 20px; }
 
-        /* --- CARDS --- */
-        .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px; }
-        .userCard {
-            background: linear-gradient(180deg, rgba(255,255,255,0.05) 0%, rgba(0,0,0,0.8) 100%);
-            border: 1px solid var(--border); border-radius: 12px; padding: 25px;
-            text-align: center; position: relative; overflow: hidden;
-        }
-        .userCard::before {
-            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 2px;
-            background: var(--gold-gradient); opacity: 0.5;
-        }
-        .card-avatar {
-            width: 80px; height: 80px; margin: 0 auto 15px; border-radius: 50%;
-            border: 2px solid var(--gold); padding: 5px; background: #000;
-        }
-        .card-avatar img { width: 100%; border-radius: 50%; }
+        /* User Cards */
+        #centerContent { overflow-y: auto; padding: 30px; background: radial-gradient(circle at top, #151515 0%, #050505 100%); }
+        .userCard { background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 12px; padding: 20px; text-align: center; position: relative; }
+        .card-avatar { width: 70px; height: 70px; margin: 0 auto 10px; border-radius: 50%; border: 2px solid var(--gold); background: #000; overflow: hidden; }
+        .card-avatar img { width: 100%; }
 
-        /* --- CHAT --- */
+        /* Chat */
         .right-sidebar { background: #000; padding: 20px; display: flex; flex-direction: column; border-left: 1px solid var(--border); }
         #chatBox { flex-grow: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; margin-bottom: 15px; }
         .msg { font-size: 0.85rem; padding: 8px; border-radius: 4px; background: rgba(255,255,255,0.02); }
-        .vault-msg { border-left: 3px solid var(--gold); background: rgba(212, 175, 55, 0.05); color: var(--gold); }
-        .chat-input { background: #111; border: 1px solid #333; color: #fff; padding: 12px; border-radius: 8px; }
-
-        /* --- THEMES --- */
-        .theme-ice { box-shadow: inset 0 0 20px rgba(0, 242, 255, 0.1); border-color: var(--neon-blue); }
-        .theme-royal { box-shadow: inset 0 0 20px rgba(255, 0, 255, 0.1); border-color: #ff00ff; }
     </style>
 </head>
 <body>
 
 <header>
     <h1>DIAMOND LOUNGE</h1>
-    <div id="userBalance" style="background: var(--glass-heavy); padding: 5px 15px; border-radius: 20px; border: 1px solid var(--gold); color: var(--gold); font-family: 'Cinzel';">
-        ♦ 0
+    <div id="userStats" style="display:flex; gap:15px; align-items:center;">
+        <div style="color:var(--xp-purple); font-size:0.8rem;">LVL <span id="myLvl">1</span></div>
+        <div id="userBalance" style="color:var(--gold); font-family:'Cinzel'; border:1px solid var(--gold); padding:2px 12px; border-radius:20px;">♦ 0</div>
     </div>
 </header>
 
@@ -128,57 +75,67 @@
         <button class="nav-btn active" onclick="switchTab('explore', this)">THE LOUNGE</button>
         <button class="nav-btn" onclick="switchTab('wheel', this)">DAILY VAULT</button>
         <button class="nav-btn" onclick="switchTab('editor', this)">IDENTITY</button>
-        <button class="nav-btn" onclick="switchTab('shop', this)">LUXURY SHOP</button>
         <button class="nav-btn" style="margin-top:auto; color:#ff4444;" onclick="auth.signOut()">EXIT</button>
     </div>
 
     <div id="centerContent">
         <div id="exploreTab" class="view-section">
-            <h2 style="font-family:'Cinzel'; color:var(--gold); font-size:0.9rem; letter-spacing:4px; margin-bottom:30px;">ELITE MEMBERS ONLINE</h2>
-            <div id="cardsContainer" class="card-grid"></div>
+            <div id="cardsContainer" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(240px,1fr)); gap:20px;"></div>
         </div>
 
-        <div id="wheelTab" class="view-section" style="display:none;">
-            <div class="wheel-box">
-                <h2 style="font-family:'Cinzel'; color:var(--gold); margin-top:0;">DAILY SPIN</h2>
+        <div id="wheelTab" class="view-section" style="display:none; text-align:center;">
+            <div style="background:rgba(255,255,255,0.02); padding:40px; border-radius:20px; border:1px solid var(--border); max-width:600px; margin:0 auto;">
+                <h2 style="font-family:'Cinzel'; color:var(--gold);">THE VAULT WHEEL</h2>
                 <div class="wheel-outer">
-                    <div class="wheel-pointer"></div>
+                    <div style="position:absolute; top:-15px; left:50%; transform:translateX(-50%); width:30px; height:30px; background:var(--gold); clip-path:polygon(50% 100%, 0 0, 100% 0); z-index:10;"></div>
                     <div id="wheel">
-                        <div style="position:absolute; top:20px; left:50%; transform:translateX(-50%); font-weight:bold; color:var(--gold);">1</div>
-                        <div style="position:absolute; bottom:50px; left:40px; font-weight:bold; color:var(--gold); transform:rotate(-60deg);">2</div>
-                        <div style="position:absolute; bottom:50px; right:40px; font-weight:bold; color:var(--gold); transform:rotate(60deg);">3</div>
+                        <div class="slice-text" style="transform: rotate(0deg)">♦ 1</div>
+                        <div class="slice-text" style="transform: rotate(60deg)">+50 XP</div>
+                        <div class="slice-text" style="transform: rotate(120deg)">♦ 2</div>
+                        <div class="slice-text" style="transform: rotate(180deg)">SPIN AGAIN</div>
+                        <div class="slice-text" style="transform: rotate(240deg)">♦ 3</div>
+                        <div class="slice-text" style="transform: rotate(300deg)">+100 XP</div>
                     </div>
                 </div>
-                <button id="spinBtn" class="nav-btn" style="width:100%; text-align:center; padding:15px; color:var(--gold); font-weight:bold;" onclick="spinWheel()">UNLOCK VAULT</button>
+                <button id="spinBtn" class="nav-btn" style="width:200px; color:var(--gold); font-weight:bold;" onclick="spinWheel()">ACTIVATE</button>
             </div>
         </div>
 
+        <div id="editorTab" class="view-section" style="display:none;">
+            <div style="max-width:400px; margin:0 auto; background:rgba(255,255,255,0.02); padding:30px; border:1px solid var(--border);">
+                <h3 style="font-family:'Cinzel';">IDENTITY</h3>
+                <input id="editName" placeholder="Name" style="width:100%; padding:10px; background:#000; border:1px solid #333; color:#fff; margin-bottom:10px;">
+                <input id="editAvatar" placeholder="Avatar URL" style="width:100%; padding:10px; background:#000; border:1px solid #333; color:#fff; margin-bottom:10px;">
+                <button class="nav-btn" style="width:100%" onclick="saveProfile()">UPDATE</button>
+            </div>
         </div>
+    </div>
 
     <div class="right-sidebar">
-        <div id="leaderboard" style="padding-bottom:15px; margin-bottom:15px; border-bottom: 1px solid #222;">
-            <h4 style="font-family:'Cinzel'; font-size:0.7rem; color:var(--gold); margin:0;">TOP HOLDERS</h4>
-            <div id="lbList" style="font-size: 0.8rem; margin-top:10px;"></div>
-        </div>
+        <h4 style="font-family:'Cinzel'; font-size:0.7rem; color:var(--gold); margin:0 0 10px 0;">RECENT ACTIVITY</h4>
         <div id="chatBox"></div>
-        <input id="chatInput" class="chat-input" placeholder="Type message..." onkeypress="if(event.key==='Enter') sendChat()">
+        <input id="chatInput" placeholder="Message..." onkeypress="if(event.key==='Enter') sendChat()" style="background:#111; border:1px solid #333; color:#fff; padding:10px; border-radius:4px;">
     </div>
 </div>
 
 <script>
+// Firebase Config
 const firebaseConfig = {
   apiKey: "AIzaSyCDll8RH1kzGOf-ixJmSlHXGssOHSMlO3s",
   authDomain: "vibely-5128e.firebaseapp.com",
   projectId: "vibely-5128e",
   storageBucket: "vibely-5128e.firebasestorage.app",
   messagingSenderId: "1048550825812",
-  appId: "1:1048550825812:web:fc5bbba51e065807ffb2c1",
-  measurementId: "G-HZW6SXDZQT"
+  appId: "1:1048550825812:web:fc5bbba51e065807ffb2c1"
 };
 
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
+
+// Leveling Constants
+const getLevel = (xp) => Math.floor(Math.sqrt(xp / 100)) + 1;
+const getXPForLevel = (lvl) => Math.pow(lvl - 1, 2) * 100;
 
 function switchTab(tab, btn) {
     document.querySelectorAll('.view-section').forEach(s => s.style.display = 'none');
@@ -193,25 +150,37 @@ function spinWheel() {
         const data = doc.data();
         const now = Date.now();
         if (data.lastSpin && (now - data.lastSpin < 86400000)) {
-            alert("Vault is on cooldown."); return;
+            alert("Vault is recharging."); return;
         }
 
-        const reward = Math.floor(Math.random() * 3) + 1;
-        const baseSpin = 1800; // 5 full rotations
-        const extra = (reward - 1) * 120;
-        const totalRotation = baseSpin + extra;
+        const outcomes = [
+            { type: 'diamonds', val: 1, deg: 0 },
+            { type: 'xp', val: 50, deg: 300 }, // Matches CSS rotation logic
+            { type: 'diamonds', val: 2, deg: 240 },
+            { type: 'spin', val: 0, deg: 180 },
+            { type: 'diamonds', val: 3, deg: 120 },
+            { type: 'xp', val: 100, deg: 60 }
+        ];
+
+        const result = outcomes[Math.floor(Math.random() * outcomes.length)];
+        const totalRotation = 1800 + result.deg;
 
         document.getElementById('wheel').style.transform = `rotate(${totalRotation}deg)`;
         document.getElementById('spinBtn').disabled = true;
 
         setTimeout(() => {
-            userRef.update({ vibes: firebase.firestore.FieldValue.increment(reward), lastSpin: now });
-            db.collection('chat').add({ 
-                msg: `Claimed ♦ ${reward} from the Daily Vault!`, 
-                user: "SYSTEM", type: "vault", time: firebase.firestore.FieldValue.serverTimestamp() 
-            });
-            alert(`Earned ♦ ${reward}`);
-            document.getElementById('spinBtn').innerText = "CLAIMED";
+            let update = { lastSpin: result.type === 'spin' ? 0 : now };
+            
+            if(result.type === 'diamonds') update.vibes = firebase.firestore.FieldValue.increment(result.val);
+            if(result.type === 'xp') update.xp = firebase.firestore.FieldValue.increment(result.val);
+            
+            userRef.update(update);
+            
+            const msg = result.type === 'spin' ? "LUCKY! Spin again." : `Earned ${result.val} ${result.type.toUpperCase()}!`;
+            alert(msg);
+            
+            if(result.type !== 'spin') document.getElementById('spinBtn').innerText = "CLAIMED";
+            else document.getElementById('spinBtn').disabled = false;
         }, 4100);
     });
 }
@@ -222,36 +191,33 @@ function loadUsers() {
         container.innerHTML = '';
         snap.forEach(doc => {
             const u = doc.data();
-            const themeClass = u.theme === 'ice' ? 'theme-ice' : (u.theme === 'royal' ? 'theme-royal' : '');
+            const lvl = getLevel(u.xp || 0);
+            const currentXP = (u.xp || 0) - getXPForLevel(lvl);
+            const nextXP = getXPForLevel(lvl + 1) - getXPForLevel(lvl);
+            const progress = (currentXP / nextXP) * 100;
+
             container.innerHTML += `
-                <div class="userCard ${themeClass}">
-                    <div class="card-avatar">
-                        <img src="${u.avatar || 'https://api.dicebear.com/7.x/initials/svg?seed='+doc.id}">
-                    </div>
-                    <h4 style="margin:5px 0; color:${u.goldName ? 'var(--gold)' : '#fff'};">${u.name || 'GUEST'} ${u.vip ? '👑' : ''}</h4>
-                    <p style="color:var(--gold); font-family:'Cinzel'; margin:5px 0;">♦ ${u.vibes || 0}</p>
-                    ${doc.id !== auth.currentUser.uid ? `<button class="nav-btn" style="width:100%; text-align:center; padding:8px;" onclick="giftDiamond('${doc.id}','${u.name}')">GIFT</button>` : ''}
+                <div class="userCard">
+                    <div class="card-avatar"><img src="${u.avatar || 'https://api.dicebear.com/7.x/bottts/svg?seed='+doc.id}"></div>
+                    <div style="font-size:0.9rem; font-weight:600;">${u.name || 'GUEST'} <span class="lvl-badge">LVL ${lvl}</span></div>
+                    <div style="color:var(--gold); font-family:'Cinzel'; margin:5px 0;">♦ ${u.vibes || 0}</div>
+                    <div class="xp-bar-container"><div class="xp-bar-fill" style="width:${progress}%"></div></div>
                 </div>`;
         });
     });
 }
 
-function giftDiamond(id, name) {
-    const msg = prompt("Add a note to your gift:");
-    if(msg !== null) {
-        db.collection('users').doc(id).update({ vibes: firebase.firestore.FieldValue.increment(1) });
-        db.collection('chat').add({ 
-            msg: `💎 "${msg}" — Gifted to ${name}`, user: "GIFT", type: "vault", time: firebase.firestore.FieldValue.serverTimestamp() 
-        });
-    }
+function saveProfile() {
+    db.collection('users').doc(auth.currentUser.uid).update({
+        name: document.getElementById('editName').value,
+        avatar: document.getElementById('editAvatar').value
+    });
 }
 
 function sendChat() {
     const val = document.getElementById('chatInput').value;
     if(!val) return;
-    db.collection('chat').add({ 
-        msg: val, user: auth.currentUser.email.split('@')[0], time: firebase.firestore.FieldValue.serverTimestamp() 
-    });
+    db.collection('chat').add({ msg: val, user: auth.currentUser.email.split('@')[0], time: firebase.firestore.FieldValue.serverTimestamp() });
     document.getElementById('chatInput').value = '';
 }
 
@@ -260,9 +226,7 @@ db.collection('chat').orderBy('time', 'desc').limit(20).onSnapshot(snap => {
     box.innerHTML = '';
     snap.docs.reverse().forEach(doc => {
         const d = doc.data();
-        box.innerHTML += `<div class="msg ${d.type === 'vault' ? 'vault-msg' : ''}">
-            <b>${d.user}:</b> ${d.msg}
-        </div>`;
+        box.innerHTML += `<div class="msg"><b>${d.user}:</b> ${d.msg}</div>`;
         box.scrollTop = box.scrollHeight;
     });
 });
@@ -272,8 +236,15 @@ auth.onAuthStateChanged(user => {
         document.getElementById('mainView').style.display = 'grid';
         loadUsers();
         db.collection('users').doc(user.uid).onSnapshot(doc => {
-            if(doc.exists) document.getElementById('userBalance').innerText = `♦ ${doc.data().vibes || 0}`;
-            else db.collection('users').doc(user.uid).set({ vibes: 0, name: user.email.split('@')[0] });
+            if(doc.exists) {
+                const d = doc.data();
+                document.getElementById('userBalance').innerText = `♦ ${d.vibes || 0}`;
+                document.getElementById('myLvl').innerText = getLevel(d.xp || 0);
+                document.getElementById('editName').value = d.name || '';
+                document.getElementById('editAvatar').value = d.avatar || '';
+            } else {
+                db.collection('users').doc(user.uid).set({ vibes: 0, xp: 0, name: user.email.split('@')[0] });
+            }
         });
     } else { auth.signInAnonymously(); }
 });
