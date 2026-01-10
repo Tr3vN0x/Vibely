@@ -23,8 +23,6 @@
 body { 
     margin: 0; font-family: 'Inter', sans-serif; background: #080a12; color: #fff; height: 100vh; overflow: hidden; display: flex; flex-direction: column;
 }
-
-/* Ambient frost overlay */
 body::before {
     content: '';
     position: fixed; inset: 0;
@@ -57,10 +55,18 @@ header { padding: 15px 40px; background: rgba(5, 5, 10, 0.95); border-bottom: 1p
 
 /* Cards */
 .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 20px; }
-.user-card { background: rgba(255,255,255,0.05); border: 1px solid rgba(165,243,252,0.2); border-radius: 12px; padding: 25px; text-align: center; position: relative; box-shadow: 0 0 15px rgba(165,243,252,0.2); transition: transform 0.3s ease, box-shadow 0.3s ease; }
-.user-card:hover { transform: translateY(-5px); box-shadow: 0 0 25px rgba(165,243,252,0.5); }
+.user-card { background: rgba(255,255,255,0.05); border: 1px solid rgba(165,243,252,0.2); border-radius: 12px; padding: 25px; text-align: center; position: relative; box-shadow: 0 0 15px rgba(165,243,252,0.2); transition: transform 0.3s ease, box-shadow 0.3s ease; transform: translateY(20px); opacity: 0; animation: cardEnter 0.6s forwards; overflow: hidden;}
+.user-card:hover { transform: scale(1.03); box-shadow: 0 0 35px rgba(165,243,252,0.6); }
+.user-card::before { content: '❄'; position: absolute; font-size: 10px; opacity: 0.2; top: -5px; left: 50%; transform: translateX(-50%); animation: floatSnow 3s infinite; }
+@keyframes cardEnter { to { transform: translateY(0); opacity:1; } }
+@keyframes floatSnow { 0% {top:-5px} 50% {top:20px} 100% {top:-5px} }
+
 .card-avatar { width: 80px; height: 80px; margin: 0 auto 10px; border: 2px solid var(--ice-blue); border-radius: 50%; overflow: hidden; }
 .card-avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+.card-level { font-size: 0.6rem; color: #a5f3fc; margin-top: 2px; }
+.card-xp { background: rgba(165,243,252,0.1); border-radius: 8px; height: 6px; width: 100%; margin-top: 5px; overflow: hidden; }
+.card-xp-fill { background: var(--ice-blue); width: 0%; height: 100%; border-radius: 8px; transition: width 1s ease-in-out; }
 
 /* Profile Editor */
 .edit-box { background: var(--glass); padding: 25px; border-radius: 12px; border: 1px solid rgba(165,243,252,0.2); }
@@ -75,6 +81,7 @@ input { background: #111; border: 1px solid #333; color: #fff; padding: 10px; ma
 #loginOverlay { position: fixed; inset: 0; background: #000; z-index: 1000; display: flex; align-items: center; justify-content: center; }
 #loginOverlay input { margin-bottom: 10px; }
 #loginOverlay button { margin-top: 10px; }
+
 </style>
 </head>
 <body>
@@ -157,7 +164,7 @@ const auth = firebase.auth();
 let isLogin = true;
 let myProfile = null;
 
-// Snow Effect
+/* Snow Effect */
 setInterval(() => {
     const s = document.createElement('div');
     s.className = 'snowflake';
@@ -203,25 +210,37 @@ function loadApp(uid) {
         cont.innerHTML = '';
         snap.forEach(d => {
             const u = d.data();
+            const level = Math.floor(u.xp / 100) + 1;
+            const xpPercent = Math.min(u.xp % 100,100);
             cont.innerHTML += `
                 <div class="user-card">
                     <div class="card-avatar"><img src="${u.avatar || 'https://api.dicebear.com/7.x/bottts/svg?seed='+u.name}"></div>
                     <div style="font-family:'Cinzel'; color:var(--ice-blue);">${u.name}</div>
                     <div style="font-size:0.6rem; color:#888; margin-bottom:5px;">${u.badge || ''}</div>
                     <div style="color:var(--gold); font-size:0.8rem;">♦ ${u.vibes}</div>
+                    <div class="card-level">Lvl ${level}</div>
+                    <div class="card-xp"><div class="card-xp-fill" style="width:${xpPercent}%"></div></div>
                 </div>`;
         });
     });
 }
 
-function spinWheel() {
+async function spinWheel() {
+    const userRef = db.collection('users').doc(auth.currentUser.uid);
+    const userDoc = await userRef.get();
+    const lastSpin = userDoc.data().lastSpin?.toDate();
+    const today = new Date();
+    if(lastSpin && lastSpin.toDateString() === today.toDateString()) {
+        alert("You can only spin the wheel once per day!");
+        return;
+    }
+
     let index;
     do { index = Math.floor(Math.random() * 8); } while (index === 3);
     const rot = 3600 + (index * 45);
     const wheel = document.getElementById('wheel');
     wheel.style.transform = `rotate(${rot}deg)`;
 
-    // Sparkle effect
     const sparkle = document.createElement('div');
     sparkle.innerHTML = '❄✨';
     sparkle.style.position = 'absolute';
@@ -233,13 +252,14 @@ function spinWheel() {
     setTimeout(() => sparkle.remove(), 1500);
 
     document.getElementById('spinBtn').disabled = true;
-    setTimeout(() => {
+    setTimeout(async () => {
         const rewards = [{v:5},{x:50},{v:10},{x:1000},{v:1},{x:10},{v:25},{v:0}];
         const win = rewards[index];
         const up = {};
         if(win.v) up.vibes = firebase.firestore.FieldValue.increment(win.v);
         if(win.x) up.xp = firebase.firestore.FieldValue.increment(win.x);
-        db.collection('users').doc(auth.currentUser.uid).update(up);
+        up.lastSpin = firebase.firestore.FieldValue.serverTimestamp();
+        await userRef.update(up);
         document.getElementById('spinBtn').disabled = false;
     }, 5500);
 }
