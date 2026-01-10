@@ -3,8 +3,9 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Vibely Social</title>
+<title>Vibely – Social Platform</title>
 
+<!-- Firebase SDKs -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
@@ -12,39 +13,49 @@
 
 <style>
 :root{--blue:#1877f2}
+*{box-sizing:border-box}
 body{margin:0;font-family:system-ui;background:#f0f2f5}
-header{background:var(--blue);color:#fff;padding:12px 20px;display:flex;justify-content:space-between;align-items:center}
-button{cursor:pointer;border:none;border-radius:6px;padding:6px 12px}
+header{background:var(--blue);color:#fff;padding:12px 16px;display:flex;justify-content:space-between;align-items:center}
+nav{display:flex;gap:10px}
+nav button{background:rgba(255,255,255,.15);color:#fff}
+button{cursor:pointer;border:none;border-radius:8px;padding:8px 12px}
 .primary{background:var(--blue);color:white}
-.container{display:grid;grid-template-columns:240px 1fr 320px;gap:15px;padding:15px}
-.card{background:#fff;border-radius:12px;padding:12px;margin-bottom:12px;box-shadow:0 2px 4px rgba(0,0,0,.05)}
-textarea,input{width:100%;padding:8px;border-radius:6px;border:1px solid #ccc}
-.post{margin-bottom:10px}
-.comment{font-size:14px;margin-left:10px;color:#444}
-.chat-box{height:300px;overflow-y:auto}
-.message{margin:5px 0}
+.container{display:grid;grid-template-columns:260px 1fr 320px;gap:14px;padding:14px}
+.card{background:#fff;border-radius:14px;padding:14px;margin-bottom:12px;box-shadow:0 2px 4px rgba(0,0,0,.05)}
+input,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid #ccc}
+.hidden{display:none}
+.avatar{width:40px;height:40px;border-radius:50%;background:#aaa;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:bold}
+.preview{display:flex;gap:10px;align-items:center}
 .badge{color:#1da1f2;font-weight:bold;margin-left:4px}
-.preview{display:flex;align-items:center;gap:8px}
-.avatar{width:36px;height:36px;border-radius:50%;background:#ccc;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:bold}
-.friend{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.story{display:inline-block;width:90px;height:140px;background:#ddd;border-radius:12px;margin-right:8px;display:flex;align-items:flex-end;padding:8px;font-size:12px}
+.post video,.post img{max-width:100%;border-radius:10px;margin-top:8px}
+@media(max-width:900px){.container{grid-template-columns:1fr}nav{overflow-x:auto}}
 </style>
 </head>
 <body>
 
 <header>
-<h2>Vibely</h2>
+<b>Vibely</b>
+<nav>
+<button onclick="showTab('feed')">Feed</button>
+<button onclick="showTab('friends')">Friends</button>
+<button onclick="showTab('reels')">Reels</button>
+<button onclick="showTab('notifications')">Notifications</button>
 <button onclick="logout()">Logout</button>
+</nav>
 </header>
 
-<div id="auth" class="card" style="max-width:400px;margin:80px auto">
+<!-- AUTH -->
+<div id="auth" class="card" style="max-width:420px;margin:80px auto">
 <h3>Login / Register</h3>
 <input id="email" placeholder="Email" />
-<input id="password" type="password" />
+<input id="password" type="password" placeholder="Password" />
 <button class="primary" onclick="login()">Login</button>
 <button class="primary" onclick="register()">Register</button>
 </div>
 
-<div id="app" style="display:none">
+<!-- APP -->
+<div id="app" class="hidden">
 <div class="container">
 
 <!-- LEFT -->
@@ -52,30 +63,53 @@ textarea,input{width:100%;padding:8px;border-radius:6px;border:1px solid #ccc}
 <div class="card">
 <h4>Profile</h4>
 <input id="username" placeholder="Username" />
-<label><input type="checkbox" id="verified" /> Verified</label>
+<label><input type="checkbox" id="verified" /> Premium Verified</label>
 <button onclick="saveProfile()">Save</button>
 </div>
-<div class="card">
-<h4>People</h4>
-<div id="people"></div>
-</div>
+<div class="card" id="stories"></div>
 </div>
 
-<!-- FEED -->
+<!-- CENTER -->
 <div>
+
+<!-- FEED TAB -->
+<div id="feed" class="tab">
 <div class="card">
 <textarea id="postText" placeholder="What's on your mind?"></textarea>
+<input type="file" id="imageUpload" />
 <button class="primary" onclick="createPost()">Post</button>
 </div>
 <div id="posts"></div>
+</div>
+
+<!-- FRIENDS TAB -->
+<div id="friends" class="tab hidden">
+<div class="card"><h4>Friend Requests</h4><div id="requests"></div></div>
+<div class="card"><h4>Followers</h4><div id="followers"></div></div>
+</div>
+
+<!-- REELS TAB -->
+<div id="reels" class="tab hidden">
+<div class="card">
+<input type="file" id="videoUpload" />
+<button onclick="uploadReel()">Upload Reel</button>
+</div>
+<div id="reelFeed"></div>
+</div>
+
+<!-- NOTIFICATIONS TAB -->
+<div id="notifications" class="tab hidden">
+<div class="card" id="notify"></div>
+</div>
+
 </div>
 
 <!-- RIGHT -->
 <div>
 <div class="card">
 <h4>Chat</h4>
-<div class="chat-box" id="chat"></div>
-<input id="chatText" placeholder="Type message" />
+<div id="chat" style="height:260px;overflow:auto"></div>
+<input id="chatText" placeholder="Message" />
 <button onclick="sendMessage()">Send</button>
 </div>
 </div>
@@ -84,87 +118,69 @@ textarea,input{width:100%;padding:8px;border-radius:6px;border:1px solid #ccc}
 </div>
 
 <script>
-const firebaseConfig={
-apiKey:"AIzaSyCDll8RH1kzGOf-ixJmSlHXGssOHSMlO3s",
-authDomain:"vibely-5128e.firebaseapp.com",
-projectId:"vibely-5128e",
-storageBucket:"vibely-5128e.firebasestorage.app",
-messagingSenderId:"1048550825812",
-appId:"1:1048550825812:web:fc5bbba51e065807ffb2c1"
-};
-
+// Firebase Config
+const firebaseConfig={apiKey:"AIzaSyCDll8RH1kzGOf-ixJmSlHXGssOHSMlO3s",authDomain:"vibely-5128e.firebaseapp.com",projectId:"vibely-5128e",storageBucket:"vibely-5128e.firebasestorage.app",messagingSenderId:"1048550825812",appId:"1:1048550825812:web:fc5bbba51e065807ffb2c1"};
 firebase.initializeApp(firebaseConfig);
 const auth=firebase.auth();
 const db=firebase.firestore();
+const storage=firebase.storage();
 
-const authDiv=document.getElementById('auth');
+const authDiv=authDiv=document.getElementById('auth');
 const appDiv=document.getElementById('app');
 
-auth.onAuthStateChanged(u=>{
-if(u){authDiv.style.display='none';appDiv.style.display='block';loadPosts();loadChat();loadPeople();}
-else{authDiv.style.display='block';appDiv.style.display='none';}
-});
+auth.onAuthStateChanged(u=>{if(u){authDiv.style.display='none';appDiv.classList.remove('hidden');loadFeed();loadChat();loadNotifications();}else{authDiv.style.display='block';appDiv.classList.add('hidden');}});
+
+function showTab(t){document.querySelectorAll('.tab').forEach(x=>x.classList.add('hidden'));document.getElementById(t).classList.remove('hidden');}
 
 function register(){auth.createUserWithEmailAndPassword(email.value,password.value)}
 function login(){auth.signInWithEmailAndPassword(email.value,password.value)}
 function logout(){auth.signOut()}
 
-function saveProfile(){
-db.collection('users').doc(auth.currentUser.uid).set({
-username:username.value,
-verified:verified.checked
+function saveProfile(){db.collection('users').doc(auth.currentUser.uid).set({username:username.value,verified:verified.checked,followers:0},{merge:true})}
+
+// Algorithmic feed ranking (likes + recency)
+function loadFeed(){db.collection('posts').onSnapshot(async s=>{
+posts.innerHTML='';
+let arr=[];
+for(const d of s.docs){const p=d.data();const score=(p.likes||0)*2+(Date.now()-(p.created?.toMillis()||0))*-0.000001;arr.push({id:d.id,score,p});}
+arr.sort((a,b)=>b.score-a.score);
+for(const o of arr){posts.innerHTML+=`<div class='card post'><p>${o.p.text||''}</p>${o.p.image?`<img src='${o.p.image}'>`:''}<button onclick="likePost('${o.id}')">❤️ ${(o.p.likes||0)}</button></div>`;}
 });}
 
 function createPost(){
-if(!postText.value)return;
-db.collection('posts').add({
-text:postText.value,
-uid:auth.currentUser.uid,
-created:firebase.firestore.FieldValue.serverTimestamp()
-});postText.value='';}
-
-function loadPosts(){
-db.collection('posts').orderBy('created','desc').onSnapshot(async s=>{
-posts.innerHTML='';
-for(const d of s.docs){
-const u=await db.collection('users').doc(d.data().uid).get();
-const user=u.data()||{};
-posts.innerHTML+=`
-<div class='card post'>
-<div class='preview'>
-<div class='avatar'>${(user.username||'?')[0]}</div>
-<b>${user.username||'User'}${user.verified?'<span class="badge">✔</span>':''}</b>
-</div>
-<p>${d.data().text}</p>
-<button onclick="likePost('${d.id}')">❤️</button>
-<button onclick="commentPost('${d.id}')">💬</button>
-<div id='c${d.id}'></div>
-</div>`;
-loadComments(d.id);
-}
-});}
-
+const text=postText.value;const file=imageUpload.files[0];
+if(file){const ref=storage.ref('images/'+Date.now()+file.name);ref.put(file).then(r=>r.ref.getDownloadURL().then(url=>savePost(text,url)));}
+else savePost(text,null);
+postText.value='';imageUpload.value='';}
+function savePost(text,image){db.collection('posts').add({text,image,uid:auth.currentUser.uid,likes:0,created:firebase.firestore.FieldValue.serverTimestamp()})}
 function likePost(id){db.collection('posts').doc(id).update({likes:firebase.firestore.FieldValue.increment(1)})}
 
-function commentPost(id){const c=prompt('Comment');if(c)db.collection('posts').doc(id).collection('comments').add({text:c})}
+// Chat
+function sendMessage(){if(!chatText.value)return;db.collection('chat').add({text:chatText.value,created:firebase.firestore.FieldValue.serverTimestamp()});chatText.value='';}
+function loadChat(){db.collection('chat').orderBy('created').onSnapshot(s=>{chat.innerHTML='';s.forEach(d=>chat.innerHTML+=`<div>${d.data().text}</div>`);});}
 
-function loadComments(id){
-db.collection('posts').doc(id).collection('comments').onSnapshot(s=>{
-const div=document.getElementById('c'+id);if(!div)return;
-div.innerHTML='';s.forEach(d=>div.innerHTML+=`<div class='comment'>${d.data().text}</div>`);
-});}
+// Notifications
+function loadNotifications(){db.collection('notifications').onSnapshot(s=>{notify.innerHTML='';s.forEach(d=>notify.innerHTML+=`<div>${d.data().text}</div>`);});}
 
-function sendMessage(){if(!chatText.value)return;
-db.collection('chat').add({text:chatText.value,uid:auth.currentUser.uid,created:firebase.firestore.FieldValue.serverTimestamp()});chatText.value='';}
-
-function loadChat(){db.collection('chat').orderBy('created').onSnapshot(s=>{
-chat.innerHTML='';s.forEach(d=>chat.innerHTML+=`<div class='message'>${d.data().text}</div>`)});}
-
-function loadPeople(){
-db.collection('users').onSnapshot(s=>{
-people.innerHTML='';s.forEach(d=>{
-people.innerHTML+=`<div class='friend'>${d.data().username||'User'}${d.data().verified?'<span class="badge">✔</span>':''}</div>`;
-});});}
+// Reels
+function uploadReel(){const f=videoUpload.files[0];if(!f)return;const ref=storage.ref('reels/'+Date.now()+f.name);ref.put(f).then(r=>r.ref.getDownloadURL().then(url=>db.collection('reels').add({url,created:firebase.firestore.FieldValue.serverTimestamp()})));}
 </script>
+
+<!-- ADMIN PANEL (PHP - server/admin.php)
+<?php
+require 'vendor/autoload.php';
+use Kreait\\Firebase\\Factory;
+$firebase=(new Factory)->withServiceAccount('serviceAccount.json')->create();
+$db=$firebase->getFirestore();
+// Admin moderation, verification, ads, bans
+?>
+-->
+
+<!-- DEPLOYMENT
+1. firebase init hosting
+2. firebase deploy
+3. connect domain + SSL auto
+-->
+
 </body>
 </html>
