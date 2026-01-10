@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vibely | Diamond Lounge Secure</title>
+    <title>Vibely | Diamond Lounge Pro</title>
 
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
@@ -23,17 +23,17 @@
         * { box-sizing: border-box; transition: all 0.3s ease; }
         body { margin: 0; font-family: 'Inter', sans-serif; background: var(--obsidian); color: #fff; height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
 
-        /* Secure Login Overlay */
+        /* Auth Screen */
         #loginOverlay {
-            position: fixed; inset: 0; background: radial-gradient(circle, #111 0%, #000 100%); z-index: 1000;
+            position: fixed; inset: 0; background: radial-gradient(circle, #151515 0%, #000 100%); z-index: 1000;
             display: flex; align-items: center; justify-content: center;
         }
         .login-card {
-            background: rgba(0,0,0,0.8); padding: 40px; border: 1px solid var(--gold); border-radius: 15px;
+            background: rgba(0,0,0,0.9); padding: 40px; border: 1px solid var(--gold); border-radius: 15px;
             text-align: center; max-width: 400px; width: 90%; box-shadow: 0 0 50px rgba(212, 175, 55, 0.2);
         }
 
-        header { padding: 15px 40px; background: rgba(0,0,0,0.9); border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; z-index: 100; }
+        header { padding: 15px 40px; background: rgba(0,0,0,0.9); border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
         .logo { font-family: 'Cinzel', serif; letter-spacing: 8px; font-size: 1.1rem; color: var(--gold); margin: 0; }
 
         .main-layout { display: grid; grid-template-columns: 240px 1fr 320px; flex-grow: 1; overflow: hidden; }
@@ -44,47 +44,46 @@
         #centerContent { overflow-y: auto; padding: 40px; background: radial-gradient(circle at top, #111 0%, #050505 100%); }
         .view-section { display: none; max-width: 900px; margin: 0 auto; }
 
-        /* User Cards */
         .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 25px; }
         .user-card { background: linear-gradient(180deg, rgba(212, 175, 55, 0.05) 0%, rgba(0,0,0,0.8) 100%); border: 1px solid var(--border); border-radius: 15px; padding: 30px; text-align: center; position: relative; }
         .gold-aura { border-color: var(--gold) !important; box-shadow: 0 0 20px rgba(212, 175, 55, 0.4); }
         .card-lvl { position: absolute; top: 15px; right: 15px; background: var(--gold-gradient); color: #000; font-size: 0.65rem; padding: 2px 8px; border-radius: 10px; font-weight: bold; }
-        .card-avatar { width: 85px; height: 85px; margin: 0 auto 15px; border: 2px solid var(--gold); border-radius: 50%; padding: 3px; background: #000; overflow: hidden; }
+        .card-avatar { width: 85px; height: 85px; margin: 0 auto 15px; border: 2px solid var(--gold); border-radius: 50%; padding: 3px; background: #000; }
         .card-avatar img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
         
         .xp-mini-bar { width: 100%; height: 4px; background: #222; margin-top: 10px; border-radius: 2px; overflow: hidden; }
         .xp-fill { height: 100%; background: var(--gold-gradient); width: 0%; transition: width 1s; }
 
-        /* Right Sidebar Chat */
         .right-sidebar { background: #000; border-left: 1px solid var(--border); display: flex; flex-direction: column; padding: 20px; }
         #chatBox { flex-grow: 1; overflow-y: auto; font-size: 0.85rem; margin-bottom: 15px; }
         .chat-msg { margin-bottom: 8px; padding: 8px; background: rgba(255,255,255,0.02); border-radius: 4px; }
         
         input { background: #111; border: 1px solid #333; color: #fff; padding: 12px; margin-bottom: 10px; width: 100%; border-radius: 5px; }
-        .error { color: #ff4444; font-size: 0.75rem; margin-bottom: 10px; }
     </style>
 </head>
 <body>
 
 <div id="loginOverlay">
     <div class="login-card">
-        <h1 style="font-family:'Cinzel'; color:var(--gold); margin-bottom:5px;">DIAMOND LOUNGE</h1>
-        <p id="authModeDesc" style="font-size:0.75rem; color:#888; margin-bottom:20px;">Secure Access Required</p>
+        <h1 style="font-family:'Cinzel'; color:var(--gold);">DIAMOND LOUNGE</h1>
+        <p id="modeText" style="font-size:0.75rem; color:#888; margin-bottom:20px;">Elite Membership Access</p>
         
-        <input id="authUsername" placeholder="Username">
-        <input id="authPass" type="password" placeholder="Keycode (Password)">
+        <input id="authUsername" placeholder="Display Name" style="display:none;">
         
-        <div id="authError" class="error"></div>
+        <input id="authEmail" type="email" placeholder="Real Email Address">
+        <input id="authPass" type="password" placeholder="Password">
+        
+        <div id="authErr" style="color:#ff4444; font-size:0.75rem; margin-bottom:10px;"></div>
         
         <button class="nav-btn" style="width:100%; text-align:center; margin-bottom:10px;" onclick="handleAuth()">PROCEED</button>
-        <div style="font-size:0.7rem; color:var(--gold); cursor:pointer;" onclick="toggleAuthMode()" id="modeToggle">Don't have an account? Join.</div>
+        <div id="modeToggle" style="font-size:0.7rem; color:var(--gold); cursor:pointer;" onclick="toggleMode()">New here? Join the Lounge.</div>
     </div>
 </div>
 
 <header>
     <div class="logo">DIAMOND LOUNGE</div>
     <div style="display: flex; gap: 20px; align-items: center;">
-        <div id="passiveStatus" style="font-size: 0.65rem; color: var(--gold); opacity: 0.7;">CONNECTED</div>
+        <div id="passiveStatus" style="font-size: 0.65rem; color: var(--gold); opacity: 0.7;">STAKING...</div>
         <div id="headerBalance" style="color: var(--gold); border: 1px solid var(--gold); padding: 4px 15px; border-radius: 20px; font-family: 'Cinzel'; font-weight: bold;">♦ 0</div>
     </div>
 </header>
@@ -100,11 +99,11 @@
         <section id="view-explore" class="view-section" style="display:block;">
             <div id="cardsContainer" class="card-grid"></div>
         </section>
-
+        
         <section id="view-wheel" class="view-section" style="text-align: center;">
              <div style="background: var(--glass); padding: 50px; border-radius: 20px; border: 1px solid var(--border);">
                 <h2 style="font-family:'Cinzel'; color:var(--gold);">DAILY VAULT</h2>
-                <button class="nav-btn" style="width:200px; text-align:center;" onclick="alert('Spin Logic Ready')">SPIN</button>
+                <p>Vault functionality re-loading...</p>
              </div>
         </section>
     </main>
@@ -116,6 +115,7 @@
 </div>
 
 <script>
+// --- CONFIG ---
 const firebaseConfig = {
     apiKey: "AIzaSyCDll8RH1kzGOf-ixJmSlHXGssOHSMlO3s",
     authDomain: "vibely-5128e.firebaseapp.com",
@@ -128,50 +128,56 @@ firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 const auth = firebase.auth();
 
-let isLoginMode = true;
-let currentUserProfile = null;
+let isLogin = true;
+let currentUserData = null;
 
-function toggleAuthMode() {
-    isLoginMode = !isLoginMode;
-    document.getElementById('modeToggle').innerText = isLoginMode ? "Don't have an account? Join." : "Already a member? Enter.";
-    document.getElementById('authModeDesc').innerText = isLoginMode ? "Secure Access Required" : "Create your Elite Profile";
+// --- AUTH UI ---
+function toggleMode() {
+    isLogin = !isLogin;
+    document.getElementById('modeText').innerText = isLogin ? "Elite Membership Access" : "Join the Lounge";
+    document.getElementById('modeToggle').innerText = isLogin ? "New here? Join the Lounge." : "Member? Sign In.";
+    document.getElementById('authUsername').style.display = isLogin ? "none" : "block";
 }
 
 async function handleAuth() {
-    const user = document.getElementById('authUsername').value.trim().toLowerCase();
+    const email = document.getElementById('authEmail').value;
     const pass = document.getElementById('authPass').value;
-    const err = document.getElementById('authError');
-    
-    if (user.length < 3 || pass.length < 5) return err.innerText = "Username 3+ | Pass 5+ chars";
-
-    // Because Firebase Auth usually uses Emails, we simulate usernames by using @diamond.com
-    const fakeEmail = user + "@diamond.com";
+    const name = document.getElementById('authUsername').value.trim();
+    const err = document.getElementById('authErr');
 
     try {
-        if (isLoginMode) {
-            await auth.signInWithEmailAndPassword(fakeEmail, pass);
+        if (isLogin) {
+            await auth.signInWithEmailAndPassword(email, pass);
         } else {
-            // Check if user doc exists first (prevent username sniping)
-            const check = await db.collection('users').where('name', '==', user).get();
-            if (!check.empty) return err.innerText = "Username already claimed.";
-            
-            const cred = await auth.createUserWithEmailAndPassword(fakeEmail, pass);
-            await db.collection('users').doc(cred.user.uid).set({
-                name: user, vibes: 0, xp: 0, lastSpin: 0, avatar: ""
+            if (!name) throw new Error("Username required for registration.");
+            const res = await auth.createUserWithEmailAndPassword(email, pass);
+            await db.collection('users').doc(res.user.uid).set({
+                name: name, vibes: 0, xp: 0, lastSpin: 0, avatar: ""
             });
         }
-        document.getElementById('loginOverlay').style.display = 'none';
-        document.getElementById('mainView').style.display = 'grid';
-        loadLounge(auth.currentUser.uid);
     } catch (e) {
-        err.innerText = "Access Denied: " + e.message;
+        err.innerText = e.message;
     }
 }
 
+// --- STATE LISTENER ---
+auth.onAuthStateChanged(user => {
+    if (user) {
+        document.getElementById('loginOverlay').style.display = 'none';
+        document.getElementById('mainView').style.display = 'grid';
+        loadLounge(user.uid);
+    } else {
+        document.getElementById('loginOverlay').style.display = 'flex';
+        document.getElementById('mainView').style.display = 'none';
+    }
+});
+
 function loadLounge(uid) {
     db.collection('users').doc(uid).onSnapshot(doc => {
-        currentUserProfile = doc.data();
-        document.getElementById('headerBalance').innerText = `♦ ${currentUserProfile.vibes}`;
+        currentUserData = doc.data();
+        if(currentUserData) {
+            document.getElementById('headerBalance').innerText = `♦ ${currentUserData.vibes || 0}`;
+        }
     });
 
     db.collection('users').onSnapshot(snap => {
@@ -179,29 +185,31 @@ function loadLounge(uid) {
         cont.innerHTML = '';
         snap.forEach(d => {
             const u = d.data();
-            cont.innerHTML += `<div class="user-card">
-                <div class="card-avatar"><img src="${u.avatar || 'https://api.dicebear.com/7.x/pixel-art/svg?seed='+u.name}"></div>
-                <div style="font-family:'Cinzel'; color:var(--gold);">${u.name.toUpperCase()}</div>
-                <div>♦ ${u.vibes}</div>
-            </div>`;
+            cont.innerHTML += `
+                <div class="user-card">
+                    <div class="card-avatar"><img src="${u.avatar || 'https://api.dicebear.com/7.x/pixel-art/svg?seed='+u.name}"></div>
+                    <div style="font-family:'Cinzel'; color:var(--gold);">${u.name.toUpperCase()}</div>
+                    <div>♦ ${u.vibes || 0}</div>
+                </div>`;
         });
     });
 }
 
 function sendChat() {
     const msg = document.getElementById('chatInput').value;
-    if(!msg || !currentUserProfile) return;
+    if(!msg || !currentUserData) return;
     db.collection('chat').add({
-        msg, user: currentUserProfile.name.toUpperCase(), time: firebase.firestore.FieldValue.serverTimestamp()
+        msg, user: currentUserData.name.toUpperCase(), time: firebase.firestore.FieldValue.serverTimestamp()
     });
     document.getElementById('chatInput').value = '';
 }
 
-db.collection('chat').orderBy('time', 'desc').limit(15).onSnapshot(s => {
+db.collection('chat').orderBy('time', 'desc').limit(20).onSnapshot(s => {
     const box = document.getElementById('chatBox');
     box.innerHTML = '';
     s.docs.reverse().forEach(d => {
-        box.innerHTML += `<div class="chat-msg"><b>${d.data().user}:</b> ${d.data().msg}</div>`;
+        const m = d.data();
+        box.innerHTML += `<div class="chat-msg"><b>${m.user}:</b> ${m.msg}</div>`;
     });
     box.scrollTop = box.scrollHeight;
 });
@@ -211,7 +219,7 @@ function switchTab(t) {
     document.getElementById('view-' + t).style.display = 'block';
 }
 
-function logout() { location.reload(); }
+function logout() { auth.signOut(); }
 </script>
 </body>
 </html>
