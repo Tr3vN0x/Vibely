@@ -19,7 +19,6 @@
     --glass: rgba(255, 255, 255, 0.05);
 }
 
-/* Global */
 * { box-sizing: border-box; transition: all 0.3s ease; }
 body { 
     margin: 0; font-family: 'Inter', sans-serif; background: #080a12; color: #fff; height: 100vh; overflow: hidden; display: flex; flex-direction: column;
@@ -32,14 +31,13 @@ body {
 @keyframes fall { to { transform: translateY(110vh) rotate(360deg); } }
 @keyframes sway { 0% { transform: translateX(0) rotate(0deg); } 100% { transform: translateX(20px) rotate(45deg); } }
 
-/* Header & Layout */
+/* UI Shell */
 header { padding: 15px 40px; background: rgba(5, 5, 10, 0.95); border-bottom: 1px solid rgba(165, 243, 252, 0.2); display: flex; justify-content: space-between; align-items: center; z-index:2; }
 .main-layout { display: grid; grid-template-columns: 240px 1fr 320px; flex-grow: 1; overflow: hidden; position: relative; }
 .nav-sidebar { padding: 25px 15px; background: rgba(0,0,0,0.5); border-right: 1px solid rgba(255,255,255,0.1); display: flex; flex-direction: column; gap: 10px; backdrop-filter: blur(8px); }
 .nav-btn { background: var(--glass); border: 1px solid transparent; color: #aaa; padding: 12px 20px; font-family: 'Cinzel', serif; cursor: pointer; border-radius: 4px; font-size: 0.8rem; transition: all 0.3s ease; }
 .nav-btn:hover, .nav-btn.active { color: var(--ice-blue); border-color: var(--ice-blue); background: rgba(165, 243, 252, 0.1); box-shadow: 0 0 10px var(--ice-blue); }
 
-/* Center Content */
 #centerContent { overflow-y: auto; padding: 40px; background: radial-gradient(circle at top, #0c1220 0%, #05050a 100%); position: relative; z-index:1; }
 .view-section { display: none; max-width: 900px; margin: 0 auto; }
 
@@ -87,10 +85,9 @@ input { background: #111; border: 1px solid #333; color: #fff; padding: 10px; ma
 .shop-card::before { content:'❄'; position:absolute; top:-10px; left:50%; font-size:12px; opacity:0.2; animation: floatSnow 4s infinite; }
 
 /* Inventory */
-.inventory-grid { display:grid; grid-template-columns: repeat(auto-fill,minmax(220px,1fr)); gap:20px; margin-top:20px; }
-.inventory-card { background: rgba(0,0,0,0.5); border:1px solid rgba(165,243,252,0.2); border-radius:12px; padding:15px; text-align:center; position:relative; }
-.inventory-card .effect-name { font-family:'Cinzel'; color:var(--ice-blue); margin-bottom:5px; }
-.inventory-card button { margin-top:8px; width:100%; cursor:pointer; }
+.inventory-grid { display:grid; grid-template-columns: repeat(auto-fill,minmax(180px,1fr)); gap:15px; margin-top:20px; }
+.inventory-card { background: rgba(0,0,0,0.5); border:1px solid rgba(165,243,252,0.2); border-radius:10px; padding:15px; text-align:center; transition:0.3s ease; }
+.inventory-card button { margin-top:5px; width:100%; cursor:pointer; }
 </style>
 </head>
 <body>
@@ -163,10 +160,9 @@ input { background: #111; border: 1px solid #333; color: #fff; padding: 10px; ma
 
         <!-- Inventory -->
         <section id="view-inventory" class="view-section">
-            <h2 style="font-family:'Cinzel'; color:var(--ice-blue); text-align:center;">Inventory</h2>
+            <h2 style="font-family:'Cinzel'; color:var(--ice-blue); text-align:center;">Your Inventory</h2>
             <div id="inventoryContainer" class="inventory-grid"></div>
         </section>
-
     </main>
 
     <aside class="right-sidebar">
@@ -176,7 +172,6 @@ input { background: #111; border: 1px solid #333; color: #fff; padding: 10px; ma
 </div>
 
 <script>
-const OWNER_UID = 'pqPGbhBjvrVrgDrmUBa4J2ynmkW2'; // Developer ID
 const firebaseConfig = {
     apiKey: "AIzaSyCDll8RH1kzGOf-ixJmSlHXGssOHSMlO3s",
     authDomain: "vibely-5128e.firebaseapp.com",
@@ -191,6 +186,7 @@ const auth = firebase.auth();
 
 let isLogin = true;
 let myProfile = null;
+const OWNER_UID = "pqPGbhBjvrVrgDrmUBa4J2ynmkW2";
 
 /* Snow Effect */
 setInterval(() => {
@@ -215,13 +211,10 @@ async function handleAuth() {
     if (isLogin) await auth.signInWithEmailAndPassword(e, p);
     else {
         const r = await auth.createUserWithEmailAndPassword(e, p);
-        await db.collection('users').doc(r.user.uid).set({ 
-            name: n, vibes: 50, xp: 0, avatar: "", badge: "❄️ Newcomer", inventory:{}, equipped:{} 
-        });
+        await db.collection('users').doc(r.user.uid).set({ name: n, vibes: 50, xp: 0, avatar: "", badge: "❄️ Newcomer", inventory: {}, equipped:{} });
     }
 }
 
-/* Switch Tab */
 function switchTab(t) {
     document.querySelectorAll('.view-section').forEach(v => v.style.display='none');
     document.getElementById('view-' + t).style.display='block';
@@ -231,15 +224,14 @@ function switchTab(t) {
 
 /* Shop Items */
 const shopItems = [
-  {id:'sparkleAura', name:'Sparkle Aura', cost:50, desc:'Shimmering aura around avatar', type:'aura'},
-  {id:'frostBorder', name:'Frost Border', cost:75, desc:'Glowing icy border on profile cards', type:'cardEffect'},
-  {id:'snowTrail', name:'Snow Trail', cost:100, desc:'Snowflakes drift when hovering your card', type:'cardEffect'},
-  {id:'shimmerXP', name:'Shimmer XP Bar', cost:40, desc:'XP bar glows with winter shimmer', type:'xpBar'},
-  {id:'eliteBadge', name:'Elite Badge ❄', cost:30, desc:'Exclusive winter badge', type:'badge'},
-  {id:'eliteAura', name:'Elite Aura', cost:200, desc:'Premium glowing aura', type:'aura'}
+  {id:'sparkleAura', name:'Sparkle Aura', cost:50, desc:'Shimmering aura around avatar', effect:(u)=>u.equipped.aura='sparkle'},
+  {id:'frostBorder', name:'Frost Border', cost:75, desc:'Glowing icy border on profile cards', effect:(u)=>u.equipped.cardEffect='frost'},
+  {id:'snowTrail', name:'Snow Trail', cost:100, desc:'Snowflakes drift when hovering your card', effect:(u)=>u.equipped.cardEffect='snowTrail'},
+  {id:'shimmerXP', name:'Shimmer XP Bar', cost:40, desc:'XP bar glows with winter shimmer', effect:(u)=>u.equipped.xpBar='shimmer'},
+  {id:'eliteBadge', name:'Elite Badge ❄', cost:30, desc:'Exclusive winter badge', effect:(u)=>u.equipped.badge='❄️ Elite'},
+  {id:'devCard', name:'Developer Effects', cost:0, desc:'Exclusive dev effects', effect:(u)=>{u.equipped.aura='dev'; u.equipped.cardEffect='dev'; u.equipped.xpBar='dev'; u.equipped.badge='💎 DEV';}}
 ];
 
-/* Load Shop */
 function loadShop() {
     const cont = document.getElementById('shopContainer'); cont.innerHTML='';
     shopItems.forEach(item=>{
@@ -253,16 +245,26 @@ function loadShop() {
     });
 }
 
-/* Buy Item */
+/* Purchase with inventory update */
 async function buyItem(itemId) {
     const item = shopItems.find(i=>i.id===itemId);
-    if(OWNER_UID!==auth.currentUser.uid && myProfile.vibes < item.cost){ alert("Not enough diamonds!"); return; }
-    const userRef = db.collection('users').doc(auth.currentUser.uid);
-    const updatedInv = {...myProfile.inventory}; updatedInv[itemId]=true;
-    await userRef.update({ 
-        vibes: OWNER_UID!==auth.currentUser.uid ? firebase.firestore.FieldValue.increment(-item.cost) : myProfile.vibes, 
-        inventory: updatedInv 
+    if(OWNER_UID!==auth.currentUser.uid && myProfile.vibes < item.cost){ 
+        alert("Not enough diamonds!"); return; 
+    }
+    if(!myProfile.inventory) myProfile.inventory = {};
+    myProfile.inventory[itemId] = true;
+
+    // Auto-equip new item
+    if(!myProfile.equipped) myProfile.equipped = {};
+    item.effect(myProfile);
+
+    // Update Firestore
+    await db.collection('users').doc(auth.currentUser.uid).update({
+        vibes: OWNER_UID!==auth.currentUser.uid ? firebase.firestore.FieldValue.increment(-item.cost) : myProfile.vibes,
+        inventory: myProfile.inventory,
+        equipped: myProfile.equipped
     });
+
     alert(`Purchased: ${item.name}`);
     loadInventory();
 }
@@ -270,33 +272,35 @@ async function buyItem(itemId) {
 /* Inventory UI */
 function loadInventory() {
     const cont = document.getElementById('inventoryContainer'); cont.innerHTML='';
-    for(const id in myProfile.inventory){
+    if(!myProfile.inventory) myProfile.inventory = {};
+    Object.keys(myProfile.inventory).forEach(id=>{
         const item = shopItems.find(i=>i.id===id);
-        if(!item) continue;
-        const equipped = myProfile.equipped[item.type]===id;
+        if(!item) return;
+        const isEquipped = myProfile.equipped && Object.values(myProfile.equipped).includes(id) || OWNER_UID===auth.currentUser.uid;
         cont.innerHTML+=`
         <div class="inventory-card">
-            <div class="effect-name">${item.name}</div>
-            <div style="font-size:0.7rem; color:#aaa;">${equipped?'Equipped':'Owned'}</div>
-            <button onclick="equipItem('${id}')">${equipped?'Unequip':'Equip'}</button>
+            <div style="color:var(--ice-blue); font-family:'Cinzel';">${item.name}</div>
+            <div style="font-size:0.7rem; color:#aaa;">${item.desc}</div>
+            <button onclick="equipItem('${id}')">${isEquipped?'Equipped':'Equip'}</button>
         </div>`;
-    }
+    });
 }
 
-/* Equip Item */
+/* Equip item */
 async function equipItem(itemId){
     const item = shopItems.find(i=>i.id===itemId);
     if(!item) return;
-    const eq = {...myProfile.equipped};
-    if(eq[item.type]===itemId) eq[item.type]=null; // unequip
-    else eq[item.type]=itemId; // equip
-    await db.collection('users').doc(auth.currentUser.uid).update({equipped:eq});
+    if(!myProfile.equipped) myProfile.equipped = {};
+    item.effect(myProfile);
+    await db.collection('users').doc(auth.currentUser.uid).update({ equipped: myProfile.equipped });
+    loadInventory();
+    loadApp(auth.currentUser.uid); // refresh cards with new effects
 }
 
-/* XP Helper */
+/* XP helper */
 function xpPercent(xp){ return Math.min((xp%100)/100*100,100); }
 
-/* Load App */
+/* Load main app */
 function loadApp(uid){
     db.collection('users').doc(uid).onSnapshot(d=>{
         myProfile = d.data();
@@ -310,21 +314,15 @@ function loadApp(uid){
             const u=d.data();
             const level = Math.floor(u.xp/100)+1;
             const xpFill = xpPercent(u.xp);
-            // Determine applied effects
-            let aura='', frost='', snow='', shimmer='', badge='';
-            if(u.equipped){
-                if(u.equipped.aura=== 'sparkleAura') aura='box-shadow:0 0 20px rgba(165,243,252,0.8);';
-                if(u.equipped.aura==='eliteAura') aura='box-shadow:0 0 35px gold,0 0 50px #a5f3fc;';
-                if(u.equipped.cardEffect==='frostBorder') frost='border:2px solid #a5f3fc;';
-                if(u.equipped.cardEffect==='snowTrail') snow='position:relative;';
-                if(u.equipped.xpBar==='shimmer') shimmer='background: linear-gradient(90deg,#a5f3fc,#fff);';
-                if(u.equipped.badge==='eliteBadge') badge='❄️ Elite';
-            }
+            const aura = u.equipped && u.equipped.aura==='sparkle'?'box-shadow:0 0 20px rgba(165,243,252,0.8);':'';
+            const frost = u.equipped && u.equipped.cardEffect==='frost'?'border:2px solid #a5f3fc;':'';
+            const snow = u.equipped && u.equipped.cardEffect==='snowTrail'?'position:relative;':'';
+            const shimmer = u.equipped && u.equipped.xpBar==='shimmer'?'background: linear-gradient(90deg,#a5f3fc,#fff);':'';
             cont.innerHTML+=`
             <div class="user-card" style="${aura}${frost}${snow};animation-delay:${i*0.1}s">
                 <div class="card-avatar"><img src="${u.avatar || 'https://api.dicebear.com/7.x/bottts/svg?seed='+u.name}"></div>
                 <div style="font-family:'Cinzel'; color:var(--ice-blue);">${u.name}</div>
-                <div style="font-size:0.6rem; color:#888; margin-bottom:5px;">${badge || u.badge || ''}</div>
+                <div style="font-size:0.6rem; color:#888; margin-bottom:5px;">${u.equipped && u.equipped.badge ? u.equipped.badge : u.badge || ''}</div>
                 <div style="color:var(--gold); font-size:0.8rem;">♦ ${u.vibes}</div>
                 <div class="card-level">Lvl ${level}</div>
                 <div class="card-xp"><div class="card-xp-fill" style="width:${xpFill}%; ${shimmer}"></div></div>
@@ -338,13 +336,11 @@ async function spinWheel(){
     const userRef=db.collection('users').doc(auth.currentUser.uid);
     const uSnap = await userRef.get();
     const u = uSnap.data();
-    if(auth.currentUser.uid!==OWNER_UID){
-        const last = u.lastSpin?u.lastSpin.toDate():new Date(0);
-        const now = new Date();
-        if(now-last<24*60*60*1000){ alert("You can only spin once per day."); return; }
-    }
+    const last = u.lastSpin?u.lastSpin.toDate():new Date(0);
+    const now = new Date();
+    if(OWNER_UID!==auth.currentUser.uid && now-last<24*60*60*1000){ alert("You can only spin once per day."); return; }
 
-    let index; do { index = Math.floor(Math.random()*8); } while(index===3 && auth.currentUser.uid!==OWNER_UID);
+    let index; do { index = Math.floor(Math.random()*8); } while(index===3);
     const rot=3600+(index*45);
     document.getElementById('wheel').style.transform=`rotate(${rot}deg)`;
     document.getElementById('spinBtn').disabled=true;
@@ -354,7 +350,7 @@ async function spinWheel(){
         const win=rewards[index]; const up={};
         if(win.v) up.vibes=firebase.firestore.FieldValue.increment(win.v);
         if(win.x) up.xp=firebase.firestore.FieldValue.increment(win.x);
-        if(auth.currentUser.uid!==OWNER_UID) up.lastSpin=firebase.firestore.FieldValue.serverTimestamp();
+        up.lastSpin=firebase.firestore.FieldValue.serverTimestamp();
         await userRef.update(up);
         document.getElementById('spinBtn').disabled=false;
     },5500);
@@ -380,16 +376,7 @@ db.collection('chat').orderBy('time','desc').limit(15).onSnapshot(s=>{
     s.docs.reverse().forEach(d=>box.innerHTML+=`<div class="chat-msg"><b>${d.data().user}:</b> ${d.data().msg}</div>`);
     box.scrollTop=box.scrollHeight;
 });
-
-/* Auth State */
-auth.onAuthStateChanged(user => {
-    if (user) {
-        document.getElementById('loginOverlay').style.display = 'none';
-        document.getElementById('mainView').style.display = 'grid';
-        loadApp(user.uid);
-        loadShop();
-    }
-});
 </script>
+
 </body>
 </html>
