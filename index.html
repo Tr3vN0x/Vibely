@@ -1,337 +1,165 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vibely | Connect & Vibe</title>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-    
-    <style>
-        :root {
-            --primary: #ff3c5f;
-            --secondary: #7000ff;
-            --bg: #0f0f1a;
-            --glass: rgba(255, 255, 255, 0.05);
-            --glass-border: rgba(255, 255, 255, 0.1);
-        }
-
-        body {
-            margin: 0;
-            font-family: 'Segoe UI', Roboto, sans-serif;
-            background: var(--bg);
-            color: #fff;
-            background: radial-gradient(circle at top right, #1a1a3a, #0f0f1a);
-            min-height: 100vh;
-        }
-
-        /* Navigation */
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px 30px;
-            background: rgba(15, 15, 26, 0.8);
-            backdrop-filter: blur(10px);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            border-bottom: 1px solid var(--glass-border);
-        }
-
-        h1 { font-size: 1.5rem; margin: 0; letter-spacing: 2px; color: var(--primary); }
-
-        /* UI Components */
-        .btn {
-            padding: 10px 20px;
-            border-radius: 12px;
-            border: none;
-            cursor: pointer;
-            font-weight: bold;
-            transition: 0.3s;
-            background: var(--primary);
-            color: white;
-        }
-
-        .btn-outline {
-            background: transparent;
-            border: 1px solid var(--primary);
-            color: var(--primary);
-        }
-
-        .btn:hover { transform: scale(1.05); opacity: 0.9; }
-
-        input {
-            width: 100%;
-            padding: 12px;
-            margin: 10px 0;
-            border-radius: 12px;
-            border: 1px solid var(--glass-border);
-            background: rgba(0,0,0,0.2);
-            color: white;
-            box-sizing: border-box;
-        }
-
-        /* Containers */
-        .card {
-            background: var(--glass);
-            backdrop-filter: blur(15px);
-            border: 1px solid var(--glass-border);
-            border-radius: 24px;
-            padding: 30px;
-            margin: 40px auto;
-            max-width: 400px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-        }
-
-        /* Explore Grid */
-        #cardsContainer {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 25px;
-            padding: 30px;
-        }
-
-        .userCard {
-            background: linear-gradient(145deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02));
-            border-radius: 20px;
-            padding: 25px;
-            text-align: center;
-            border: 1px solid var(--glass-border);
-            transition: all 0.3s ease;
-        }
-
-        .userCard:hover {
-            transform: translateY(-10px);
-            border-color: var(--primary);
-            box-shadow: 0 0 20px rgba(255, 60, 95, 0.2);
-        }
-
-        .tag {
-            display: inline-block;
-            background: rgba(255, 60, 95, 0.2);
-            color: var(--primary);
-            padding: 5px 12px;
-            border-radius: 8px;
-            margin: 4px;
-            font-size: 12px;
-            font-weight: bold;
-        }
-
-        .vipBadge {
-            background: linear-gradient(45deg, gold, #ffcc00);
-            color: #000;
-            padding: 3px 8px;
-            border-radius: 6px;
-            font-size: 10px;
-            font-weight: 800;
-            margin-left: 5px;
-            vertical-align: middle;
-        }
-
-        .vibe-count {
-            margin: 15px 0;
-            font-size: 1.1rem;
-            color: #ff3c5f;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Adult TagCards - Casino Style</title>
+<!-- Firebase SDKs -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&display=swap');
+body {
+  margin:0;
+  font-family:'Orbitron', sans-serif;
+  background: linear-gradient(to bottom, #0a0a0f, #1c1c2e);
+  color: #fff;
+}
+header{
+  display:flex; justify-content:space-between; align-items:center; padding:16px; background:#0f0f20;
+  border-bottom:2px solid #ff3c5f; text-shadow:0 0 10px #ff3c5f;
+}
+button{
+  padding:10px 16px; margin-top:6px; border-radius:12px; border:none; cursor:pointer;
+  background:#ff3c5f; color:#fff; font-weight:bold; text-shadow:0 0 5px #ff3c5f;
+  transition: all 0.3s;
+}
+button:hover{box-shadow:0 0 20px #ff3c5f; transform: scale(1.05);}
+input{
+  width:100%; padding:10px; margin-top:6px; border-radius:8px; border:1px solid #ccc;
+}
+.card{
+  background: linear-gradient(145deg,#1e1e2f,#2a2a3f);
+  border: 2px solid #ff3c5f; border-radius:16px; padding:20px; margin:16px auto;
+  max-width:400px; box-shadow:0 0 20px rgba(255,60,95,0.5);
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+.card:hover{
+  transform: scale(1.03); box-shadow:0 0 30px rgba(255,60,95,0.8);
+}
+.tag{
+  display:inline-block; background:#ff3c5f; color:#fff; padding:6px 12px; border-radius:8px; margin:4px;
+  font-weight:bold; text-shadow:0 0 5px #ff3c5f; transition: all 0.3s;
+}
+.tag:hover{transform:scale(1.1); text-shadow:0 0 10px #ff3c5f;}
+#cardsContainer{display:flex; flex-wrap:wrap; gap:20px; margin:16px;}
+.userCard{
+  background: linear-gradient(135deg,#1e1e2f,#2a2a3f); border:2px solid #ff3c5f;
+  border-radius:12px; padding:12px; width:180px; box-shadow:0 0 15px rgba(255,60,95,0.5);
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+.userCard:hover{transform:scale(1.05); box-shadow:0 0 25px rgba(255,60,95,0.8);}
+.vipBadge{
+  background: gold; color:#000; padding:2px 6px; border-radius:4px; font-weight:bold; font-size:12px;
+  margin-left:4px; box-shadow:0 0 10px gold; animation: glow 1.5s infinite alternate;
+}
+@keyframes glow{0%{box-shadow:0 0 5px gold;}100%{box-shadow:0 0 20px gold;}}
+</style>
 </head>
 <body>
 
 <header>
-    <h1>VIBELY</h1>
-    <div id="userControls">
-        <button class="btn btn-outline" onclick="showAuth()">Login</button>
-    </div>
+<h1>Adult TagCards</h1>
+<div id="userControls"><button onclick="showAuth()">Login/Register</button></div>
 </header>
 
+<!-- Login/Register -->
 <div id="authDiv" class="card">
-    <h2 style="text-align:center">Welcome</h2>
-    <input id="email" type="email" placeholder="Email Address">
-    <input id="password" type="password" placeholder="Password">
-    <input id="age" type="number" placeholder="Your Age (18+)">
-    <p id="authError" style="color:var(--primary); font-size: 14px;"></p>
-    <button class="btn" style="width:100%; margin-bottom:10px;" onclick="register()">Create Account</button>
-    <button class="btn btn-outline" style="width:100%" onclick="login()">Sign In</button>
+<h3>Login / Register</h3>
+<input id="email" placeholder="Email">
+<input id="password" type="password" placeholder="Password">
+<input id="age" placeholder="Age (must be 18+)" type="number">
+<button onclick="register()">Register</button>
+<button onclick="login()">Login</button>
+<p id="authError" style="color:red"></p>
 </div>
 
+<!-- Profile Card -->
 <div id="profileDiv" class="card" style="display:none">
-    <h3>Setup Your Vibe</h3>
-    <input id="username" placeholder="Display Name">
-    <input id="avatar" placeholder="Avatar Image URL (Optional)">
-    
-    <div style="margin: 15px 0;">
-        <input id="newTag" placeholder="Add interest (e.g. Gaming)" style="width: 70%;">
-        <button class="btn" onclick="addTag()" style="width: 25%;">Add</button>
-    </div>
-    <div id="tagsContainer" style="margin-bottom: 15px;"></div>
-    
-    <label style="display:block; margin-bottom: 20px;">
-        <input type="checkbox" id="vipCheckbox" style="width:auto"> Join VIP Members
-    </label>
-    
-    <button class="btn" style="width:100%" onclick="saveProfile()">Save & Explore</button>
+<h3>My Profile Card</h3>
+<input id="username" placeholder="Your Name">
+<input id="avatar" placeholder="Avatar URL">
+<input id="newTag" placeholder="Add a tag">
+<button onclick="addTag()">Add Tag</button>
+<div id="tagsContainer"></div>
+<label><input type="checkbox" id="vipCheckbox"> VIP Badge (Premium)</label>
+<button onclick="saveProfile()">Save Profile</button>
+<button onclick="showExplore()">Explore Users</button>
 </div>
 
+<!-- Explore Users -->
 <div id="exploreDiv" style="display:none">
-    <div style="display:flex; justify-content: space-between; align-items: center; padding: 0 30px;">
-        <h2>Explore the Community</h2>
-        <button class="btn btn-outline" onclick="showProfile()">Edit My Profile</button>
-    </div>
-    <div id="cardsContainer"></div>
+<h3 style="margin-left:16px">Explore Users</h3>
+<div id="cardsContainer"></div>
+<button onclick="showProfile()">Back to Profile</button>
 </div>
 
 <script>
-// --- CONFIGURATION ---
+// Firebase Config
 const firebaseConfig = {
-    apiKey: "AIzaSyCDll8RH1kzGOf-ixJmSlHXGssOHSMlO3s",
-    authDomain: "vibely-5128e.firebaseapp.com",
-    projectId: "vibely-5128e",
-    storageBucket: "vibely-5128e.firebasestorage.app",
-    messagingSenderId: "1048550825812",
-    appId: "1:1048550825812:web:fc5bbba51e065807ffb2c1"
+  apiKey: "AIzaSyCDll8RH1kzGOf-ixJmSlHXGssOHSMlO3s",
+  authDomain: "vibely-5128e.firebaseapp.com",
+  projectId: "vibely-5128e",
+  storageBucket: "vibely-5128e.firebasestorage.app",
+  messagingSenderId: "1048550825812",
+  appId: "1:1048550825812:web:fc5bbba51e065807ffb2c1"
 };
-
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 
 let myTags = [];
 
-// --- NAVIGATION ---
-function showAuth(){ 
-    document.getElementById('authDiv').style.display='block'; 
-    document.getElementById('profileDiv').style.display='none'; 
-    document.getElementById('exploreDiv').style.display='none'; 
-}
+// Show/hide auth
+function showAuth(){document.getElementById('authDiv').style.display='block'; document.getElementById('profileDiv').style.display='none'; document.getElementById('exploreDiv').style.display='none';}
 
-function showProfile(){
-    document.getElementById('profileDiv').style.display='block'; 
-    document.getElementById('exploreDiv').style.display='none';
-}
-
-function showExplore(){
-    document.getElementById('authDiv').style.display='none'; 
-    document.getElementById('profileDiv').style.display='none'; 
-    document.getElementById('exploreDiv').style.display='block';
-    loadUsers();
-}
-
-// --- AUTH LOGIC ---
+// Auth
 function register(){
-    const email = document.getElementById('email').value;
-    const password = document.getElementById('password').value;
-    const age = parseInt(document.getElementById('age').value);
-    
-    if(age < 18){ document.getElementById('authError').innerText='Access restricted to 18+'; return; }
-    
-    auth.createUserWithEmailAndPassword(email, password)
-        .then(userCred => {
-            return db.collection('users').doc(userCred.user.uid).set({
-                age: age, 
-                vip: false, 
-                vibes: 0,
-                tags: []
-            });
-        })
-        .catch(e => document.getElementById('authError').innerText = e.message);
+  const email = document.getElementById('email').value;
+  const password = document.getElementById('password').value;
+  const age = parseInt(document.getElementById('age').value);
+  if(age < 18){document.getElementById('authError').innerText='You must be 18+'; return;}
+  auth.createUserWithEmailAndPassword(email,password)
+    .then(userCred=>db.collection('users').doc(userCred.user.uid).set({age:age, vip:false}))
+    .catch(e=>document.getElementById('authError').innerText=e.message);
 }
-
 function login(){
-    const email = document.getElementById('email').value;
-    const password = document.getElementById('password').value;
-    auth.signInWithEmailAndPassword(email, password)
-        .catch(e => document.getElementById('authError').innerText = e.message);
+  const email = document.getElementById('email').value;
+  const password = document.getElementById('password').value;
+  auth.signInWithEmailAndPassword(email,password)
+    .catch(e=>document.getElementById('authError').innerText=e.message);
 }
+function logout(){auth.signOut(); showAuth();}
 
-function logout(){ auth.signOut(); location.reload(); }
+// Profile
+function addTag(){const t=document.getElementById('newTag').value.trim(); if(t&&!myTags.includes(t)){myTags.push(t); renderTags(); document.getElementById('newTag').value='';}}
+function renderTags(){const c=document.getElementById('tagsContainer'); c.innerHTML=''; myTags.forEach(t=>{const s=document.createElement('span'); s.className='tag'; s.innerText=t; c.appendChild(s);});}
+function saveProfile(){const user=auth.currentUser; if(!user) return; const name=document.getElementById('username').value; const avatar=document.getElementById('avatar').value; const vip=document.getElementById('vipCheckbox').checked; db.collection('users').doc(user.uid).set({name, avatar, tags:myTags, vip},{merge:true}); alert('Profile saved!'); showExplore();}
+function showExplore(){document.getElementById('authDiv').style.display='none'; document.getElementById('profileDiv').style.display='none'; document.getElementById('exploreDiv').style.display='block'; loadUsers();}
+function showProfile(){document.getElementById('profileDiv').style.display='block'; document.getElementById('exploreDiv').style.display='none';}
 
-// --- PROFILE LOGIC ---
-function addTag(){
-    const t = document.getElementById('newTag').value.trim();
-    if(t && !myTags.includes(t)){
-        myTags.push(t);
-        renderTags();
-        document.getElementById('newTag').value = '';
-    }
-}
-
-function renderTags(){
-    const c = document.getElementById('tagsContainer');
-    c.innerHTML = '';
-    myTags.forEach(t => {
-        const s = document.createElement('span');
-        s.className = 'tag';
-        s.innerText = t;
-        c.appendChild(s);
-    });
-}
-
-function saveProfile(){
-    const user = auth.currentUser;
-    const name = document.getElementById('username').value;
-    const avatar = document.getElementById('avatar').value;
-    const vip = document.getElementById('vipCheckbox').checked;
-    
-    db.collection('users').doc(user.uid).set({
-        name, avatar, tags: myTags, vip
-    }, {merge: true}).then(() => showExplore());
-}
-
-// --- EXPLORE & VIBES ---
-function sendVibe(targetUserId){
-    db.collection('users').doc(targetUserId).update({
-        vibes: firebase.firestore.FieldValue.increment(1)
-    });
-}
-
+// Explore
 function loadUsers(){
-    db.collection('users').onSnapshot(snapshot => {
-        const c = document.getElementById('cardsContainer');
-        c.innerHTML = '';
-        snapshot.forEach(doc => {
-            const u = doc.data();
-            const id = doc.id;
-            const card = document.createElement('div');
-            card.className = 'userCard';
-            card.innerHTML = `
-                <img src="${u.avatar || 'https://api.dicebear.com/7.x/avataaars/svg?seed='+id}" width="100" height="100" style="border-radius:50%; border:3px solid var(--primary); background:#222;">
-                <h3>${u.name || 'Viber'} ${u.vip ? '<span class="vipBadge">VIP</span>' : ''}</h3>
-                <div>${(u.tags || []).map(t => `<span class="tag">${t}</span>`).join('')}</div>
-                <div class="vibe-count">🔥 ${u.vibes || 0} Vibes</div>
-                <button class="btn btn-outline" style="width:100%" onclick="sendVibe('${id}')">Send Vibe</button>
-            `;
-            c.appendChild(card);
-        });
+  db.collection('users').onSnapshot(snapshot=>{
+    const c=document.getElementById('cardsContainer'); c.innerHTML='';
+    snapshot.forEach(doc=>{
+      const u=doc.data();
+      const card=document.createElement('div'); card.className='userCard';
+      card.innerHTML=`<div style="text-align:center"><img src="${u.avatar||'https://via.placeholder.com/80'}" width="80" height="80" style="border-radius:50%"><h4>${u.name||'Anonymous'}${u.vip?'<span class="vipBadge">VIP</span>':''}</h4></div><div>${(u.tags||[]).map(t=>`<span class="tag">${t}</span>`).join('')}</div>`;
+      c.appendChild(card);
     });
+  });
 }
 
-// --- SESSION LISTENER ---
-auth.onAuthStateChanged(user => {
-    if(user){
-        document.getElementById('authDiv').style.display='none';
-        document.getElementById('userControls').innerHTML = `
-            <span style="margin-right:15px; font-size:14px; opacity:0.7">${user.email}</span>
-            <button class="btn btn-outline" onclick="logout()">Logout</button>
-        `;
-        
-        db.collection('users').doc(user.uid).get().then(doc => {
-            if(doc.exists){
-                const d = doc.data();
-                document.getElementById('username').value = d.name || '';
-                document.getElementById('avatar').value = d.avatar || '';
-                document.getElementById('vipCheckbox').checked = d.vip || false;
-                myTags = d.tags || [];
-                renderTags();
-                showExplore();
-            } else {
-                showProfile();
-            }
-        });
-    } else {
-        showAuth();
-    }
+// Auth listener
+auth.onAuthStateChanged(user=>{
+  if(user){
+    document.getElementById('authDiv').style.display='none';
+    document.getElementById('profileDiv').style.display='block';
+    document.getElementById('userControls').innerHTML=`<span>Hello, ${user.email}</span> <button onclick="logout()">Logout</button>`;
+    db.collection('users').doc(user.uid).get().then(doc=>{if(doc.exists){const d=doc.data(); document.getElementById('username').value=d.name||''; document.getElementById('avatar').value=d.avatar||''; document.getElementById('vipCheckbox').checked=d.vip||false; myTags=d.tags||[]; renderTags();}});
+  } else {showAuth();}
 });
 </script>
 
