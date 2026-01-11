@@ -5,12 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Vibely ❄️ Winter Casino</title>
 
-  <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
-  <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet" />
 
   <style>
@@ -41,6 +39,7 @@
       justify-content: space-between;
       align-items: center;
       border-bottom: 1px solid var(--border);
+      z-index: 10;
     }
 
     .layout {
@@ -77,7 +76,7 @@
 
     main { padding: 2.5rem; overflow-y: auto; }
     .view { display: none; animation: fade 0.4s ease; }
-    @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes fade { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
     .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 1.5rem; }
 
@@ -115,7 +114,7 @@
       font-size: 0.7rem;
     }
 
-    .btn:disabled { background: #1e293b; color: #64748b; }
+    .btn:disabled { background: #1e293b; color: #64748b; cursor: not-allowed; }
 
     aside {
       border-left: 1px solid var(--border);
@@ -126,7 +125,7 @@
     }
 
     .chat { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 0.8rem; }
-    .msg { background: var(--card); padding: 10px; border-radius: 14px; font-size: 0.8rem; }
+    .msg { background: var(--card); padding: 10px; border-radius: 14px; font-size: 0.8rem; border: 1px solid var(--border); }
     .msg b { color: var(--ice); display: block; font-size: 0.65rem; }
 
     input, textarea {
@@ -141,30 +140,30 @@
       resize: none;
     }
 
+    .wheel-container { position: relative; width: 300px; margin: 2rem auto; }
     .wheel {
       width: 300px;
       height: 300px;
       border-radius: 50%;
-      margin: 2rem auto;
       border: 10px solid #1e293b;
       background: conic-gradient(
-        #0f172a 0 45deg,
-        #1e293b 45 90deg,
-        #0f172a 90 135deg,
-        #1e293b 135 180deg,
-        #0f172a 180 225deg,
-        #1e293b 225 270deg,
-        #0f172a 270 315deg,
-        var(--gold) 315 360deg
+        #0f172a 0 45deg, #1e293b 45 90deg,
+        #0f172a 90 135deg, #1e293b 135 180deg,
+        #0f172a 180 225deg, #1e293b 225 270deg,
+        #0f172a 270 315deg, var(--gold) 315 360deg
       );
+      transition: transform 4s cubic-bezier(0.15, 0, 0.15, 1);
     }
 
     .needle {
+      position: absolute;
+      top: -10px; left: 50%;
+      transform: translateX(-50%);
       width: 0; height: 0;
       border-left: 14px solid transparent;
       border-right: 14px solid transparent;
       border-top: 26px solid var(--ice);
-      margin: 0 auto;
+      z-index: 5;
       filter: drop-shadow(0 0 6px var(--ice));
     }
   </style>
@@ -178,10 +177,10 @@
 
 <div class="layout">
   <nav>
-    <div class="nav-link active" onclick="nav('lounge')">Lounge</div>
-    <div class="nav-link" onclick="nav('wheel')">Spin</div>
-    <div class="nav-link" onclick="nav('shop')">Shop</div>
-    <div class="nav-link" onclick="nav('profile')">Profile</div>
+    <div class="nav-link active" onclick="nav('lounge', this)">Lounge</div>
+    <div class="nav-link" onclick="nav('wheel', this)">Spin</div>
+    <div class="nav-link" onclick="nav('shop', this)">Shop</div>
+    <div class="nav-link" onclick="nav('profile', this)">Profile</div>
   </nav>
 
   <main>
@@ -192,21 +191,25 @@
 
     <section id="view-wheel" class="view">
       <h2>Daily Spin</h2>
-      <div class="needle"></div>
-      <div id="wheel" class="wheel"></div>
-      <button class="btn" onclick="spin()">Spin</button>
-      <div id="spinMsg" style="margin-top:1rem;"></div>
+      <div class="wheel-container">
+        <div class="needle"></div>
+        <div id="wheel" class="wheel"></div>
+      </div>
+      <button id="spinBtn" class="btn" onclick="spin()">Spin</button>
+      <div id="spinMsg" style="margin-top:1rem; text-align: center; color: var(--gold); font-weight: bold;"></div>
     </section>
 
     <section id="view-shop" class="view">
       <h2>Avatar Shop</h2>
-      <div id="shop" class="grid"></div>
+      <div id="shop" class="grid">
+        <div class="card">Coming Soon...</div>
+      </div>
     </section>
 
     <section id="view-profile" class="view">
       <h2>My Profile</h2>
-      <div class="card">
-        <img id="myAvatar" class="avatar" />
+      <div class="card" style="max-width: 400px; margin: auto;">
+        <img id="myAvatar" class="avatar" src="https://placehold.co/200x200" />
         <input id="avatarUrl" placeholder="Profile image URL" />
         <textarea id="bio" placeholder="Your bio / tags"></textarea>
         <button class="btn" onclick="saveProfile()">Save Profile</button>
@@ -221,13 +224,15 @@
 </div>
 
 <script>
-// 🔥 Firebase config here
+// 🔥 RE-INSERT YOUR CONFIG HERE
 const firebaseConfig = { /* your config */ };
+
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 const auth = firebase.auth();
 
 let me = null;
+let currentRotation = 0;
 
 auth.signInAnonymously();
 
@@ -237,8 +242,8 @@ auth.onAuthStateChanged(async u => {
   const doc = await ref.get();
   if (!doc.exists) {
     await ref.set({
-      name: 'Guest',
-      avatar: 'https://placehold.co/200x200',
+      name: 'Guest_' + Math.floor(Math.random()*999),
+      avatar: 'https://api.dicebear.com/7.x/pixel-art/svg?seed=' + u.uid,
       bio: '',
       diamonds: 100,
       xp: 0,
@@ -246,57 +251,107 @@ auth.onAuthStateChanged(async u => {
     });
   }
 
-  ref.onSnapshot(s => { me = s.data(); updateUI(); });
+  ref.onSnapshot(s => { 
+    me = s.data(); 
+    updateUI(); 
+  });
 });
 
 function updateUI() {
+  if(!me) return;
   document.getElementById('stats').innerText = `♦ ${me.diamonds} · LVL ${Math.floor(me.xp/100)+1}`;
   document.getElementById('myAvatar').src = me.avatar;
   document.getElementById('bio').value = me.bio || '';
 }
 
-function nav(v) {
+function nav(v, el) {
   document.querySelectorAll('.view').forEach(s => s.style.display='none');
+  document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
   document.getElementById('view-'+v).style.display='block';
+  el.classList.add('active');
 }
 
 function saveProfile() {
+  const newUrl = document.getElementById('avatarUrl').value;
   db.collection('users').doc(auth.currentUser.uid).update({
-    avatar: document.getElementById('avatarUrl').value || me.avatar,
+    avatar: newUrl || me.avatar,
     bio: document.getElementById('bio').value
-  });
+  }).then(() => alert("Profile Saved!"));
 }
 
 function spin() {
-  const rewards = [10, 20, 50, 'xp', 'xp', 100];
-  const r = rewards[Math.floor(Math.random()*rewards.length)];
-  if (r === 'xp') {
-    db.collection('users').doc(auth.currentUser.uid).update({ xp: firebase.firestore.FieldValue.increment(40) });
-    spinMsg.innerText = 'You won XP!';
-  } else {
-    db.collection('users').doc(auth.currentUser.uid).update({ diamonds: firebase.firestore.FieldValue.increment(r) });
-    spinMsg.innerText = `You won ♦ ${r}`;
-  }
+  const btn = document.getElementById('spinBtn');
+  const wheel = document.getElementById('wheel');
+  const msg = document.getElementById('spinMsg');
+  
+  btn.disabled = true;
+  msg.innerText = "Spinning...";
+  
+  // Logic: 5 full spins + random degrees
+  const extraDegrees = Math.floor(Math.random() * 360);
+  currentRotation += (360 * 5) + extraDegrees;
+  wheel.style.transform = `rotate(${currentRotation}deg)`;
+
+  setTimeout(() => {
+    const rewards = [10, 20, 50, 'xp', 'xp', 100];
+    const r = rewards[Math.floor(Math.random()*rewards.length)];
+    
+    if (r === 'xp') {
+      db.collection('users').doc(auth.currentUser.uid).update({ 
+        xp: firebase.firestore.FieldValue.increment(40) 
+      });
+      msg.innerText = 'You won 40 XP!';
+    } else {
+      db.collection('users').doc(auth.currentUser.uid).update({ 
+        diamonds: firebase.firestore.FieldValue.increment(r) 
+      });
+      msg.innerText = `You won ♦ ${r}`;
+    }
+    btn.disabled = false;
+  }, 4000);
 }
 
 function send() {
-  const i = chatInput.value;
-  if (!i) return;
-  db.collection('chat').add({ name: me.name, msg: i, time: Date.now() });
-  db.collection('users').doc(auth.currentUser.uid).update({ xp: firebase.firestore.FieldValue.increment(5) });
-  chatInput.value='';
+  const input = document.getElementById('chatInput');
+  const val = input.value.trim();
+  if (!val || !me) return;
+  
+  db.collection('chat').add({ 
+    name: me.name, 
+    msg: val, 
+    time: Date.now() 
+  });
+  
+  db.collection('users').doc(auth.currentUser.uid).update({ 
+    xp: firebase.firestore.FieldValue.increment(5) 
+  });
+  input.value='';
 }
 
-db.collection('chat').orderBy('time').limit(30).onSnapshot(s => {
-  chat.innerHTML='';
-  s.forEach(d => chat.innerHTML += `<div class="msg"><b>${d.data().name}</b>${d.data().msg}</div>`);
+// Fixed Chat Listener (Auto-Scroll)
+db.collection('chat').orderBy('time', 'desc').limit(30).onSnapshot(s => {
+  const chatDiv = document.getElementById('chat');
+  chatDiv.innerHTML='';
+  const messages = [];
+  s.forEach(d => messages.unshift(d.data()));
+  messages.forEach(m => {
+    chatDiv.innerHTML += `<div class="msg"><b>${m.name}</b>${m.msg}</div>`;
+  });
+  chatDiv.scrollTop = chatDiv.scrollHeight;
 });
 
+// Fixed Player Grid Listener
 db.collection('users').onSnapshot(s => {
-  players.innerHTML='';
+  const playerDiv = document.getElementById('players');
+  playerDiv.innerHTML='';
   s.forEach(d => {
     const u = d.data();
-    players.innerHTML += `<div class="card"><img class="avatar" src="${u.avatar}"><b>${u.name}</b><p style="font-size:0.7rem;">${u.bio||''}</p></div>`;
+    playerDiv.innerHTML += `
+      <div class="card">
+        <img class="avatar" src="${u.avatar}">
+        <div style="font-weight:800;">${u.name}</div>
+        <p style="font-size:0.7rem; color: #64748b;">${u.bio||''}</p>
+      </div>`;
   });
 });
 </script>
