@@ -15,78 +15,77 @@
         :root {
             --gold: #d4af37;
             --ice-blue: #a5f3fc;
-            --mythic: linear-gradient(45deg, #ff00ea, #00d4ff);
+            --mythic: #ff00ea;
             --glass: rgba(255, 255, 255, 0.05);
         }
         * { box-sizing: border-box; transition: all 0.3s ease; }
         body { margin: 0; font-family: 'Inter', sans-serif; background: #05070a; color: #fff; height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
 
-        /* Mythic Aura Effect */
+        /* Animations */
         @keyframes mythicGlow {
-            0% { box-shadow: 0 0 15px #ff00ea; border-color: #ff00ea; }
+            0%, 100% { box-shadow: 0 0 15px var(--mythic); border-color: var(--mythic); }
             50% { box-shadow: 0 0 30px #00d4ff; border-color: #00d4ff; }
-            100% { box-shadow: 0 0 15px #ff00ea; border-color: #ff00ea; }
         }
-
         .snowflake { color: #fff; position: fixed; top: -10%; z-index: 999; animation: fall linear infinite; pointer-events: none; opacity: 0.4; }
         @keyframes fall { to { transform: translateY(110vh) rotate(360deg); } }
 
-        header { padding: 15px 40px; background: #000; border-bottom: 1px solid rgba(165, 243, 252, 0.2); display: flex; justify-content: space-between; align-items: center; }
+        header { padding: 15px 40px; background: #000; border-bottom: 1px solid rgba(165, 243, 252, 0.2); display: flex; justify-content: space-between; align-items: center; z-index: 10; }
         
         .main-layout { display: grid; grid-template-columns: 240px 1fr 320px; flex-grow: 1; overflow: hidden; }
         
-        /* Sidebar */
         .nav-sidebar { padding: 20px; background: rgba(0,0,0,0.4); border-right: 1px solid rgba(255,255,255,0.05); display: flex; flex-direction: column; gap: 10px; }
-        .nav-btn { background: var(--glass); border: 1px solid transparent; color: #888; padding: 12px; font-family: 'Cinzel'; cursor: pointer; border-radius: 6px; text-align: left; }
+        .nav-btn { background: var(--glass); border: 1px solid transparent; color: #888; padding: 12px; font-family: 'Cinzel'; cursor: pointer; border-radius: 6px; text-align: left; font-size: 0.8rem; }
         .nav-btn:hover, .nav-btn.active { color: var(--ice-blue); border-color: var(--ice-blue); background: rgba(165, 243, 252, 0.1); }
 
-        #centerContent { overflow-y: auto; padding: 40px; background: radial-gradient(circle at center, #0c1220 0%, #05070a 100%); }
-        .view-section { display: none; }
+        #centerContent { overflow-y: auto; padding: 40px; background: radial-gradient(circle at center, #0c1220 0%, #05070a 100%); position: relative; }
+        .view-section { display: none; max-width: 900px; margin: 0 auto; }
 
-        /* Cards */
-        .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; }
-        .user-card { background: rgba(255,255,255,0.03); border: 1px solid #222; padding: 25px; border-radius: 15px; text-align: center; position: relative; }
-        .mythic-fx { animation: mythicGlow 3s infinite; border-width: 2px; }
+        /* Wheel Styles */
+        .wheel-container { position: relative; width: 300px; height: 300px; margin: 30px auto; }
+        #wheel { width: 100%; height: 100%; border-radius: 50%; border: 8px solid var(--ice-blue); position: relative; transition: transform 4s cubic-bezier(0.15, 0, 0.15, 1); background: conic-gradient(#111 0deg 45deg, #1a1a1a 45deg 90deg, #111 90deg 135deg, #1a1a1a 135deg 180deg, #111 180deg 225deg, #1a1a1a 225deg 270deg, #111 270deg 315deg, #1a1a1a 315deg 360deg); }
+        .wheel-pointer { position: absolute; top: -20px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 15px solid transparent; border-right: 15px solid transparent; border-top: 30px solid var(--ice-blue); z-index: 5; }
 
-        /* Shop Items */
-        .shop-card { background: #111; border: 1px solid #333; padding: 20px; border-radius: 12px; border-top: 4px solid var(--ice-blue); display: flex; flex-direction: column; gap: 10px; }
-        .mythic-shop { border-top-color: #ff00ea; background: linear-gradient(to bottom, #111, #1a051a); }
-        .price { color: var(--gold); font-weight: bold; font-size: 1.1rem; }
+        /* Card & Shop UI */
+        .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; }
+        .user-card { background: rgba(255,255,255,0.03); border: 1px solid #222; padding: 20px; border-radius: 15px; text-align: center; }
+        .mythic-fx { animation: mythicGlow 3s infinite; border-width: 2px !important; }
+        
+        .shop-card { background: #111; border: 1px solid #333; padding: 20px; border-radius: 12px; display: flex; flex-direction: column; gap: 10px; position: relative; overflow: hidden; }
+        .price { color: var(--gold); font-weight: bold; }
 
-        /* Chat */
+        /* Right Sidebar Chat */
         .right-sidebar { background: #000; border-left: 1px solid #222; display: flex; flex-direction: column; padding: 15px; }
-        #chatBox { flex-grow: 1; overflow-y: auto; margin-bottom: 10px; display: flex; flex-direction: column; gap: 8px; }
-        .chat-msg { font-size: 0.85rem; padding: 10px; background: #111; border-radius: 8px; border-left: 3px solid var(--ice-blue); }
+        #chatBox { flex-grow: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px; }
+        .chat-msg { font-size: 0.8rem; padding: 8px; background: #111; border-radius: 6px; border-left: 3px solid var(--ice-blue); }
 
         #loginOverlay { position: fixed; inset: 0; background: #05070a; z-index: 10000; display: flex; align-items: center; justify-content: center; }
-        input { background: #111; border: 1px solid #333; color: #fff; padding: 12px; border-radius: 5px; width: 100%; margin-bottom: 10px; }
+        input { background: #111; border: 1px solid #333; color: #fff; padding: 12px; border-radius: 5px; width: 100%; margin-bottom: 10px; outline: none; }
     </style>
 </head>
 <body>
 
 <div id="loginOverlay">
-    <div style="width: 320px; text-align: center; border: 1px solid var(--ice-blue); padding: 30px; border-radius: 20px; background: #000;">
-        <h2 style="font-family:'Cinzel'; color:var(--ice-blue); letter-spacing: 2px;">WINTER LOUNGE</h2>
-        <div id="authBox">
-            <input id="regName" placeholder="Username (For Register)" style="display:none;">
-            <input id="authEmail" type="email" placeholder="Email">
-            <input id="authPass" type="password" placeholder="Password">
-            <button class="nav-btn" style="width:100%; text-align:center;" onclick="handleAuth()">ENTER LOUNGE</button>
-            <p onclick="toggleMode()" style="font-size:0.7rem; cursor:pointer; color:#666; margin-top:15px;">Switch: Login / Register</p>
-        </div>
+    <div style="width: 320px; text-align: center; background: #000; padding: 30px; border-radius: 20px; border: 1px solid var(--ice-blue);">
+        <h2 style="font-family:'Cinzel'; color:var(--ice-blue);">WINTER LOUNGE</h2>
+        <input id="regName" placeholder="Username (New Users)" style="display:none;">
+        <input id="authEmail" type="email" placeholder="Email">
+        <input id="authPass" type="password" placeholder="Password">
+        <button class="nav-btn" style="width:100%; text-align:center;" onclick="handleAuth()">LOGIN / REGISTER</button>
+        <p onclick="toggleMode()" style="font-size:0.7rem; cursor:pointer; color:#555; margin-top:15px;">Toggle Login/Register</p>
     </div>
 </div>
 
 <header>
-    <div style="font-family:'Cinzel'; color:var(--ice-blue); font-weight:bold; letter-spacing:3px;">❄ WINTER DIAMOND LOUNGE</div>
-    <div id="diamondCount" style="color:var(--gold); font-family:'Cinzel';">♦ 0</div>
+    <div style="font-family:'Cinzel'; color:var(--ice-blue); letter-spacing:3px;">❄ DIAMOND LOUNGE</div>
+    <div id="diamondDisplay" style="color:var(--gold); font-family:'Cinzel';">♦ 0</div>
 </header>
 
 <div class="main-layout">
     <nav class="nav-sidebar">
-        <button class="nav-btn active" id="btn-explore" onclick="switchTab('explore')">The Lounge</button>
+        <button class="nav-btn active" id="btn-explore" onclick="switchTab('explore')">Lounge</button>
+        <button class="nav-btn" id="btn-wheel" onclick="switchTab('wheel')">Frost Vault</button>
         <button class="nav-btn" id="btn-shop" onclick="switchTab('shop')">Winter Shop</button>
-        <button class="nav-btn" id="btn-inventory" onclick="switchTab('inventory')">My Inventory</button>
+        <button class="nav-btn" id="btn-inventory" onclick="switchTab('inventory')">Inventory</button>
         <button class="nav-btn" style="margin-top:auto; color:#ff4444;" onclick="auth.signOut()">Logout</button>
     </nav>
 
@@ -96,8 +95,18 @@
             <div id="userGrid" class="card-grid"></div>
         </section>
 
+        <section id="view-wheel" class="view-section" style="text-align:center;">
+            <h2 style="font-family:'Cinzel';">The Frost Vault</h2>
+            <p style="font-size:0.8rem; color:#888;">Spin once every 24 hours for Diamonds!</p>
+            <div class="wheel-container">
+                <div class="wheel-pointer"></div>
+                <div id="wheel"></div>
+            </div>
+            <button id="spinBtn" class="nav-btn" style="text-align:center; padding: 15px 40px;" onclick="spinVault()">ACTIVATE VAULT</button>
+        </section>
+
         <section id="view-shop" class="view-section">
-            <h2 style="font-family:'Cinzel';">Diamond Boutique</h2>
+            <h2 style="font-family:'Cinzel';">Winter Boutique</h2>
             <div id="shopGrid" class="card-grid"></div>
         </section>
 
@@ -109,28 +118,28 @@
 
     <aside class="right-sidebar">
         <div id="chatBox"></div>
-        <input id="chatInput" placeholder="Send a message..." onkeypress="if(event.key==='Enter') sendChat()">
+        <input id="chatInput" placeholder="Type a message..." onkeypress="if(event.key==='Enter') sendChat()">
     </aside>
 </div>
 
 <script>
-// FIREBASE CONFIG
+// FIREBASE
 const firebaseConfig = { apiKey: "AIzaSyCDll8RH1kzGOf-ixJmSlHXGssOHSMlO3s", authDomain: "vibely-5128e.firebaseapp.com", projectId: "vibely-5128e", storageBucket: "vibely-5128e.firebasestorage.app", messagingSenderId: "1048550825812", appId: "1:1048550825812:web:fc5bbba51e065807ffb2c1" };
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 const auth = firebase.auth();
 
 let isLogin = true;
-let currentUser = null;
+let myProfile = null;
 
-const WINTER_CATALOG = [
-    { id: 'f_border', name: 'Frost Border', cost: 100, mythic: false, desc: 'A chilled blue card glow.' },
-    { id: 's_aura', name: 'Snow Aura', cost: 250, mythic: false, desc: 'Floating snowflakes on card.' },
-    { id: 'm_lord', name: 'MYTHIC: Frost Lord', cost: 1000, mythic: true, desc: 'Animated color-shifting aura.' },
-    { id: 'b_god', name: 'Godly Winter Bundle', cost: 2000, mythic: true, desc: 'All effects + "Ice God" Badge.' }
+const SHOP_DATA = [
+    { id: 'f_border', name: 'Frost Border', cost: 100, mythic: false, desc: 'Glowing ice card edges.' },
+    { id: 'm_aura', name: 'MYTHIC: Ice God', cost: 1000, mythic: true, desc: 'Pulsing purple/blue aura.' },
+    { id: 'badge_elite', name: 'Elite Badge', cost: 200, mythic: false, desc: 'Adds "Elite" tag to card.' },
+    { id: 'god_bundle', name: 'Bundle: Winter Deity', cost: 1800, mythic: true, desc: 'Includes Lord Aura + Gold Tag.' }
 ];
 
-/* Authentication */
+/* Auth Logic */
 function toggleMode() { isLogin = !isLogin; document.getElementById('regName').style.display = isLogin ? 'none' : 'block'; }
 
 async function handleAuth() {
@@ -142,7 +151,7 @@ async function handleAuth() {
         else {
             const res = await auth.createUserWithEmailAndPassword(e, p);
             await db.collection('users').doc(res.user.uid).set({
-                name: n || "User", vibes: 500, xp: 0, inventory: [], equipped: null, badge: "❄️ Villager"
+                name: n || "Member", vibes: 100, xp: 0, inventory: [], equipped: null, lastSpin: 0
             });
         }
     } catch (err) { alert(err.message); }
@@ -151,18 +160,18 @@ async function handleAuth() {
 auth.onAuthStateChanged(user => {
     if (user) {
         document.getElementById('loginOverlay').style.display = 'none';
-        initLounge(user.uid);
+        initApp(user.uid);
     } else {
         document.getElementById('loginOverlay').style.display = 'flex';
     }
 });
 
 /* App Data */
-function initLounge(uid) {
+function initApp(uid) {
     db.collection('users').doc(uid).onSnapshot(doc => {
         if (!doc.exists) return;
-        currentUser = doc.data();
-        document.getElementById('diamondCount').innerText = `♦ ${currentUser.vibes}`;
+        myProfile = doc.data();
+        document.getElementById('diamondDisplay').innerText = `♦ ${myProfile.vibes}`;
         renderShop();
         renderInventory();
     });
@@ -172,68 +181,86 @@ function initLounge(uid) {
         grid.innerHTML = '';
         snap.forEach(d => {
             const u = d.data();
-            const isMythic = u.equipped === 'm_lord' || u.equipped === 'b_winter' || u.equipped === 'b_god';
+            const isMythic = u.equipped === 'm_aura' || u.equipped === 'god_bundle';
             grid.innerHTML += `
                 <div class="user-card ${isMythic ? 'mythic-fx' : ''}">
-                    <div style="font-size:2.5rem; margin-bottom:10px;">👤</div>
-                    <div style="font-family:Cinzel; color:var(--ice-blue);">${u.name}</div>
-                    <div style="font-size:0.7rem; color:var(--gold);">${u.badge || ''}</div>
+                    <div style="font-size:2rem; margin-bottom:10px;">👤</div>
+                    <div style="font-family:Cinzel; color:${isMythic ? 'var(--mythic)' : 'var(--ice-blue)'};">${u.name}</div>
+                    <div style="font-size:0.6rem; color:#888;">LVL ${Math.floor(u.xp/100)+1}</div>
                 </div>`;
         });
     });
 }
 
+/* Wheel Logic */
+async function spinVault() {
+    const now = Date.now();
+    const cooldown = 24 * 60 * 60 * 1000;
+    if (now - (myProfile.lastSpin || 0) < cooldown) {
+        return alert("Vault is locked! Come back tomorrow.");
+    }
+
+    const spinBtn = document.getElementById('spinBtn');
+    spinBtn.disabled = true;
+    
+    const randomDeg = 1800 + Math.floor(Math.random() * 360);
+    document.getElementById('wheel').style.transform = `rotate(${randomDeg}deg)`;
+
+    setTimeout(async () => {
+        const winAmount = Math.floor(Math.random() * 50) + 10;
+        alert(`Vault Opened! You found ♦ ${winAmount} Diamonds!`);
+        await db.collection('users').doc(auth.currentUser.uid).update({
+            vibes: firebase.firestore.FieldValue.increment(winAmount),
+            lastSpin: Date.now()
+        });
+        spinBtn.disabled = false;
+    }, 4100);
+}
+
 function renderShop() {
     const grid = document.getElementById('shopGrid');
     grid.innerHTML = '';
-    WINTER_CATALOG.forEach(item => {
-        const owned = currentUser.inventory?.includes(item.id);
+    SHOP_DATA.forEach(item => {
+        const owned = myProfile.inventory?.includes(item.id);
         grid.innerHTML += `
-            <div class="shop-card ${item.mythic ? 'mythic-shop' : ''}">
-                <div style="font-weight:bold; color:${item.mythic ? '#ff00ea' : '#fff'};">${item.name}</div>
-                <div style="font-size:0.7rem; color:#888;">${item.desc}</div>
+            <div class="shop-card">
+                <div style="font-weight:bold; color:${item.mythic ? 'var(--mythic)' : '#fff'};">${item.name}</div>
+                <div style="font-size:0.7rem; color:#666;">${item.desc}</div>
                 <div class="price">♦ ${item.cost}</div>
                 <button class="nav-btn" style="text-align:center;" onclick="buyItem('${item.id}', ${item.cost})" ${owned ? 'disabled' : ''}>
-                    ${owned ? 'OWNED' : 'PURCHASE'}
+                    ${owned ? 'PURCHASED' : 'BUY'}
                 </button>
             </div>`;
     });
 }
 
 async function buyItem(id, cost) {
-    if (currentUser.vibes < cost) return alert("Not enough Diamonds!");
+    if (myProfile.vibes < cost) return alert("Not enough Diamonds!");
     await db.collection('users').doc(auth.currentUser.uid).update({
         vibes: firebase.firestore.FieldValue.increment(-cost),
         inventory: firebase.firestore.FieldValue.arrayUnion(id)
     });
-    alert("Purchased! Check your inventory. ❄️");
 }
 
 function renderInventory() {
     const grid = document.getElementById('inventoryGrid');
     grid.innerHTML = '';
-    if (!currentUser.inventory?.length) {
-        grid.innerHTML = "<p style='color:#444;'>Your treasury is empty.</p>";
-        return;
-    }
-    currentUser.inventory.forEach(itemId => {
-        const item = WINTER_CATALOG.find(i => i.id === itemId);
-        const active = currentUser.equipped === itemId;
+    myProfile.inventory?.forEach(itemId => {
+        const item = SHOP_DATA.find(i => i.id === itemId);
+        const active = myProfile.equipped === itemId;
         grid.innerHTML += `
             <div class="shop-card">
-                <div>${item ? item.name : 'Legacy Item'}</div>
+                <div>${item ? item.name : 'Item'}</div>
                 <button class="nav-btn" style="text-align:center;" onclick="equipItem('${itemId}')">
-                    ${active ? 'EQUIPPED' : 'EQUIP'}
+                    ${active ? 'UNEQUIP' : 'EQUIP'}
                 </button>
             </div>`;
     });
 }
 
 async function equipItem(id) {
-    const isCurrentlyEquipped = currentUser.equipped === id;
-    await db.collection('users').doc(auth.currentUser.uid).update({
-        equipped: isCurrentlyEquipped ? null : id
-    });
+    const current = myProfile.equipped === id ? null : id;
+    await db.collection('users').doc(auth.currentUser.uid).update({ equipped: current });
 }
 
 function switchTab(t) {
@@ -243,14 +270,17 @@ function switchTab(t) {
     document.getElementById('btn-' + t).classList.add('active');
 }
 
-/* Chat Logic */
+/* Chat & XP */
 function sendChat() {
     const input = document.getElementById('chatInput');
     if (!input.value) return;
     db.collection('chat').add({
-        user: currentUser.name,
+        user: myProfile.name,
         text: input.value,
         time: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    db.collection('users').doc(auth.currentUser.uid).update({
+        xp: firebase.firestore.FieldValue.increment(10)
     });
     input.value = '';
 }
@@ -264,12 +294,11 @@ db.collection('chat').orderBy('time', 'desc').limit(15).onSnapshot(s => {
     box.scrollTop = box.scrollHeight;
 });
 
-/* Snow Effect */
+/* Snow */
 setInterval(() => {
     const s = document.createElement('div');
     s.className = 'snowflake'; s.innerHTML = '❄';
     s.style.left = Math.random() * 100 + 'vw';
-    s.style.fontSize = Math.random() * 20 + 10 + 'px';
     s.style.animationDuration = (Math.random() * 3 + 2) + 's';
     document.body.appendChild(s);
     setTimeout(() => s.remove(), 5000);
