@@ -1,120 +1,304 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Vibely | Winter Vault 2026</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vibely ❄️ Winter Casino</title>
 
-<!-- Firebase -->
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet" />
 
-<style>
-:root {
---gold:#f59e0b;--ice:#38bdf8;--mythic:#d946ef;--bg:#020617;--card:rgba(15,23,42,.75);--border:rgba(255,255,255,.1)
-}
-*{box-sizing:border-box}
-body{margin:0;font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:#f8fafc;height:100vh;display:flex;flex-direction:column;overflow:hidden}
-header{padding:1rem 2rem;background:#000c;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
-.layout{display:grid;grid-template-columns:240px 1fr 320px;flex:1}
-nav{padding:1.5rem;background:#0005;border-right:1px solid var(--border);display:flex;flex-direction:column;gap:.5rem}
-.nav-link{padding:1rem;border-radius:14px;cursor:pointer;font-size:.75rem;font-weight:800;color:#64748b;text-transform:uppercase}
-.nav-link.active,.nav-link:hover{background:var(--card);color:var(--ice)}
-main{padding:2.5rem;overflow-y:auto}
-.view{display:none}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1.5rem}
-.vault-card{background:var(--card);border:1px solid var(--border);border-radius:24px;padding:2rem;text-align:center}
-.vault-card:hover{transform:translateY(-5px);box-shadow:0 10px 40px rgba(56,189,248,.2)}
-.mythic-glow{border-color:var(--mythic);box-shadow:0 0 25px rgba(217,70,239,.4)}
-.card-icon{font-size:3rem;margin-bottom:1rem}
-.btn{background:var(--ice);border:none;border-radius:12px;padding:12px;font-weight:800;cursor:pointer;width:100%}
-.btn:disabled{background:#1e293b;color:#64748b}
-.chat{background:#0005;border-left:1px solid var(--border);padding:1rem;display:flex;flex-direction:column}
-.chat-log{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:.5rem}
-.chat-msg{background:var(--card);padding:.75rem;border-radius:12px;font-size:.75rem}
-.toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:var(--card);padding:12px 20px;border-radius:14px;border:1px solid var(--border);font-weight:700;animation:fadeUp 3s ease forwards;z-index:9999}
-@keyframes fadeUp{0%{opacity:0;transform:translate(-50%,20px)}10%{opacity:1}90%{opacity:1}100%{opacity:0;transform:translate(-50%,-20px)}}
-</style>
+  <style>
+    :root {
+      --ice: #38bdf8;
+      --gold: #facc15;
+      --bg: #020617;
+      --card: rgba(15, 23, 42, 0.75);
+      --border: rgba(255, 255, 255, 0.1);
+    }
+
+    * { box-sizing: border-box; transition: 0.25s ease; }
+    body {
+      margin: 0;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background: radial-gradient(circle at top, #0f172a, #020617);
+      color: #f8fafc;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    header {
+      padding: 1rem 2rem;
+      background: rgba(0,0,0,0.7);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 240px 1fr 320px;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    nav {
+      padding: 2rem 1.5rem;
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .nav-link {
+      padding: 0.9rem 1rem;
+      border-radius: 14px;
+      font-size: 0.75rem;
+      font-weight: 800;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: #64748b;
+      cursor: pointer;
+    }
+
+    .nav-link.active, .nav-link:hover {
+      background: var(--card);
+      color: var(--ice);
+      border: 1px solid var(--border);
+    }
+
+    main { padding: 2.5rem; overflow-y: auto; }
+    .view { display: none; animation: fade 0.4s ease; }
+    @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 1.5rem; }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      padding: 1.8rem;
+      text-align: center;
+      backdrop-filter: blur(12px);
+    }
+
+    .card:hover { transform: translateY(-4px); border-color: var(--ice); }
+
+    .avatar {
+      width: 90px;
+      height: 90px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid var(--ice);
+      margin-bottom: 0.8rem;
+    }
+
+    .btn {
+      width: 100%;
+      padding: 12px;
+      margin-top: 1rem;
+      background: var(--ice);
+      color: #000;
+      font-weight: 800;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      text-transform: uppercase;
+      font-size: 0.7rem;
+    }
+
+    .btn:disabled { background: #1e293b; color: #64748b; }
+
+    aside {
+      border-left: 1px solid var(--border);
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      background: rgba(0,0,0,0.3);
+    }
+
+    .chat { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 0.8rem; }
+    .msg { background: var(--card); padding: 10px; border-radius: 14px; font-size: 0.8rem; }
+    .msg b { color: var(--ice); display: block; font-size: 0.65rem; }
+
+    input, textarea {
+      width: 100%;
+      padding: 12px;
+      margin-top: 0.6rem;
+      background: #0f172a;
+      border: 1px solid var(--border);
+      color: #fff;
+      border-radius: 12px;
+      outline: none;
+      resize: none;
+    }
+
+    .wheel {
+      width: 300px;
+      height: 300px;
+      border-radius: 50%;
+      margin: 2rem auto;
+      border: 10px solid #1e293b;
+      background: conic-gradient(
+        #0f172a 0 45deg,
+        #1e293b 45 90deg,
+        #0f172a 90 135deg,
+        #1e293b 135 180deg,
+        #0f172a 180 225deg,
+        #1e293b 225 270deg,
+        #0f172a 270 315deg,
+        var(--gold) 315 360deg
+      );
+    }
+
+    .needle {
+      width: 0; height: 0;
+      border-left: 14px solid transparent;
+      border-right: 14px solid transparent;
+      border-top: 26px solid var(--ice);
+      margin: 0 auto;
+      filter: drop-shadow(0 0 6px var(--ice));
+    }
+  </style>
 </head>
 <body>
 
 <header>
-<div style="font-family:Cinzel;color:var(--ice);letter-spacing:3px">VIBELY</div>
-<div id="diamonds">♦ 0</div>
+  <div style="font-family:Cinzel; color:var(--ice); letter-spacing:3px;">VIBELY ❄️</div>
+  <div id="stats">♦ 0 · LVL 1</div>
 </header>
 
 <div class="layout">
-<nav>
-<div class="nav-link active" onclick="nav('lounge')">Citizens</div>
-<div class="nav-link" onclick="nav('shop')">Boutique</div>
-<div class="nav-link" onclick="nav('inv')">Inventory</div>
-<div class="nav-link" onclick="nav('rank')">Ranks</div>
-<div class="nav-link" style="margin-top:auto;color:#ef4444" onclick="auth.signOut()">Logout</div>
-</nav>
+  <nav>
+    <div class="nav-link active" onclick="nav('lounge')">Lounge</div>
+    <div class="nav-link" onclick="nav('wheel')">Spin</div>
+    <div class="nav-link" onclick="nav('shop')">Shop</div>
+    <div class="nav-link" onclick="nav('profile')">Profile</div>
+  </nav>
 
-<main>
-<section id="view-lounge" class="view" style="display:block"><h2>Vault Lounge</h2><div id="lounge" class="grid"></div></section>
-<section id="view-shop" class="view"><h2>Boutique</h2><div id="shop" class="grid"></div></section>
-<section id="view-inv" class="view"><h2>My Treasury</h2><div id="inv" class="grid"></div></section>
-<section id="view-rank" class="view"><h2>Hall of Frost</h2><div id="ranks"></div></section>
-</main>
+  <main>
+    <section id="view-lounge" class="view" style="display:block;">
+      <h2>Players</h2>
+      <div id="players" class="grid"></div>
+    </section>
 
-<aside class="chat">
-<div id="chat" class="chat-log"></div>
-<input id="chatInput" placeholder="Send message" onkeydown="if(event.key==='Enter')sendChat()" />
-</aside>
+    <section id="view-wheel" class="view">
+      <h2>Daily Spin</h2>
+      <div class="needle"></div>
+      <div id="wheel" class="wheel"></div>
+      <button class="btn" onclick="spin()">Spin</button>
+      <div id="spinMsg" style="margin-top:1rem;"></div>
+    </section>
+
+    <section id="view-shop" class="view">
+      <h2>Avatar Shop</h2>
+      <div id="shop" class="grid"></div>
+    </section>
+
+    <section id="view-profile" class="view">
+      <h2>My Profile</h2>
+      <div class="card">
+        <img id="myAvatar" class="avatar" />
+        <input id="avatarUrl" placeholder="Profile image URL" />
+        <textarea id="bio" placeholder="Your bio / tags"></textarea>
+        <button class="btn" onclick="saveProfile()">Save Profile</button>
+      </div>
+    </section>
+  </main>
+
+  <aside>
+    <div id="chat" class="chat"></div>
+    <input id="chatInput" placeholder="Message..." onkeypress="if(event.key==='Enter') send()" />
+  </aside>
 </div>
 
 <script>
-const firebaseConfig={apiKey:"AIzaSyCDll8RH1kzGOf-ixJmSlHXGssOHSMlO3s",authDomain:"vibely-5128e.firebaseapp.com",projectId:"vibely-5128e"};
+// 🔥 Firebase config here
+const firebaseConfig = { /* your config */ };
 firebase.initializeApp(firebaseConfig);
-const db=firebase.firestore();
-const auth=firebase.auth();
+const db = firebase.firestore();
+const auth = firebase.auth();
 
-const SHOP=[
-{id:'c1',name:'Frost Fox',cost:100,pfp:'🦊'},
-{id:'c2',name:'Polar Bear',cost:300,pfp:'🐻'},
-{id:'c3',name:'Glacier King',cost:700,pfp:'👑',mythic:true},
-{id:'c1e',name:'Arctic Fox',pfp:'🦊❄️',requires:'c1',evolveCost:300,mythic:true}
-];
+let me = null;
 
-let me=null;
+auth.signInAnonymously();
 
-function toast(m){const t=document.createElement('div');t.className='toast';t.innerText=m;document.body.appendChild(t);setTimeout(()=>t.remove(),3000)}
+auth.onAuthStateChanged(async u => {
+  if (!u) return;
+  const ref = db.collection('users').doc(u.uid);
+  const doc = await ref.get();
+  if (!doc.exists) {
+    await ref.set({
+      name: 'Guest',
+      avatar: 'https://placehold.co/200x200',
+      bio: '',
+      diamonds: 100,
+      xp: 0,
+      lastSpin: 0
+    });
+  }
 
-auth.onAuthStateChanged(u=>{
-if(!u)return location.reload();
-db.collection('users').doc(u.uid).onSnapshot(d=>{me=d.data();render();dailyReward()});
-renderLounge();renderRanks();renderChat();
+  ref.onSnapshot(s => { me = s.data(); updateUI(); });
 });
 
-function render(){document.getElementById('diamonds').innerText=`♦ ${me.vibes}`;renderShop();renderInv()}
+function updateUI() {
+  document.getElementById('stats').innerText = `♦ ${me.diamonds} · LVL ${Math.floor(me.xp/100)+1}`;
+  document.getElementById('myAvatar').src = me.avatar;
+  document.getElementById('bio').value = me.bio || '';
+}
 
-function dailyReward(){if(Date.now()- (me.lastLoginReward||0)<86400000)return;
-db.collection('users').doc(auth.currentUser.uid).update({vibes:firebase.firestore.FieldValue.increment(50),lastLoginReward:Date.now()});toast('🎁 Daily Reward +50♦')}
+function nav(v) {
+  document.querySelectorAll('.view').forEach(s => s.style.display='none');
+  document.getElementById('view-'+v).style.display='block';
+}
 
-function renderShop(){shop.innerHTML='';SHOP.forEach(i=>{if(i.requires)return;const owned=me.inventory?.includes(i.id);
-shop.innerHTML+=`<div class="vault-card ${i.mythic?'mythic-glow':''}"><div class="card-icon">${i.pfp}</div><b>${i.name}</b><p>♦${i.cost}</p><button class="btn" ${owned?'disabled':''} onclick="buy('${i.id}',${i.cost})">${owned?'OWNED':'BUY'}</button></div>`})}
+function saveProfile() {
+  db.collection('users').doc(auth.currentUser.uid).update({
+    avatar: document.getElementById('avatarUrl').value || me.avatar,
+    bio: document.getElementById('bio').value
+  });
+}
 
-function buy(id,c){if(me.vibes<c)return toast('Not enough ♦');db.collection('users').doc(auth.currentUser.uid).update({vibes:firebase.firestore.FieldValue.increment(-c),inventory:firebase.firestore.FieldValue.arrayUnion(id)})}
+function spin() {
+  const rewards = [10, 20, 50, 'xp', 'xp', 100];
+  const r = rewards[Math.floor(Math.random()*rewards.length)];
+  if (r === 'xp') {
+    db.collection('users').doc(auth.currentUser.uid).update({ xp: firebase.firestore.FieldValue.increment(40) });
+    spinMsg.innerText = 'You won XP!';
+  } else {
+    db.collection('users').doc(auth.currentUser.uid).update({ diamonds: firebase.firestore.FieldValue.increment(r) });
+    spinMsg.innerText = `You won ♦ ${r}`;
+  }
+}
 
-function renderInv(){inv.innerHTML='';(me.inventory||[]).forEach(id=>{const i=SHOP.find(x=>x.id===id);if(!i)return;
-const evo=SHOP.find(e=>e.requires===id);
-inv.innerHTML+=`<div class="vault-card ${i.mythic?'mythic-glow':''}"><div class="card-icon">${i.pfp}</div>${evo?`<button class="btn" onclick="evolve('${id}','${evo.id}',${evo.evolveCost})">EVOLVE</button>`:''}</div>`})}
+function send() {
+  const i = chatInput.value;
+  if (!i) return;
+  db.collection('chat').add({ name: me.name, msg: i, time: Date.now() });
+  db.collection('users').doc(auth.currentUser.uid).update({ xp: firebase.firestore.FieldValue.increment(5) });
+  chatInput.value='';
+}
 
-function evolve(b,e,c){if(me.vibes<c)return toast('Need more ♦');db.collection('users').doc(auth.currentUser.uid).update({vibes:firebase.firestore.FieldValue.increment(-c),inventory:firebase.firestore.FieldValue.arrayRemove(b)}).then(()=>db.collection('users').doc(auth.currentUser.uid).update({inventory:firebase.firestore.FieldValue.arrayUnion(e)}));toast('🧬 Evolution Complete')}
+db.collection('chat').orderBy('time').limit(30).onSnapshot(s => {
+  chat.innerHTML='';
+  s.forEach(d => chat.innerHTML += `<div class="msg"><b>${d.data().name}</b>${d.data().msg}</div>`);
+});
 
-function renderLounge(){db.collection('users').onSnapshot(s=>{lounge.innerHTML='';s.forEach(d=>{lounge.innerHTML+=`<div class="vault-card"><b>${d.data().name}</b></div>`})})}
-
-function renderRanks(){db.collection('users').orderBy('xp','desc').limit(10).onSnapshot(s=>{ranks.innerHTML='';s.forEach((d,i)=>{ranks.innerHTML+=`<div>#${i+1} ${d.data().name} – XP ${d.data().xp}</div>`})})}
-
-function sendChat(){const i=chatInput;if(!i.value)return;db.collection('chat').add({user:me.name,msg:i.value,time:Date.now()});i.value=''}
-function renderChat(){db.collection('chat').orderBy('time').limitToLast(25).onSnapshot(s=>{chat.innerHTML='';s.forEach(d=>chat.innerHTML+=`<div class="chat-msg"><b>${d.data().user}</b> ${d.data().msg}</div>`);chat.scrollTop=99999})}
-
-function nav(t){document.querySelectorAll('.view').forEach(v=>v.style.display='none');document.getElementById('view-'+t).style.display='block';document.querySelectorAll('.nav-link').forEach(n=>n.classList.remove('active'));event.target.classList.add('active')}
+db.collection('users').onSnapshot(s => {
+  players.innerHTML='';
+  s.forEach(d => {
+    const u = d.data();
+    players.innerHTML += `<div class="card"><img class="avatar" src="${u.avatar}"><b>${u.name}</b><p style="font-size:0.7rem;">${u.bio||''}</p></div>`;
+  });
+});
 </script>
 </body>
 </html>
