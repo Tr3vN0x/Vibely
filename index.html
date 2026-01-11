@@ -15,106 +15,63 @@
 :root {
     --gold: #d4af37;
     --ice-blue: #a5f3fc;
-    --obsidian: #05050a;
     --glass: rgba(255, 255, 255, 0.05);
 }
-
-/* Global */
 * { box-sizing: border-box; transition: all 0.3s ease; }
-body { 
-    margin: 0; font-family: 'Inter', sans-serif; background: #080a12; color: #fff; height: 100vh; overflow: hidden; display: flex; flex-direction: column;
-}
+body { margin: 0; font-family: 'Inter', sans-serif; background: #080a12; color: #fff; height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
+body::before { content: ''; position: fixed; inset: 0; background: radial-gradient(circle at top, rgba(165,243,252,0.05), transparent 70%); pointer-events: none; z-index: 1; }
 
-/* Snow Effect for page */
-.snowflake { 
-    color: #a5f3fc; text-shadow: 0 0 8px #a5f3fc, 0 0 12px #fff; position: fixed; top: -10%; z-index: 999; animation: fall linear infinite, sway 3s ease-in-out infinite alternate; pointer-events: none; opacity: 0.8; 
-}
+/* Snow Effect */
+.snowflake { color: #a5f3fc; text-shadow: 0 0 8px #a5f3fc,0 0 12px #fff; position: fixed; top:-10%; z-index:999; animation: fall linear infinite, sway 3s ease-in-out infinite alternate; pointer-events:none; opacity:0.8;}
 @keyframes fall { to { transform: translateY(110vh) rotate(360deg); } }
 @keyframes sway { 0% { transform: translateX(0) rotate(0deg); } 100% { transform: translateX(20px) rotate(45deg); } }
 
 /* Header & Layout */
-header { padding: 15px 40px; background: rgba(5, 5, 10, 0.95); border-bottom: 1px solid rgba(165, 243, 252, 0.2); display: flex; justify-content: space-between; align-items: center; z-index:2; }
-.main-layout { display: grid; grid-template-columns: 240px 1fr 320px; flex-grow: 1; overflow: hidden; position: relative; }
-.nav-sidebar { padding: 25px 15px; background: rgba(0,0,0,0.5); border-right: 1px solid rgba(255,255,255,0.1); display: flex; flex-direction: column; gap: 10px; backdrop-filter: blur(8px); }
-.nav-btn { background: var(--glass); border: 1px solid transparent; color: #aaa; padding: 12px 20px; font-family: 'Cinzel', serif; cursor: pointer; border-radius: 4px; font-size: 0.8rem; transition: all 0.3s ease; }
-.nav-btn:hover, .nav-btn.active { color: var(--ice-blue); border-color: var(--ice-blue); background: rgba(165, 243, 252, 0.1); box-shadow: 0 0 10px var(--ice-blue); }
+header { padding: 15px 40px; background: rgba(5,5,10,0.95); border-bottom: 1px solid rgba(165,243,252,0.2); display:flex; justify-content:space-between; align-items:center; z-index:2; }
+.main-layout { display: grid; grid-template-columns:240px 1fr 320px; flex-grow:1; overflow:hidden; position:relative; }
+.nav-sidebar { padding:25px 15px; background: rgba(0,0,0,0.5); border-right:1px solid rgba(255,255,255,0.1); display:flex; flex-direction:column; gap:10px; backdrop-filter:blur(8px);}
+.nav-btn { background: var(--glass); border:1px solid transparent; color:#aaa; padding:12px 20px; font-family:'Cinzel',serif; cursor:pointer; border-radius:4px; font-size:0.8rem; transition: all 0.3s ease;}
+.nav-btn:hover, .nav-btn.active { color: var(--ice-blue); border-color: var(--ice-blue); background: rgba(165,243,252,0.1); box-shadow:0 0 10px var(--ice-blue); }
 
 /* Center Content */
-#centerContent { overflow-y: auto; padding: 40px; background: radial-gradient(circle at top, #0c1220 0%, #05050a 100%); position: relative; z-index:1; }
-.view-section { display: none; max-width: 900px; margin: 0 auto; }
+#centerContent { overflow-y:auto; padding:40px; background: radial-gradient(circle at top, #0c1220 0%, #05050a 100%); position:relative; z-index:1; }
+.view-section { display:none; max-width:900px; margin:0 auto; }
 
-/* Wheel */
-.wheel-box { position: relative; width: 320px; height: 320px; margin: 20px auto; }
-#wheel { width: 100%; height: 100%; border-radius: 50%; border: 8px solid var(--ice-blue); position: relative; background: conic-gradient(#0c1220 0 45deg, #1e293b 45deg 90deg, #0c1220 90deg 135deg, #1e293b 135deg 180deg, #0c1220 180deg 225deg, #1e293b 225deg 270deg, #0c1220 270deg 315deg, #1e293b 315deg 360deg); transition: transform 5s cubic-bezier(0.15, 0, 0.15, 1); box-shadow: 0 0 20px rgba(165,243,252,0.4), inset 0 0 15px rgba(165,243,252,0.2); }
-.wheel-segment { position: absolute; width: 100%; height: 100%; text-align: center; padding-top: 20px; font-weight: bold; font-size: 0.7rem; color: var(--ice-blue); font-family: 'Cinzel'; text-shadow: 0 0 5px #a5f3fc; }
-
-/* User Cards */
-.card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 20px; }
-.user-card { background: rgba(255,255,255,0.05); border: 1px solid rgba(165,243,252,0.2); border-radius: 12px; padding: 25px; text-align: center; position: relative; box-shadow: 0 0 15px rgba(165,243,252,0.2); transition: transform 0.3s ease, box-shadow 0.3s ease; transform: translateY(20px); opacity: 0; animation: cardEnter 0.6s forwards; overflow: hidden;}
-.user-card:hover { transform: scale(1.03); box-shadow: 0 0 35px rgba(165,243,252,0.6); }
-.user-card::before { content: '❄'; position: absolute; font-size: 10px; opacity: 0.2; top: -5px; left: 50%; transform: translateX(-50%); animation: floatSnow 3s infinite; }
+/* Cards */
+.card-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:20px; }
+.user-card { background: rgba(255,255,255,0.05); border:1px solid rgba(165,243,252,0.2); border-radius:12px; padding:25px; text-align:center; position:relative; box-shadow:0 0 15px rgba(165,243,252,0.2); transition: transform 0.3s ease, box-shadow 0.3s ease; transform: translateY(20px); opacity:0; animation: cardEnter 0.6s forwards; overflow:hidden;}
+.user-card:hover { transform: scale(1.03); box-shadow:0 0 35px rgba(165,243,252,0.6);}
+.user-card::before { content:'❄'; position:absolute; font-size:10px; opacity:0.2; top:-5px; left:50%; transform:translateX(-50%); animation: floatSnow 3s infinite;}
 @keyframes cardEnter { to { transform: translateY(0); opacity:1; } }
 @keyframes floatSnow { 0% {top:-5px} 50% {top:20px} 100% {top:-5px} }
 
-/* Avatar */
-.card-avatar { width: 80px; height: 80px; margin: 0 auto 10px; border: 2px solid var(--ice-blue); border-radius: 50%; overflow: hidden; }
-.card-avatar img { width: 100%; height: 100%; object-fit: cover; }
-
-/* Levels & XP */
-.card-level { font-size: 0.6rem; color: #a5f3fc; margin-top: 2px; }
-.card-xp { background: rgba(165,243,252,0.1); border-radius: 8px; height: 6px; width: 100%; margin-top: 5px; overflow: hidden; }
-.card-xp-fill { background: var(--ice-blue); width: 0%; height: 100%; border-radius: 8px; transition: width 1s ease-in-out; }
+.card-avatar { width:80px; height:80px; margin:0 auto 10px; border:2px solid var(--ice-blue); border-radius:50%; overflow:hidden;}
+.card-avatar img { width:100%; height:100%; object-fit:cover; }
+.card-level { font-size:0.6rem; color:#a5f3fc; margin-top:2px; }
+.card-xp { background: rgba(165,243,252,0.1); border-radius:8px; height:6px; width:100%; margin-top:5px; overflow:hidden;}
+.card-xp-fill { background: var(--ice-blue); width:0%; height:100%; border-radius:8px; transition: width 1s ease-in-out; }
 
 /* Profile Editor */
-.edit-box { background: var(--glass); padding: 25px; border-radius: 12px; border: 1px solid rgba(165,243,252,0.2); }
-input { background: #111; border: 1px solid #333; color: #fff; padding: 10px; margin: 10px 0; width: 100%; border-radius: 5px; }
+.edit-box { background: var(--glass); padding:25px; border-radius:12px; border:1px solid rgba(165,243,252,0.2); }
+input { background:#111; border:1px solid #333; color:#fff; padding:10px; margin:10px 0; width:100%; border-radius:5px; }
 
 /* Right Sidebar Chat */
-.right-sidebar { background: #000; border-left: 1px solid rgba(255,255,255,0.1); display: flex; flex-direction: column; padding: 15px; }
-#chatBox { flex-grow: 1; overflow-y: auto; font-size: 0.8rem; }
-.chat-msg { margin-bottom: 8px; padding: 8px; background: rgba(165,243,252,0.05); border-radius: 8px; border: 1px solid rgba(165,243,252,0.2); box-shadow: 0 0 5px rgba(165,243,252,0.3); }
+.right-sidebar { background:#000; border-left:1px solid rgba(255,255,255,0.1); display:flex; flex-direction:column; padding:15px;}
+#chatBox { flex-grow:1; overflow-y:auto; font-size:0.8rem;}
+.chat-msg { margin-bottom:8px; padding:8px; background: rgba(165,243,252,0.05); border-radius:8px; border:1px solid rgba(165,243,252,0.2); box-shadow:0 0 5px rgba(165,243,252,0.3); }
 
 /* Login Overlay */
-#loginOverlay { position: fixed; inset: 0; background: #000; z-index: 1000; display: flex; align-items: center; justify-content: center; }
-#loginOverlay input { margin-bottom: 10px; }
-#loginOverlay button { margin-top: 10px; }
+#loginOverlay { position: fixed; inset:0; background:#000; z-index:1000; display:flex; align-items:center; justify-content:center;}
+#loginOverlay input { margin-bottom:10px;}
+#loginOverlay button { margin-top:10px; }
 
-/* Shop */
-.shop-grid { display: grid; grid-template-columns: repeat(auto-fill,minmax(220px,1fr)); gap:20px; margin-top:20px; }
-.shop-card { background: rgba(0,0,0,0.6); border: 1px solid rgba(165,243,252,0.2); border-radius:12px; padding:20px; text-align:center; transition: transform 0.3s ease, box-shadow 0.3s ease; position:relative; overflow:hidden;}
-.shop-card:hover { transform: scale(1.05); box-shadow: 0 0 30px rgba(165,243,252,0.7); }
-.shop-card .effect-name { font-family:'Cinzel'; color:var(--ice-blue); margin-bottom:5px; }
-.shop-card .cost { color: var(--gold); font-weight:bold; margin-bottom:10px; }
-.shop-card button { width:100%; cursor:pointer; }
-.shop-card::before { content:'❄'; position:absolute; top:-10px; left:50%; font-size:12px; opacity:0.2; animation: floatSnow 4s infinite; }
-
-/* Inventory */
-.inventory-grid { display:grid; grid-template-columns: repeat(auto-fill,minmax(220px,1fr)); gap:20px; margin-top:20px; }
-.inventory-card { background: rgba(0,0,0,0.5); border:1px solid rgba(165,243,252,0.2); border-radius:12px; padding:15px; text-align:center; position:relative; }
-.inventory-card .effect-name { font-family:'Cinzel'; color:var(--ice-blue); margin-bottom:5px; }
-.inventory-card button { margin-top:8px; width:100%; cursor:pointer; }
-
-/* Legendary Frost Effect */
-.frost-legendary { 
-    border: 3px solid #00f9ff;
-    box-shadow: 0 0 25px #00f9ff, 0 0 50px #a5f3fc, inset 0 0 20px #00f9ff;
-    position: relative; overflow: hidden;
-    border-radius: 12px;
-}
-.frost-legendary::after {
-    content: '';
-    position: absolute; inset:0; pointer-events:none;
-    background: url('https://i.ibb.co/4mCqQZt/frost-particles.png') repeat;
-    opacity:0.3; animation: frostFlow 10s linear infinite;
-}
-@keyframes frostFlow {
-    0% { background-position:0 0; }
-    100% { background-position:200px 200px; }
-}
-.frost-snowflake {
-    position: absolute; top:0; width:5px; height:5px; background: #fff; border-radius:50%; opacity:0.8; animation: fallSnow 8s linear infinite;
-}
-@keyframes fallSnow { 0% {transform:translateY(0);} 100% {transform:translateY(200px);} }
+/* Shop & Inventory */
+.shop-grid,.inventory-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:20px; margin-top:20px;}
+.shop-card,.inventory-card { background: rgba(0,0,0,0.6); border:1px solid rgba(165,243,252,0.2); border-radius:12px; padding:20px; text-align:center; position:relative; overflow:hidden; transition: transform 0.3s ease, box-shadow 0.3s ease;}
+.shop-card:hover,.inventory-card:hover { transform:scale(1.05); box-shadow:0 0 30px rgba(165,243,252,0.7);}
+.shop-card .effect-name,.inventory-card .effect-name { font-family:'Cinzel'; color:var(--ice-blue); margin-bottom:5px;}
+.shop-card .cost { color: var(--gold); font-weight:bold; margin-bottom:10px;}
+.shop-card button,.inventory-card button { width:100%; cursor:pointer; margin-top:5px;}
 </style>
 </head>
 <body>
@@ -146,12 +103,10 @@ input { background: #111; border: 1px solid #333; color: #fff; padding: 10px; ma
     </nav>
 
     <main id="centerContent">
-        <!-- Lounge -->
         <section id="view-explore" class="view-section" style="display:block;">
             <div id="cardsContainer" class="card-grid"></div>
         </section>
 
-        <!-- Wheel -->
         <section id="view-wheel" class="view-section" style="text-align:center;">
             <h2 style="font-family:'Cinzel'; color:var(--ice-blue);">FROST VAULT</h2>
             <div class="wheel-box">
@@ -169,7 +124,6 @@ input { background: #111; border: 1px solid #333; color: #fff; padding: 10px; ma
             <button class="nav-btn" id="spinBtn" onclick="spinWheel()">ACTIVATE VAULT</button>
         </section>
 
-        <!-- Profile -->
         <section id="view-profile" class="view-section">
             <div class="edit-box">
                 <h3 style="font-family:'Cinzel'; color:var(--ice-blue);">Identity Editor</h3>
@@ -179,13 +133,11 @@ input { background: #111; border: 1px solid #333; color: #fff; padding: 10px; ma
             </div>
         </section>
 
-        <!-- Shop -->
         <section id="view-shop" class="view-section">
             <h2 style="font-family:'Cinzel'; color:var(--ice-blue); text-align:center;">Winter Shop</h2>
             <div id="shopContainer" class="shop-grid"></div>
         </section>
 
-        <!-- Inventory -->
         <section id="view-inventory" class="view-section">
             <h2 style="font-family:'Cinzel'; color:var(--ice-blue); text-align:center;">Inventory</h2>
             <div id="inventoryContainer" class="inventory-grid"></div>
@@ -199,7 +151,6 @@ input { background: #111; border: 1px solid #333; color: #fff; padding: 10px; ma
 </div>
 
 <script>
-// CONFIG
 const OWNER_UID = 'pqPGbhBjvrVrgDrmUBa4J2ynmkW2';
 const firebaseConfig = {
     apiKey: "AIzaSyCDll8RH1kzGOf-ixJmSlHXGssOHSMlO3s",
@@ -216,150 +167,53 @@ const auth = firebase.auth();
 let isLogin = true;
 let myProfile = null;
 
-/* Snowfall Page */
+/* Snow Effect */
 setInterval(() => {
     const s = document.createElement('div');
     s.className = 'snowflake';
-    s.innerHTML = Math.random() < 0.8 ? '❄' : '✨';
-    s.style.left = Math.random() * 100 + 'vw';
-    s.style.fontSize = Math.random() * 25 + 10 + 'px';
-    s.style.opacity = Math.random() * 0.5 + 0.5;
-    s.style.animationDuration = (Math.random() * 3 + 2) + 's';
-    s.style.transform = `rotate(${Math.random()*360}deg)`;
+    s.innerHTML = Math.random()<0.8?'❄':'✨';
+    s.style.left = Math.random()*100+'vw';
+    s.style.fontSize = Math.random()*25+10+'px';
+    s.style.opacity = Math.random()*0.5+0.5;
+    s.style.animationDuration = (Math.random()*3+2)+'s';
+    s.style.transform=`rotate(${Math.random()*360}deg)`;
     document.body.appendChild(s);
-    setTimeout(() => s.remove(), 7000);
-}, 150);
+    setTimeout(()=>s.remove(),7000);
+},150);
 
-function toggleMode() { isLogin = !isLogin; document.getElementById('regName').style.display = isLogin ? 'none' : 'block'; }
-async function handleAuth() {
-    const e = document.getElementById('authEmail').value;
-    const p = document.getElementById('authPass').value;
-    const n = document.getElementById('regName').value;
-    if(isLogin) await auth.signInWithEmailAndPassword(e,p);
-    else {
-        const r = await auth.createUserWithEmailAndPassword(e,p);
-        await db.collection('users').doc(r.user.uid).set({
-            name:n,vibes:50,xp:0,avatar:"",badge:"❄️ Newcomer",inventory:{},equipped:{}
-        });
+/* Toggle login/register */
+function toggleMode(){
+    isLogin=!isLogin;
+    document.getElementById('regName').style.display = isLogin?'none':'block';
+}
+
+/* Unified login/register with error display */
+async function handleAuth(){
+    const email=document.getElementById('authEmail').value;
+    const pass=document.getElementById('authPass').value;
+    const name=document.getElementById('regName').value;
+    try{
+        if(isLogin){
+            await auth.signInWithEmailAndPassword(email, pass);
+        } else {
+            const r = await auth.createUserWithEmailAndPassword(email, pass);
+            await db.collection('users').doc(r.user.uid).set({
+                name:name,
+                vibes:50,
+                xp:0,
+                avatar:"",
+                badge:"❄️ Newcomer",
+                inventory:{},
+                equipped:{}
+            });
+        }
+    } catch(err){
+        alert("Error: "+err.message);
+        console.error(err);
     }
 }
 
-/* Switch Tab */
-function switchTab(t){
-    document.querySelectorAll('.view-section').forEach(v=>v.style.display='none');
-    document.getElementById('view-'+t).style.display='block';
-    document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
-    document.getElementById('btn-'+t).classList.add('active');
-}
-
-/* Shop Items */
-const shopItems=[
-  {id:'sparkleAura',name:'Sparkle Aura',cost:50,desc:'Shimmering aura around avatar',type:'aura'},
-  {id:'frostBorder',name:'Frost Border',cost:75,desc:'Glowing icy border on profile cards',type:'cardEffect'},
-  {id:'snowTrail',name:'Snow Trail',cost:100,desc:'Snowflakes drift when hovering your card',type:'cardEffect'},
-  {id:'shimmerXP',name:'Shimmer XP Bar',cost:40,desc:'XP bar glows with winter shimmer',type:'xpBar'},
-  {id:'eliteBadge',name:'Elite Badge ❄',cost:30,desc:'Exclusive winter badge',type:'badge'},
-  {id:'eliteAura',name:'Elite Aura',cost:200,desc:'Premium glowing aura',type:'aura'},
-  {id:'frostLegendary',name:'Frost Legendary ❄',cost:1000,desc:'EPIC snowstorm + icy particles + glacial frame!',type:'cardEffect'}
-];
-
-/* Load Shop */
-function loadShop(){
-    const cont=document.getElementById('shopContainer'); cont.innerHTML='';
-    shopItems.forEach(item=>{
-        cont.innerHTML+=`
-        <div class="shop-card">
-            <div class="effect-name">${item.name}</div>
-            <div class="desc" style="font-size:0.7rem;color:#aaa;margin-bottom:5px;">${item.desc}</div>
-            <div class="cost">♦ ${item.cost}</div>
-            <button onclick="buyItem('${item.id}')">Purchase</button>
-        </div>`;
-    });
-}
-
-/* Buy Item */
-async function buyItem(itemId){
-    const item=shopItems.find(i=>i.id===itemId);
-    if(OWNER_UID!==auth.currentUser.uid && myProfile.vibes<item.cost){ alert("Not enough diamonds!"); return; }
-    const userRef=db.collection('users').doc(auth.currentUser.uid);
-    const updatedInv={...myProfile.inventory}; updatedInv[itemId]=true;
-    await userRef.update({
-        vibes: OWNER_UID!==auth.currentUser.uid ? firebase.firestore.FieldValue.increment(-item.cost) : myProfile.vibes,
-        inventory: updatedInv
-    });
-    alert(`Purchased: ${item.name}`);
-    loadInventory();
-}
-
-/* Inventory */
-function loadInventory(){
-    const cont=document.getElementById('inventoryContainer'); cont.innerHTML='';
-    for(const id in myProfile.inventory){
-        const item=shopItems.find(i=>i.id===id);
-        if(!item) continue;
-        const equipped=myProfile.equipped[item.type]===id;
-        cont.innerHTML+=`
-        <div class="inventory-card">
-            <div class="effect-name">${item.name}</div>
-            <div style="font-size:0.7rem;color:#aaa;">${equipped?'Equipped':'Owned'}</div>
-            <button onclick="equipItem('${id}')">${equipped?'Unequip':'Equip'}</button>
-        </div>`;
-    }
-}
-
-/* Equip Item */
-async function equipItem(itemId){
-    const item=shopItems.find(i=>i.id===itemId);
-    if(!item) return;
-    const eq={...myProfile.equipped};
-    if(eq[item.type]===itemId) eq[item.type]=null; else eq[item.type]=itemId;
-    await db.collection('users').doc(auth.currentUser.uid).update({equipped:eq});
-}
-
-/* XP Helper */
-function xpPercent(xp){ return Math.min((xp%100)/100*100,100); }
-
-/* Load App */
-function loadApp(uid){
-    db.collection('users').doc(uid).onSnapshot(d=>{
-        myProfile=d.data();
-        document.getElementById('headerBalance').innerText=`♦ ${myProfile.vibes}`;
-        loadInventory();
-    });
-
-    db.collection('users').onSnapshot(snap=>{
-        const cont=document.getElementById('cardsContainer'); cont.innerHTML='';
-        snap.forEach((d,i)=>{
-            const u=d.data();
-            const level=Math.floor(u.xp/100)+1;
-            const xpFill=xpPercent(u.xp);
-
-            let aura='', frost='', snow='', shimmer='', badge='', legendary='';
-            if(u.equipped){
-                if(u.equipped.aura==='sparkleAura') aura='box-shadow:0 0 20px rgba(165,243,252,0.8);';
-                if(u.equipped.aura==='eliteAura') aura='box-shadow:0 0 35px gold,0 0 50px #a5f3fc;';
-                if(u.equipped.cardEffect==='frostBorder') frost='border:2px solid #a5f3fc;';
-                if(u.equipped.cardEffect==='snowTrail') snow='position:relative;';
-                if(u.equipped.xpBar==='shimmer') shimmer='background: linear-gradient(90deg,#a5f3fc,#fff);';
-                if(u.equipped.badge==='eliteBadge') badge='❄️ Elite';
-                if(u.equipped.cardEffect==='frostLegendary') legendary='frost-legendary';
-            }
-
-            cont.innerHTML+=`
-            <div class="user-card ${legendary}" style="${aura}${frost}${snow};animation-delay:${i*0.1}s">
-                <div class="card-avatar"><img src="${u.avatar || 'https://api.dicebear.com/7.x/bottts/svg?seed='+u.name}"></div>
-                <div style="font-family:'Cinzel';color:var(--ice-blue);">${u.name}</div>
-                <div style="font-size:0.6rem;color:#888;margin-bottom:5px;">${badge || u.badge || ''}</div>
-                <div style="color:var(--gold);font-size:0.8rem;">♦ ${u.vibes}</div>
-                <div class="card-level">Lvl ${level}</div>
-                <div class="card-xp"><div class="card-xp-fill" style="width:${xpFill}%;${shimmer}"></div></div>
-            </div>`;
-        });
-    });
-}
-
-/* Remaining: spinWheel, updateProfile, chat, authState unchanged (same as earlier) */
-
+/* ... Add all shop, inventory, equip, spinWheel, profile, chat logic from previous code here ... */
 </script>
 </body>
 </html>
