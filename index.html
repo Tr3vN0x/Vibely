@@ -1,350 +1,120 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vibely | Winter Vault 2026</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Vibely | Winter Vault 2026</title>
 
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
 
-    <style>
-        :root {
-            --gold: #f59e0b;
-            --ice: #38bdf8;
-            --mythic: #d946ef;
-            --bg: #020617;
-            --card: rgba(15, 23, 42, 0.75);
-            --border: rgba(255, 255, 255, 0.1);
-        }
-
-        * { box-sizing: border-box; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-        body { 
-            margin: 0; font-family: 'Plus Jakarta Sans', sans-serif; 
-            background: var(--bg); color: #f8fafc; height: 100vh; 
-            overflow: hidden; display: flex; flex-direction: column;
-            background-image: radial-gradient(circle at 10% 10%, #0f172a 0%, transparent 50%);
-        }
-
-        /* --- HEADER & PROGRESS --- */
-        header { 
-            padding: 1rem 2.5rem; background: rgba(0,0,0,0.85); 
-            backdrop-filter: blur(20px); border-bottom: 1px solid var(--border);
-            display: flex; justify-content: space-between; align-items: center; z-index: 100;
-        }
-        .xp-container { width: 180px; height: 6px; background: #1e293b; border-radius: 10px; overflow: hidden; margin-top: 4px; }
-        #xpFill { width: 0%; height: 100%; background: linear-gradient(90deg, var(--ice), var(--mythic)); box-shadow: 0 0 10px var(--ice); }
-
-        .layout { display: grid; grid-template-columns: 260px 1fr 340px; flex-grow: 1; overflow: hidden; }
-
-        /* --- NAVIGATION --- */
-        nav { padding: 2rem; background: rgba(0,0,0,0.2); border-right: 1px solid var(--border); display: flex; flex-direction: column; gap: 0.5rem; }
-        .nav-link { 
-            padding: 1rem; border-radius: 14px; cursor: pointer; color: #64748b; 
-            font-size: 0.85rem; font-weight: 700; border: 1px solid transparent; text-transform: uppercase; letter-spacing: 1px;
-        }
-        .nav-link:hover, .nav-link.active { background: var(--card); color: var(--ice); border-color: rgba(56, 189, 248, 0.3); }
-
-        main { overflow-y: auto; padding: 3rem; position: relative; }
-        .view { display: none; animation: slideUp 0.6s ease; }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* --- WINTER WHEEL --- */
-        .wheel-wrapper { position: relative; width: 420px; height: 420px; margin: 0 auto; padding: 10px; border-radius: 50%; background: rgba(255,255,255,0.02); }
-        #wheel { 
-            width: 100%; height: 100%; border-radius: 50%; border: 10px solid #1e293b;
-            position: relative; overflow: hidden; box-shadow: 0 0 50px rgba(0,0,0,0.5);
-            background: conic-gradient(
-                #0f172a 0deg 45deg, #1e293b 45deg 90deg, #0f172a 90deg 135deg, 
-                #1e293b 135deg 180deg, #0f172a 180deg 225deg, #1e293b 225deg 270deg,
-                #0f172a 270deg 315deg, var(--gold) 315deg 360deg
-            );
-        }
-        .segment { position: absolute; width: 100%; height: 100%; text-align: center; font-family: 'Cinzel'; font-weight: 800; padding-top: 30px; color: #fff; }
-        .needle { 
-            position: absolute; top: -10px; left: 50%; transform: translateX(-50%);
-            width: 0; height: 0; border-left: 18px solid transparent; border-right: 18px solid transparent;
-            border-top: 35px solid var(--ice); z-index: 50; filter: drop-shadow(0 0 10px var(--ice));
-        }
-
-        /* --- SHOP & CARDS --- */
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1.5rem; }
-        .vault-card {
-            background: var(--card); backdrop-filter: blur(10px); border: 1px solid var(--border);
-            border-radius: 24px; padding: 2.5rem 1.5rem; text-align: center; position: relative;
-        }
-        .vault-card:hover { transform: translateY(-5px); border-color: var(--ice); }
-        .mythic-glow { border-color: var(--mythic) !important; animation: mythicPulse 3s infinite ease-in-out; }
-        @keyframes mythicPulse { 0%, 100% { box-shadow: 0 0 10px rgba(217, 70, 239, 0.2); } 50% { box-shadow: 0 0 25px rgba(217, 70, 239, 0.5); } }
-
-        .card-icon { font-size: 3rem; margin-bottom: 1rem; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3)); }
-        .btn-prime { background: var(--ice); color: #000; border: none; padding: 12px; border-radius: 12px; font-weight: 800; cursor: pointer; width: 100%; text-transform: uppercase; font-size: 0.75rem; }
-        .btn-prime:disabled { background: #1e293b; color: #475569; cursor: not-allowed; }
-
-        /* --- CHAT --- */
-        .chat-pane { background: rgba(0,0,0,0.3); border-left: 1px solid var(--border); padding: 1.5rem; display: flex; flex-direction: column; }
-        #chatFlow { flex-grow: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 0.8rem; }
-        .chat-msg { background: var(--card); padding: 12px; border-radius: 15px; font-size: 0.85rem; border: 1px solid var(--border); }
-        .chat-msg b { color: var(--ice); display: block; margin-bottom: 3px; font-size: 0.7rem; }
-
-        #authOverlay { position: fixed; inset: 0; background: var(--bg); z-index: 1000; display: flex; align-items: center; justify-content: center; }
-        .auth-box { background: #000; padding: 3rem; border-radius: 35px; border: 1px solid var(--border); width: 380px; text-align: center; }
-        input { background: #0f172a; border: 1px solid var(--border); color: #fff; padding: 14px; border-radius: 12px; width: 100%; margin-bottom: 1rem; outline: none; }
-    </style>
+<style>
+:root {
+--gold:#f59e0b;--ice:#38bdf8;--mythic:#d946ef;--bg:#020617;--card:rgba(15,23,42,.75);--border:rgba(255,255,255,.1)
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:#f8fafc;height:100vh;display:flex;flex-direction:column;overflow:hidden}
+header{padding:1rem 2rem;background:#000c;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+.layout{display:grid;grid-template-columns:240px 1fr 320px;flex:1}
+nav{padding:1.5rem;background:#0005;border-right:1px solid var(--border);display:flex;flex-direction:column;gap:.5rem}
+.nav-link{padding:1rem;border-radius:14px;cursor:pointer;font-size:.75rem;font-weight:800;color:#64748b;text-transform:uppercase}
+.nav-link.active,.nav-link:hover{background:var(--card);color:var(--ice)}
+main{padding:2.5rem;overflow-y:auto}
+.view{display:none}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1.5rem}
+.vault-card{background:var(--card);border:1px solid var(--border);border-radius:24px;padding:2rem;text-align:center}
+.vault-card:hover{transform:translateY(-5px);box-shadow:0 10px 40px rgba(56,189,248,.2)}
+.mythic-glow{border-color:var(--mythic);box-shadow:0 0 25px rgba(217,70,239,.4)}
+.card-icon{font-size:3rem;margin-bottom:1rem}
+.btn{background:var(--ice);border:none;border-radius:12px;padding:12px;font-weight:800;cursor:pointer;width:100%}
+.btn:disabled{background:#1e293b;color:#64748b}
+.chat{background:#0005;border-left:1px solid var(--border);padding:1rem;display:flex;flex-direction:column}
+.chat-log{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:.5rem}
+.chat-msg{background:var(--card);padding:.75rem;border-radius:12px;font-size:.75rem}
+.toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:var(--card);padding:12px 20px;border-radius:14px;border:1px solid var(--border);font-weight:700;animation:fadeUp 3s ease forwards;z-index:9999}
+@keyframes fadeUp{0%{opacity:0;transform:translate(-50%,20px)}10%{opacity:1}90%{opacity:1}100%{opacity:0;transform:translate(-50%,-20px)}}
+</style>
 </head>
 <body>
 
-<div id="authOverlay">
-    <div class="auth-box">
-        <h1 style="font-family:'Cinzel'; color:var(--ice); margin-bottom: 2rem;">WINTER VAULT</h1>
-        <input id="regName" placeholder="Lounge Username" style="display:none;">
-        <input id="authEmail" type="email" placeholder="Email">
-        <input id="authPass" type="password" placeholder="Password">
-        <button class="btn-prime" onclick="handleAuth()">Access Vault</button>
-        <p onclick="toggleAuth()" style="font-size:0.7rem; cursor:pointer; color:#475569; margin-top:20px;">Switch Login/Register</p>
-    </div>
-</div>
-
 <header>
-    <div style="font-family:'Cinzel'; font-weight:700; color:var(--ice); letter-spacing:4px;">VIBELY</div>
-    <div style="display: flex; gap: 30px; align-items: center;">
-        <div>
-            <div id="lvlDisplay" style="font-size: 0.65rem; font-weight: 800; color: #64748b; text-align: right;">LEVEL 1</div>
-            <div class="xp-container"><div id="xpFill"></div></div>
-        </div>
-        <div id="diamonds" style="color:var(--gold); font-family:'Cinzel'; font-weight:700; font-size:1.2rem;">♦ 0</div>
-    </div>
+<div style="font-family:Cinzel;color:var(--ice);letter-spacing:3px">VIBELY</div>
+<div id="diamonds">♦ 0</div>
 </header>
 
 <div class="layout">
-    <nav>
-        <div class="nav-link active" id="tab-lounge" onclick="nav('lounge')">Citizens</div>
-        <div class="nav-link" id="tab-wheel" onclick="nav('wheel')">Daily Vault</div>
-        <div class="nav-link" id="tab-shop" onclick="nav('shop')">Boutique</div>
-        <div class="nav-link" id="tab-inv" onclick="nav('inv')">Inventory</div>
-        <div class="nav-link" style="margin-top:auto; color:#ef4444;" onclick="auth.signOut()">Logout</div>
-    </nav>
+<nav>
+<div class="nav-link active" onclick="nav('lounge')">Citizens</div>
+<div class="nav-link" onclick="nav('shop')">Boutique</div>
+<div class="nav-link" onclick="nav('inv')">Inventory</div>
+<div class="nav-link" onclick="nav('rank')">Ranks</div>
+<div class="nav-link" style="margin-top:auto;color:#ef4444" onclick="auth.signOut()">Logout</div>
+</nav>
 
-    <main>
-        <section id="view-lounge" class="view" style="display:block;">
-            <h2 style="font-family:'Cinzel'; margin-bottom: 2rem;">Vault Lounge</h2>
-            <div id="loungeGrid" class="grid"></div>
-        </section>
+<main>
+<section id="view-lounge" class="view" style="display:block"><h2>Vault Lounge</h2><div id="lounge" class="grid"></div></section>
+<section id="view-shop" class="view"><h2>Boutique</h2><div id="shop" class="grid"></div></section>
+<section id="view-inv" class="view"><h2>My Treasury</h2><div id="inv" class="grid"></div></section>
+<section id="view-rank" class="view"><h2>Hall of Frost</h2><div id="ranks"></div></section>
+</main>
 
-        <section id="view-wheel" class="view" style="text-align:center;">
-            <h2 style="font-family:'Cinzel';">The Frost Wheel</h2>
-            <p style="color:#64748b; margin-bottom: 2.5rem;">One spin every 24 hours.</p>
-            <div class="wheel-wrapper">
-                <div class="needle"></div>
-                <div id="wheel">
-                    <div class="segment" style="transform: rotate(22.5deg)">10♦</div>
-                    <div class="segment" style="transform: rotate(67.5deg)">50♦</div>
-                    <div class="segment" style="transform: rotate(112.5deg)">25♦</div>
-                    <div class="segment" style="transform: rotate(157.5deg)">100♦</div>
-                    <div class="segment" style="transform: rotate(202.5deg)">5♦</div>
-                    <div class="segment" style="transform: rotate(247.5deg)">75♦</div>
-                    <div class="segment" style="transform: rotate(292.5deg)">15♦</div>
-                    <div class="segment" style="transform: rotate(337.5deg); color:var(--gold)">JACKPOT</div>
-                </div>
-            </div>
-            <div id="timer" style="margin: 2rem 0; font-family:'Cinzel'; color:var(--ice); font-weight:700;">READY</div>
-            <button id="spinBtn" class="btn-prime" style="max-width:280px;" onclick="spin()">SPIN VAULT</button>
-        </section>
-
-        <section id="view-shop" class="view">
-            <h2 style="font-family:'Cinzel'; margin-bottom: 2rem;">Boutique</h2>
-            <div id="shopGrid" class="grid"></div>
-        </section>
-
-        <section id="view-inv" class="view">
-            <h2 style="font-family:'Cinzel'; margin-bottom: 2rem;">My Treasury</h2>
-            <div id="invGrid" class="grid"></div>
-        </section>
-    </main>
-
-    <aside class="chat-pane">
-        <div id="chatFlow"></div>
-        <input id="chatInput" placeholder="Send transmission..." onkeypress="if(event.key==='Enter') sendChat()" style="margin-top:1.5rem;">
-    </aside>
+<aside class="chat">
+<div id="chat" class="chat-log"></div>
+<input id="chatInput" placeholder="Send message" onkeydown="if(event.key==='Enter')sendChat()" />
+</aside>
 </div>
 
 <script>
-const firebaseConfig = {
-  apiKey: "AIzaSyCDll8RH1kzGOf-ixJmSlHXGssOHSMlO3s",
-  authDomain: "vibely-5128e.firebaseapp.com",
-  projectId: "vibely-5128e",
-  storageBucket: "vibely-5128e.firebasestorage.app",
-  messagingSenderId: "1048550825812",
-  appId: "1:1048550825812:web:fc5bbba51e065807ffb2c1",
-  measurementId: "G-HZW6SXDZQT"
-};
-
+const firebaseConfig={apiKey:"AIzaSyCDll8RH1kzGOf-ixJmSlHXGssOHSMlO3s",authDomain:"vibely-5128e.firebaseapp.com",projectId:"vibely-5128e"};
 firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
-const auth = firebase.auth();
+const db=firebase.firestore();
+const auth=firebase.auth();
 
-let isLogin = true, myData = null, countdownIdx = null;
-
-const SHOP = [
-    { id: 'c1', name: 'Frost Fox', cost: 100, pfp: '🦊', tag: 'Scout', mythic: false },
-    { id: 'c2', name: 'Polar Bear', cost: 300, pfp: '🐻', tag: 'Guardian', mythic: false },
-    { id: 'c3', name: 'Glacier King', cost: 700, pfp: '👑', tag: 'High King', mythic: true },
-    { id: 'c4', name: 'Winter Mage', cost: 1000, pfp: '🧙‍♂️', tag: 'Archon', mythic: true }
+const SHOP=[
+{id:'c1',name:'Frost Fox',cost:100,pfp:'🦊'},
+{id:'c2',name:'Polar Bear',cost:300,pfp:'🐻'},
+{id:'c3',name:'Glacier King',cost:700,pfp:'👑',mythic:true},
+{id:'c1e',name:'Arctic Fox',pfp:'🦊❄️',requires:'c1',evolveCost:300,mythic:true}
 ];
 
-function toggleAuth() { isLogin = !isLogin; document.getElementById('regName').style.display = isLogin ? 'none' : 'block'; }
+let me=null;
 
-async function handleAuth() {
-    const e = document.getElementById('authEmail').value, p = document.getElementById('authPass').value, n = document.getElementById('regName').value;
-    try {
-        if (isLogin) await auth.signInWithEmailAndPassword(e, p);
-        else {
-            const res = await auth.createUserWithEmailAndPassword(e, p);
-            await db.collection('users').doc(res.user.uid).set({
-                name: n, vibes: 100, xp: 0, inventory: [], equipped: null, lastSpin: 0, pfp: '👤'
-            });
-        }
-    } catch (err) { alert(err.message); }
-}
+function toast(m){const t=document.createElement('div');t.className='toast';t.innerText=m;document.body.appendChild(t);setTimeout(()=>t.remove(),3000)}
 
-auth.onAuthStateChanged(user => {
-    if (user) {
-        document.getElementById('authOverlay').style.display = 'none';
-        db.collection('users').doc(user.uid).onSnapshot(doc => {
-            myData = doc.data();
-            updateHeader();
-            renderShop();
-            renderInventory();
-            handleTimer();
-        });
-        syncLounge();
-    } else {
-        document.getElementById('authOverlay').style.display = 'flex';
-    }
+auth.onAuthStateChanged(u=>{
+if(!u)return location.reload();
+db.collection('users').doc(u.uid).onSnapshot(d=>{me=d.data();render();dailyReward()});
+renderLounge();renderRanks();renderChat();
 });
 
-function updateHeader() {
-    document.getElementById('diamonds').innerText = `♦ ${myData.vibes}`;
-    const lvl = Math.floor(myData.xp / 100) + 1;
-    document.getElementById('lvlDisplay').innerText = `LEVEL ${lvl}`;
-    document.getElementById('xpFill').style.width = (myData.xp % 100) + '%';
-}
+function render(){document.getElementById('diamonds').innerText=`♦ ${me.vibes}`;renderShop();renderInv()}
 
-function syncLounge() {
-    db.collection('users').onSnapshot(snap => {
-        const grid = document.getElementById('loungeGrid'); grid.innerHTML = '';
-        snap.forEach(d => {
-            const u = d.data();
-            const kit = SHOP.find(i => i.id === u.equipped);
-            grid.innerHTML += `
-                <div class="vault-card ${kit?.mythic ? 'mythic-glow' : ''}">
-                    <div class="card-icon">${kit ? kit.pfp : u.pfp}</div>
-                    <div style="font-weight:800;">${u.name}</div>
-                    <div style="font-size:0.6rem; color:var(--ice); margin-top:5px; text-transform:uppercase;">${kit ? kit.tag : 'Novice'}</div>
-                </div>`;
-        });
-    });
-}
+function dailyReward(){if(Date.now()- (me.lastLoginReward||0)<86400000)return;
+db.collection('users').doc(auth.currentUser.uid).update({vibes:firebase.firestore.FieldValue.increment(50),lastLoginReward:Date.now()});toast('🎁 Daily Reward +50♦')}
 
-function handleTimer() {
-    if(countdownIdx) clearInterval(countdownIdx);
-    countdownIdx = setInterval(() => {
-        const remaining = 86400000 - (Date.now() - myData.lastSpin);
-        const btn = document.getElementById('spinBtn');
-        const disp = document.getElementById('timer');
-        if(remaining > 0) {
-            btn.disabled = true;
-            const h = Math.floor(remaining/3600000), m = Math.floor((remaining%3600000)/60000), s = Math.floor((remaining%60000)/1000);
-            disp.innerText = `LOCKED: ${h}h ${m}m ${s}s`;
-        } else {
-            btn.disabled = false;
-            disp.innerText = "READY TO SPIN";
-        }
-    }, 1000);
-}
+function renderShop(){shop.innerHTML='';SHOP.forEach(i=>{if(i.requires)return;const owned=me.inventory?.includes(i.id);
+shop.innerHTML+=`<div class="vault-card ${i.mythic?'mythic-glow':''}"><div class="card-icon">${i.pfp}</div><b>${i.name}</b><p>♦${i.cost}</p><button class="btn" ${owned?'disabled':''} onclick="buy('${i.id}',${i.cost})">${owned?'OWNED':'BUY'}</button></div>`})}
 
-async function spin() {
-    const btn = document.getElementById('spinBtn'); btn.disabled = true;
-    const deg = 1800 + Math.floor(Math.random() * 360);
-    document.getElementById('wheel').style.transform = `rotate(${deg}deg)`;
-    setTimeout(async () => {
-        const prizes = [10, 50, 25, 100, 5, 75, 15, 500];
-        const win = prizes[Math.floor(Math.random() * prizes.length)];
-        alert(`You won ♦ ${win}!`);
-        await db.collection('users').doc(auth.currentUser.uid).update({
-            vibes: firebase.firestore.FieldValue.increment(win),
-            xp: firebase.firestore.FieldValue.increment(25),
-            lastSpin: Date.now()
-        });
-    }, 4000);
-}
+function buy(id,c){if(me.vibes<c)return toast('Not enough ♦');db.collection('users').doc(auth.currentUser.uid).update({vibes:firebase.firestore.FieldValue.increment(-c),inventory:firebase.firestore.FieldValue.arrayUnion(id)})}
 
-function renderShop() {
-    const grid = document.getElementById('shopGrid'); grid.innerHTML = '';
-    SHOP.forEach(item => {
-        const owned = myData.inventory?.includes(item.id);
-        grid.innerHTML += `
-            <div class="vault-card ${item.mythic ? 'mythic-glow' : ''}">
-                <div class="card-icon">${item.pfp}</div>
-                <div style="font-weight:800;">${item.name}</div>
-                <div style="color:var(--gold); font-weight:800; margin:1rem 0;">♦ ${item.cost}</div>
-                <button class="btn-prime" onclick="buy('${item.id}', ${item.cost})" ${owned ? 'disabled' : ''}>
-                    ${owned ? 'OWNED' : 'BUY'}
-                </button>
-            </div>`;
-    });
-}
+function renderInv(){inv.innerHTML='';(me.inventory||[]).forEach(id=>{const i=SHOP.find(x=>x.id===id);if(!i)return;
+const evo=SHOP.find(e=>e.requires===id);
+inv.innerHTML+=`<div class="vault-card ${i.mythic?'mythic-glow':''}"><div class="card-icon">${i.pfp}</div>${evo?`<button class="btn" onclick="evolve('${id}','${evo.id}',${evo.evolveCost})">EVOLVE</button>`:''}</div>`})}
 
-async function buy(id, cost) {
-    if (myData.vibes < cost) return alert("Need more Diamonds!");
-    await db.collection('users').doc(auth.currentUser.uid).update({
-        vibes: firebase.firestore.FieldValue.increment(-cost),
-        inventory: firebase.firestore.FieldValue.arrayUnion(id)
-    });
-}
+function evolve(b,e,c){if(me.vibes<c)return toast('Need more ♦');db.collection('users').doc(auth.currentUser.uid).update({vibes:firebase.firestore.FieldValue.increment(-c),inventory:firebase.firestore.FieldValue.arrayRemove(b)}).then(()=>db.collection('users').doc(auth.currentUser.uid).update({inventory:firebase.firestore.FieldValue.arrayUnion(e)}));toast('🧬 Evolution Complete')}
 
-function renderInventory() {
-    const grid = document.getElementById('invGrid'); grid.innerHTML = '';
-    myData.inventory?.forEach(id => {
-        const item = SHOP.find(i => i.id === id);
-        grid.innerHTML += `
-            <div class="vault-card">
-                <div class="card-icon">${item?.pfp}</div>
-                <button class="btn-prime" onclick="equip('${id}')">
-                    ${myData.equipped === id ? 'UNEQUIP' : 'EQUIP'}
-                </button>
-            </div>`;
-    });
-}
+function renderLounge(){db.collection('users').onSnapshot(s=>{lounge.innerHTML='';s.forEach(d=>{lounge.innerHTML+=`<div class="vault-card"><b>${d.data().name}</b></div>`})})}
 
-async function equip(id) {
-    await db.collection('users').doc(auth.currentUser.uid).update({ equipped: myData.equipped === id ? null : id });
-}
+function renderRanks(){db.collection('users').orderBy('xp','desc').limit(10).onSnapshot(s=>{ranks.innerHTML='';s.forEach((d,i)=>{ranks.innerHTML+=`<div>#${i+1} ${d.data().name} – XP ${d.data().xp}</div>`})})}
 
-function sendChat() {
-    const i = document.getElementById('chatInput'); if(!i.value) return;
-    db.collection('chat').add({ user: myData.name, msg: i.value, time: Date.now() });
-    db.collection('users').doc(auth.currentUser.uid).update({ xp: firebase.firestore.FieldValue.increment(5) });
-    i.value = '';
-}
+function sendChat(){const i=chatInput;if(!i.value)return;db.collection('chat').add({user:me.name,msg:i.value,time:Date.now()});i.value=''}
+function renderChat(){db.collection('chat').orderBy('time').limitToLast(25).onSnapshot(s=>{chat.innerHTML='';s.forEach(d=>chat.innerHTML+=`<div class="chat-msg"><b>${d.data().user}</b> ${d.data().msg}</div>`);chat.scrollTop=99999})}
 
-db.collection('chat').orderBy('time', 'desc').limit(20).onSnapshot(s => {
-    const b = document.getElementById('chatFlow'); b.innerHTML = '';
-    s.docs.reverse().forEach(d => {
-        b.innerHTML += `<div class="chat-msg"><b>${d.data().user}</b>${d.data().msg}</div>`;
-    });
-    b.scrollTop = b.scrollHeight;
-});
-
-function nav(t) {
-    document.querySelectorAll('.view').forEach(v => v.style.display = 'none');
-    document.getElementById('view-'+t).style.display = 'block';
-    document.querySelectorAll('.nav-link').forEach(b => b.classList.remove('active'));
-    document.getElementById('tab-'+t).classList.add('active');
-}
+function nav(t){document.querySelectorAll('.view').forEach(v=>v.style.display='none');document.getElementById('view-'+t).style.display='block';document.querySelectorAll('.nav-link').forEach(n=>n.classList.remove('active'));event.target.classList.add('active')}
 </script>
 </body>
 </html>
