@@ -9,20 +9,17 @@
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
 
     <style>
         :root { --gold: #d4af37; --ice: #a5f3fc; --mythic: #ff00ea; --glass: rgba(255, 255, 255, 0.05); }
-        * { box-sizing: border-box; transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        * { box-sizing: border-box; transition: 0.3s ease; }
         body { margin: 0; font-family: 'Inter', sans-serif; background: #05070a; color: #fff; height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
 
-        /* Mythic Glow */
-        @keyframes mythic { 0%, 100% { box-shadow: 0 0 15px var(--mythic); border-color: var(--mythic); } 50% { box-shadow: 0 0 30px #00d4ff; border-color: #00d4ff; } }
-        
         header { padding: 15px 40px; background: #000; border-bottom: 1px solid rgba(165, 243, 252, 0.2); display: flex; justify-content: space-between; align-items: center; }
         .main-layout { display: grid; grid-template-columns: 240px 1fr 320px; flex-grow: 1; overflow: hidden; }
         
-        /* Sidebar */
+        /* Sidebar Navigation */
         .nav-sidebar { padding: 20px; background: rgba(0,0,0,0.4); border-right: 1px solid rgba(255,255,255,0.05); display: flex; flex-direction: column; gap: 10px; }
         .nav-btn { background: var(--glass); border: 1px solid transparent; color: #888; padding: 12px; font-family: 'Cinzel'; cursor: pointer; border-radius: 6px; text-align: left; }
         .nav-btn.active { color: var(--ice); border-color: var(--ice); background: rgba(165, 243, 252, 0.1); }
@@ -30,36 +27,48 @@
         #centerContent { overflow-y: auto; padding: 40px; background: radial-gradient(circle at center, #0c1220 0%, #05070a 100%); }
         .view-section { display: none; }
 
-        /* Wheel with Labels */
+        /* Wheel with Segments and Labels */
         .wheel-box { position: relative; width: 340px; height: 340px; margin: 40px auto; }
-        #wheel { width: 100%; height: 100%; border-radius: 50%; border: 10px solid #111; position: relative; overflow: hidden; transition: transform 4s cubic-bezier(0.15, 0, 0.15, 1); background: #111; }
-        .wheel-label { position: absolute; width: 50%; height: 50%; transform-origin: bottom right; padding: 20px; font-weight: bold; font-size: 0.9rem; color: var(--ice); text-align: center; }
+        #wheel { 
+            width: 100%; height: 100%; border-radius: 50%; border: 10px solid #111; position: relative; overflow: hidden; 
+            transition: transform 4s cubic-bezier(0.15, 0, 0.15, 1); 
+            background: conic-gradient(
+                #1a1a1a 0deg 60deg, #222 60deg 120deg, #1a1a1a 120deg 180deg, 
+                #222 180deg 240deg, #1a1a1a 240deg 300deg, var(--gold) 300deg 360deg
+            );
+        }
+        .segment-label {
+            position: absolute; width: 100%; height: 100%; text-align: center;
+            font-weight: bold; font-family: 'Cinzel'; color: #fff; padding-top: 20px;
+        }
         .pointer { position: absolute; top: -15px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 20px solid transparent; border-right: 20px solid transparent; border-top: 40px solid var(--gold); z-index: 10; }
 
-        /* Profile Cards */
+        /* Cards and Profiles */
         .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; }
         .user-card { background: rgba(255,255,255,0.03); border: 1px solid #222; padding: 20px; border-radius: 15px; text-align: center; }
-        .pfp { width: 60px; height: 60px; border-radius: 50%; background: var(--glass); margin: 0 auto 10px; border: 2px solid var(--ice); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; }
-        .mythic-card { animation: mythic 3s infinite; border-width: 2px !important; }
+        .pfp-circle { width: 70px; height: 70px; border-radius: 50%; background: #111; margin: 0 auto 10px; display: flex; align-items: center; justify-content: center; font-size: 2rem; border: 2px solid var(--ice); }
+        .mythic-glow { animation: mythicAnim 3s infinite; border-width: 2px !important; }
+        @keyframes mythicAnim { 0%, 100% { border-color: var(--mythic); box-shadow: 0 0 15px var(--mythic); } 50% { border-color: #00d4ff; box-shadow: 0 0 15px #00d4ff; } }
 
-        /* Shop & Inventory */
+        /* Shop Styles */
         .shop-card { background: #111; border: 1px solid #333; padding: 20px; border-radius: 12px; border-top: 4px solid var(--ice); }
-        .item-cost { color: var(--gold); font-weight: bold; margin: 10px 0; }
+        .item-cost { color: var(--gold); font-weight: bold; margin: 10px 0; font-family: 'Cinzel'; }
 
         #loginOverlay { position: fixed; inset: 0; background: #05070a; z-index: 9999; display: flex; align-items: center; justify-content: center; }
         input { background: #111; border: 1px solid #333; color: #fff; padding: 12px; border-radius: 5px; width: 100%; margin-bottom: 10px; }
         
+        /* Chat */
         .chat-sidebar { background: #000; border-left: 1px solid #222; display: flex; flex-direction: column; padding: 15px; }
-        #chatBox { flex-grow: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
+        #chatBox { flex-grow: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; }
         .msg { font-size: 0.8rem; padding: 8px; background: #111; border-radius: 5px; border-left: 3px solid var(--ice); }
     </style>
 </head>
 <body>
 
 <div id="loginOverlay">
-    <div style="width: 320px; text-align: center; padding: 30px; border: 1px solid var(--ice); border-radius: 20px;">
+    <div style="width: 320px; text-align: center; padding: 30px; border: 1px solid var(--ice); border-radius: 20px; background: #000;">
         <h2 style="font-family:'Cinzel'; color:var(--ice);">WINTER LOUNGE</h2>
-        <input id="regName" placeholder="Username (For Join Only)" style="display:none;">
+        <input id="regName" placeholder="Lounge Name (Join Only)" style="display:none;">
         <input id="authEmail" type="email" placeholder="Email">
         <input id="authPass" type="password" placeholder="Password">
         <button class="nav-btn" style="width:100%; text-align:center;" onclick="handleAuth()">ENTER</button>
@@ -90,22 +99,24 @@
             <div class="wheel-box">
                 <div class="pointer"></div>
                 <div id="wheel">
-                    <div class="wheel-label" style="transform:rotate(0deg); background:#1a1a1a;">10♦</div>
-                    <div class="wheel-label" style="transform:rotate(60deg); background:#222;">50♦</div>
-                    <div class="wheel-label" style="transform:rotate(120deg); background:#1a1a1a;">20♦</div>
-                    <div class="wheel-label" style="transform:rotate(180deg); background:#222;">100♦</div>
-                    <div class="wheel-label" style="transform:rotate(240deg); background:#1a1a1a;">5♦</div>
-                    <div class="wheel-label" style="transform:rotate(300deg); background:var(--gold); color:#000;">JACKPOT</div>
+                    <div class="segment-label" style="transform: rotate(30deg)">10♦</div>
+                    <div class="segment-label" style="transform: rotate(90deg)">50♦</div>
+                    <div class="segment-label" style="transform: rotate(150deg)">20♦</div>
+                    <div class="segment-label" style="transform: rotate(210deg)">100♦</div>
+                    <div class="segment-label" style="transform: rotate(270deg)">5♦</div>
+                    <div class="segment-label" style="transform: rotate(330deg); color:#000;">JACKPOT</div>
                 </div>
             </div>
-            <button id="spinBtn" class="nav-btn" onclick="spinWheel()">SPIN FOR 24h REWARD</button>
+            <button id="spinBtn" class="nav-btn" style="margin: 0 auto; display:block;" onclick="spinWheel()">SPIN FOR REWARD</button>
         </section>
 
         <section id="view-shop" class="view-section">
+            <h2 style="font-family:'Cinzel';">Shop</h2>
             <div id="shopGrid" class="card-grid"></div>
         </section>
 
         <section id="view-inventory" class="view-section">
+            <h2 style="font-family:'Cinzel';">My Items</h2>
             <div id="inventoryGrid" class="card-grid"></div>
         </section>
     </main>
@@ -117,6 +128,7 @@
 </div>
 
 <script>
+// INITIALIZE
 const firebaseConfig = { apiKey: "AIzaSyCDll8RH1kzGOf-ixJmSlHXGssOHSMlO3s", authDomain: "vibely-5128e.firebaseapp.com", projectId: "vibely-5128e", storageBucket: "vibely-5128e.firebasestorage.app", messagingSenderId: "1048550825812", appId: "1:1048550825812:web:fc5bbba51e065807ffb2c1" };
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
@@ -126,17 +138,16 @@ let isLogin = true;
 let myData = null;
 
 const ITEMS = [
-    { id: 'ice_frame', name: 'Ice Frame', cost: 150, mythic: false, icon: '❄️' },
-    { id: 'mythic_god', name: 'Mythic God', cost: 1000, mythic: true, icon: '🔱' },
-    { id: 'gold_tag', name: 'Gold Tag', cost: 300, mythic: false, icon: '🏷️' }
+    { id: 'ice_king', name: 'Ice King', cost: 500, mythic: true, pfp: '👑' },
+    { id: 'penguin', name: 'Penguin Pet', cost: 200, mythic: false, pfp: '🐧' },
+    { id: 'wizard', name: 'Frost Mage', cost: 1000, mythic: true, pfp: '🧙‍♂️' },
+    { id: 'snowflake', name: 'Snowflake', cost: 50, mythic: false, pfp: '❄️' }
 ];
 
 function toggleMode() { isLogin = !isLogin; document.getElementById('regName').style.display = isLogin ? 'none' : 'block'; }
 
 async function handleAuth() {
-    const e = document.getElementById('authEmail').value;
-    const p = document.getElementById('authPass').value;
-    const n = document.getElementById('regName').value;
+    const e = document.getElementById('authEmail').value, p = document.getElementById('authPass').value, n = document.getElementById('regName').value;
     try {
         if (isLogin) await auth.signInWithEmailAndPassword(e, p);
         else {
@@ -151,31 +162,30 @@ async function handleAuth() {
 auth.onAuthStateChanged(user => {
     if (user) {
         document.getElementById('loginOverlay').style.display = 'none';
-        syncData(user.uid);
+        db.collection('users').doc(user.uid).onSnapshot(doc => {
+            myData = doc.data();
+            document.getElementById('userStats').innerText = `♦ ${myData.vibes}`;
+            renderShop();
+            renderInventory();
+        });
+        loadLounge();
     } else {
         document.getElementById('loginOverlay').style.display = 'flex';
     }
 });
 
-function syncData(uid) {
-    db.collection('users').doc(uid).onSnapshot(doc => {
-        myData = doc.data();
-        document.getElementById('userStats').innerText = `♦ ${myData.vibes}`;
-        renderShop();
-        renderInventory();
-    });
-
+function loadLounge() {
     db.collection('users').onSnapshot(snap => {
         const grid = document.getElementById('userGrid');
         grid.innerHTML = '';
         snap.forEach(d => {
             const u = d.data();
-            const isMythic = u.equipped === 'mythic_god';
+            const mythic = u.equipped && ITEMS.find(i => i.id === u.equipped)?.mythic;
+            const currentPfp = u.equipped ? ITEMS.find(i => i.id === u.equipped).pfp : u.pfp;
             grid.innerHTML += `
-                <div class="user-card ${isMythic ? 'mythic-card' : ''}">
-                    <div class="pfp">${u.pfp || '👤'}</div>
+                <div class="user-card ${mythic ? 'mythic-glow' : ''}">
+                    <div class="pfp-circle">${currentPfp}</div>
                     <div style="font-family:Cinzel; color:var(--ice);">${u.name}</div>
-                    <div style="font-size:0.6rem; color:var(--gold);">${u.equipped ? 'Equipped: ' + u.equipped : 'Member'}</div>
                 </div>`;
         });
     });
@@ -183,7 +193,7 @@ function syncData(uid) {
 
 async function spinWheel() {
     const cooldown = 24 * 60 * 60 * 1000;
-    if (Date.now() - (myData.lastSpin || 0) < cooldown) return alert("Wheel is frozen! Wait 24h.");
+    if (Date.now() - (myData.lastSpin || 0) < cooldown) return alert("Wheel frozen! Try later.");
     
     const spinBtn = document.getElementById('spinBtn');
     spinBtn.disabled = true;
@@ -191,11 +201,11 @@ async function spinWheel() {
     document.getElementById('wheel').style.transform = `rotate(${deg}deg)`;
 
     setTimeout(async () => {
-        const prizes = [10, 50, 20, 100, 5, 500];
-        const prize = prizes[Math.floor(Math.random() * prizes.length)];
-        alert(`Won ♦ ${prize}!`);
+        const prizes = [10, 50, 20, 100, 5, 500]; // 500 is Jackpot
+        const win = prizes[Math.floor(Math.random() * prizes.length)];
+        alert(`You won ♦ ${win}!`);
         await db.collection('users').doc(auth.currentUser.uid).update({
-            vibes: firebase.firestore.FieldValue.increment(prize),
+            vibes: firebase.firestore.FieldValue.increment(win),
             lastSpin: Date.now()
         });
         spinBtn.disabled = false;
@@ -209,18 +219,18 @@ function renderShop() {
         const owned = myData.inventory?.includes(item.id);
         grid.innerHTML += `
             <div class="shop-card">
-                <div style="font-size:1.5rem;">${item.icon}</div>
+                <div style="font-size:2rem;">${item.pfp}</div>
                 <div style="font-weight:bold; color:${item.mythic ? 'var(--mythic)' : '#fff'}">${item.name}</div>
                 <div class="item-cost">♦ ${item.cost}</div>
                 <button class="nav-btn" onclick="buyItem('${item.id}', ${item.cost})" ${owned ? 'disabled' : ''}>
-                    ${owned ? 'OWNED' : 'PURCHASE'}
+                    ${owned ? 'OWNED' : 'BUY'}
                 </button>
             </div>`;
     });
 }
 
 async function buyItem(id, cost) {
-    if (myData.vibes < cost) return alert("Need more Diamonds!");
+    if (myData.vibes < cost) return alert("Not enough Diamonds!");
     await db.collection('users').doc(auth.currentUser.uid).update({
         vibes: firebase.firestore.FieldValue.increment(-cost),
         inventory: firebase.firestore.FieldValue.arrayUnion(id)
@@ -234,7 +244,7 @@ function renderInventory() {
         const item = ITEMS.find(i => i.id === itemId);
         grid.innerHTML += `
             <div class="shop-card">
-                <div>${item?.name || 'Legacy Item'}</div>
+                <div style="font-size:1.5rem;">${item?.pfp}</div>
                 <button class="nav-btn" onclick="equip('${itemId}')">
                     ${myData.equipped === itemId ? 'UNEQUIP' : 'EQUIP'}
                 </button>
@@ -243,8 +253,7 @@ function renderInventory() {
 }
 
 async function equip(id) {
-    const newEquip = myData.equipped === id ? null : id;
-    await db.collection('users').doc(auth.currentUser.uid).update({ equipped: newEquip });
+    await db.collection('users').doc(auth.currentUser.uid).update({ equipped: myData.equipped === id ? null : id });
 }
 
 function switchTab(t) {
