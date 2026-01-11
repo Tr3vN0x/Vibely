@@ -3,236 +3,298 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Vibely ❄️ Winter Casino</title>
+  <title>Vibely | Premium Lounge</title>
 
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet" />
 
   <style>
     :root {
-      --ice: #38bdf8;
-      --gold: #facc15;
-      --bg: #020617;
-      --card: rgba(15, 23, 42, 0.75);
-      --border: rgba(255, 255, 255, 0.1);
+      --gold: #d4af37;
+      --gold-bright: #facc15;
+      --dark-bg: #0a0a0a;
+      --card-bg: #161616;
+      --border: rgba(212, 175, 55, 0.3);
+      --glass: rgba(255, 255, 255, 0.03);
     }
 
-    * { box-sizing: border-box; transition: 0.25s ease; }
+    * { box-sizing: border-box; transition: all 0.3s ease; }
+    
     body {
       margin: 0;
       font-family: 'Plus Jakarta Sans', sans-serif;
-      background: radial-gradient(circle at top, #0f172a, #020617);
-      color: #f8fafc;
+      background: var(--dark-bg);
+      background-image: radial-gradient(circle at center, #1a1a1a 0%, #0a0a0a 100%);
+      color: #e5e5e5;
       height: 100vh;
       display: flex;
       flex-direction: column;
       overflow: hidden;
     }
 
+    /* Header & Stats */
     header {
-      padding: 1rem 2rem;
-      background: rgba(0,0,0,0.7);
+      padding: 1rem 3rem;
+      background: rgba(0,0,0,0.9);
       display: flex;
       justify-content: space-between;
       align-items: center;
-      border-bottom: 1px solid var(--border);
-      z-index: 10;
+      border-bottom: 2px solid var(--gold);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+      z-index: 100;
     }
 
+    .logo {
+      font-family: 'Cinzel', serif;
+      color: var(--gold);
+      font-size: 1.8rem;
+      letter-spacing: 4px;
+      text-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
+    }
+
+    .stats-bar {
+      display: flex;
+      gap: 20px;
+      font-weight: 800;
+      background: var(--glass);
+      padding: 8px 20px;
+      border-radius: 50px;
+      border: 1px solid var(--border);
+    }
+
+    .diamond-count { color: var(--gold-bright); }
+
+    /* Layout */
     .layout {
       display: grid;
-      grid-template-columns: 240px 1fr 320px;
+      grid-template-columns: 260px 1fr 340px;
       flex: 1;
       overflow: hidden;
     }
 
+    /* Sidebar Navigation */
     nav {
-      padding: 2rem 1.5rem;
+      padding: 2rem 1rem;
+      background: rgba(0,0,0,0.4);
       border-right: 1px solid var(--border);
       display: flex;
       flex-direction: column;
-      gap: 0.5rem;
+      gap: 10px;
     }
 
     .nav-link {
-      padding: 0.9rem 1rem;
-      border-radius: 14px;
-      font-size: 0.75rem;
-      font-weight: 800;
-      letter-spacing: 1px;
+      padding: 15px 20px;
+      border-radius: 12px;
+      font-size: 0.8rem;
+      font-weight: 700;
       text-transform: uppercase;
-      color: #64748b;
+      letter-spacing: 1px;
+      color: #888;
       cursor: pointer;
+      border-left: 3px solid transparent;
     }
 
-    .nav-link.active, .nav-link:hover {
-      background: var(--card);
-      color: var(--ice);
-      border: 1px solid var(--border);
+    .nav-link:hover, .nav-link.active {
+      background: var(--glass);
+      color: var(--gold);
+      border-left: 3px solid var(--gold);
     }
 
-    main { padding: 2.5rem; overflow-y: auto; }
-    .view { display: none; animation: fade 0.4s ease; }
-    @keyframes fade { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    /* Main Content */
+    main { padding: 2rem; overflow-y: auto; background: transparent; }
+    
+    .view { display: none; animation: slideUp 0.5s ease; }
+    @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 1.5rem; }
+    /* Cards & Grids */
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; }
 
-    .card {
-      background: var(--card);
+    .player-card {
+      background: var(--card-bg);
       border: 1px solid var(--border);
-      border-radius: 22px;
-      padding: 1.8rem;
+      border-radius: 15px;
+      padding: 1.5rem;
       text-align: center;
-      backdrop-filter: blur(12px);
+      position: relative;
+      overflow: hidden;
     }
 
-    .card:hover { transform: translateY(-4px); border-color: var(--ice); }
+    .player-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 4px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    }
 
-    .avatar {
-      width: 90px;
-      height: 90px;
+    .avatar-frame {
+      width: 100px; height: 100px;
+      margin: 0 auto 15px;
+      border-radius: 50%;
+      padding: 4px;
+      background: linear-gradient(45deg, var(--gold), #554400);
+    }
+
+    .avatar-frame img {
+      width: 100%; height: 100%;
       border-radius: 50%;
       object-fit: cover;
-      border: 3px solid var(--ice);
-      margin-bottom: 0.8rem;
+      background: #000;
     }
 
+    /* Interactive Elements */
     .btn {
-      width: 100%;
-      padding: 12px;
-      margin-top: 1rem;
-      background: var(--ice);
+      background: linear-gradient(135deg, #d4af37 0%, #8a6d3b 100%);
       color: #000;
-      font-weight: 800;
       border: none;
-      border-radius: 12px;
-      cursor: pointer;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-weight: 900;
       text-transform: uppercase;
-      font-size: 0.7rem;
+      cursor: pointer;
+      width: 100%;
+      margin-top: 10px;
     }
 
-    .btn:disabled { background: #1e293b; color: #64748b; cursor: not-allowed; }
+    .btn:hover { transform: scale(1.03); box-shadow: 0 0 15px rgba(212, 175, 55, 0.4); }
+    .btn:disabled { filter: grayscale(1); cursor: not-allowed; }
 
+    /* Chat Area */
     aside {
+      background: rgba(0,0,0,0.5);
       border-left: 1px solid var(--border);
-      padding: 1.5rem;
       display: flex;
       flex-direction: column;
-      background: rgba(0,0,0,0.3);
+      padding: 1.5rem;
     }
 
-    .chat { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 0.8rem; }
-    .msg { background: var(--card); padding: 10px; border-radius: 14px; font-size: 0.8rem; border: 1px solid var(--border); }
-    .msg b { color: var(--ice); display: block; font-size: 0.65rem; }
+    .chat-box { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; padding-bottom: 1rem; }
+    .chat-msg {
+      background: var(--glass);
+      padding: 12px;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.05);
+      font-size: 0.85rem;
+    }
+
+    .chat-msg b { color: var(--gold); display: block; margin-bottom: 4px; font-size: 0.7rem; text-transform: uppercase; }
 
     input, textarea {
-      width: 100%;
-      padding: 12px;
-      margin-top: 0.6rem;
-      background: #0f172a;
+      background: #000;
       border: 1px solid var(--border);
       color: #fff;
-      border-radius: 12px;
+      padding: 12px;
+      border-radius: 8px;
+      width: 100%;
       outline: none;
-      resize: none;
     }
 
-    .wheel-container { position: relative; width: 300px; margin: 2rem auto; }
+    /* Wheel Style */
+    .wheel-container { position: relative; width: 320px; margin: 2rem auto; }
     .wheel {
-      width: 300px;
-      height: 300px;
+      width: 320px; height: 320px;
       border-radius: 50%;
-      border: 10px solid #1e293b;
+      border: 8px solid var(--gold);
       background: conic-gradient(
-        #0f172a 0 45deg, #1e293b 45 90deg,
-        #0f172a 90 135deg, #1e293b 135 180deg,
-        #0f172a 180 225deg, #1e293b 225 270deg,
-        #0f172a 270 315deg, var(--gold) 315 360deg
+        #111 0deg 45deg, #222 45deg 90deg,
+        #111 90deg 135deg, #222 135deg 180deg,
+        #111 180deg 225deg, #222 225deg 270deg,
+        #111 270deg 315deg, var(--gold) 315deg 360deg
       );
-      transition: transform 4s cubic-bezier(0.15, 0, 0.15, 1);
+      box-shadow: 0 0 50px rgba(212, 175, 55, 0.2);
+    }
+    .needle {
+      position: absolute; top: -15px; left: 50%; transform: translateX(-50%);
+      width: 0; height: 0;
+      border-left: 15px solid transparent; border-right: 15px solid transparent;
+      border-top: 30px solid var(--gold-bright); z-index: 10;
     }
 
-    .needle {
-      position: absolute;
-      top: -10px; left: 50%;
-      transform: translateX(-50%);
-      width: 0; height: 0;
-      border-left: 14px solid transparent;
-      border-right: 14px solid transparent;
-      border-top: 26px solid var(--ice);
-      z-index: 5;
-      filter: drop-shadow(0 0 6px var(--ice));
-    }
   </style>
 </head>
 <body>
 
 <header>
-  <div style="font-family:Cinzel; color:var(--ice); letter-spacing:3px;">VIBELY ❄️</div>
-  <div id="stats">♦ 0 · LVL 1</div>
+  <div class="logo">VIBELY</div>
+  <div class="stats-bar">
+    <span>LVL <span id="lvl">1</span></span>
+    <span class="diamond-count">♦ <span id="diamonds">0</span></span>
+  </div>
 </header>
 
 <div class="layout">
   <nav>
-    <div class="nav-link active" onclick="nav('lounge', this)">Lounge</div>
-    <div class="nav-link" onclick="nav('wheel', this)">Spin</div>
-    <div class="nav-link" onclick="nav('shop', this)">Shop</div>
-    <div class="nav-link" onclick="nav('profile', this)">Profile</div>
+    <div class="nav-link active" onclick="show('lounge', this)">Lounge</div>
+    <div class="nav-link" onclick="show('wheel', this)">Rewards</div>
+    <div class="nav-link" onclick="show('shop', this)">Elite Shop</div>
+    <div class="nav-link" onclick="show('profile', this)">My Card</div>
   </nav>
 
   <main>
-    <section id="view-lounge" class="view" style="display:block;">
-      <h2>Players</h2>
-      <div id="players" class="grid"></div>
+    <section id="v-lounge" class="view" style="display:block;">
+      <h2 style="font-family:Cinzel;">Member Lounge</h2>
+      <div id="player-list" class="grid"></div>
     </section>
 
-    <section id="view-wheel" class="view">
-      <h2>Daily Spin</h2>
+    <section id="v-wheel" class="view">
+      <h2 style="font-family:Cinzel; text-align: center;">Daily Spin</h2>
       <div class="wheel-container">
         <div class="needle"></div>
-        <div id="wheel" class="wheel"></div>
+        <div id="main-wheel" class="wheel"></div>
       </div>
-      <button id="spinBtn" class="btn" onclick="spin()">Spin</button>
-      <div id="spinMsg" style="margin-top:1rem; text-align: center; color: var(--gold); font-weight: bold;"></div>
+      <button id="spin-btn" class="btn" onclick="handleSpin()">Spin for Diamonds</button>
+      <p id="spin-status" style="text-align:center; color: var(--gold); font-weight: bold; margin-top: 15px;"></p>
     </section>
 
-    <section id="view-shop" class="view">
-      <h2>Avatar Shop</h2>
-      <div id="shop" class="grid">
-        <div class="card">Coming Soon...</div>
+    <section id="v-shop" class="view">
+      <h2 style="font-family:Cinzel;">Elite Shop</h2>
+      <div class="grid">
+        <div class="player-card">
+          <div style="font-size: 2rem;">🏆</div>
+          <h3>Gold Badge</h3>
+          <p>Status symbol for winners.</p>
+          <button class="btn" onclick="buy(500)">Buy (♦ 500)</button>
+        </div>
+        <div class="player-card">
+          <div style="font-size: 2rem;">⚡</div>
+          <h3>XP Booster</h3>
+          <p>Level up twice as fast.</p>
+          <button class="btn" onclick="buy(250)">Buy (♦ 250)</button>
+        </div>
       </div>
     </section>
 
-    <section id="view-profile" class="view">
-      <h2>My Profile</h2>
-      <div class="card" style="max-width: 400px; margin: auto;">
-        <img id="myAvatar" class="avatar" src="https://placehold.co/200x200" />
-        <input id="avatarUrl" placeholder="Profile image URL" />
-        <textarea id="bio" placeholder="Your bio / tags"></textarea>
-        <button class="btn" onclick="saveProfile()">Save Profile</button>
+    <section id="v-profile" class="view">
+      <h2 style="font-family:Cinzel;">Profile Management</h2>
+      <div class="player-card" style="max-width: 450px; margin: 0 auto;">
+        <div class="avatar-frame"><img id="prof-img" src=""></div>
+        <input id="upd-img" placeholder="New Avatar URL" style="margin-bottom: 10px;">
+        <textarea id="upd-bio" placeholder="Update your status..."></textarea>
+        <button class="btn" onclick="updateProfile()">Save Identity</button>
       </div>
     </section>
   </main>
 
   <aside>
-    <div id="chat" class="chat"></div>
-    <input id="chatInput" placeholder="Message..." onkeypress="if(event.key==='Enter') send()" />
+    <div id="chat-stream" class="chat-box"></div>
+    <div style="margin-top: 10px;">
+      <input id="chat-input" placeholder="Say something..." onkeypress="if(event.key==='Enter') postMsg()">
+    </div>
   </aside>
 </div>
 
 <script>
-// 🔥 RE-INSERT YOUR CONFIG HERE
-const firebaseConfig = { /* your config */ };
+// --- PASTE YOUR FIREBASE CONFIG HERE ---
+const firebaseConfig = { /* PASTE CONFIG DATA HERE */ };
 
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 const auth = firebase.auth();
 
-let me = null;
-let currentRotation = 0;
+let user = null;
+let rotation = 0;
 
 auth.signInAnonymously();
 
@@ -240,117 +302,110 @@ auth.onAuthStateChanged(async u => {
   if (!u) return;
   const ref = db.collection('users').doc(u.uid);
   const doc = await ref.get();
+  
   if (!doc.exists) {
     await ref.set({
-      name: 'Guest_' + Math.floor(Math.random()*999),
-      avatar: 'https://api.dicebear.com/7.x/pixel-art/svg?seed=' + u.uid,
-      bio: '',
-      diamonds: 100,
-      xp: 0,
-      lastSpin: 0
+      name: 'User_' + u.uid.substring(0,5),
+      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=' + u.uid,
+      bio: 'New Member',
+      diamonds: 200,
+      xp: 0
     });
   }
-
-  ref.onSnapshot(s => { 
-    me = s.data(); 
-    updateUI(); 
-  });
+  ref.onSnapshot(s => { user = s.data(); refreshUI(); });
 });
 
-function updateUI() {
-  if(!me) return;
-  document.getElementById('stats').innerText = `♦ ${me.diamonds} · LVL ${Math.floor(me.xp/100)+1}`;
-  document.getElementById('myAvatar').src = me.avatar;
-  document.getElementById('bio').value = me.bio || '';
+function refreshUI() {
+  if(!user) return;
+  document.getElementById('diamonds').innerText = user.diamonds;
+  document.getElementById('lvl').innerText = Math.floor(user.xp / 100) + 1;
+  document.getElementById('prof-img').src = user.avatar;
 }
 
-function nav(v, el) {
-  document.querySelectorAll('.view').forEach(s => s.style.display='none');
+function show(id, el) {
+  document.querySelectorAll('.view').forEach(v => v.style.display = 'none');
   document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
-  document.getElementById('view-'+v).style.display='block';
+  document.getElementById('v-' + id).style.display = 'block';
   el.classList.add('active');
 }
 
-function saveProfile() {
-  const newUrl = document.getElementById('avatarUrl').value;
-  db.collection('users').doc(auth.currentUser.uid).update({
-    avatar: newUrl || me.avatar,
-    bio: document.getElementById('bio').value
-  }).then(() => alert("Profile Saved!"));
-}
-
-function spin() {
-  const btn = document.getElementById('spinBtn');
-  const wheel = document.getElementById('wheel');
-  const msg = document.getElementById('spinMsg');
+function handleSpin() {
+  const btn = document.getElementById('spin-btn');
+  const wheel = document.getElementById('main-wheel');
+  const status = document.getElementById('spin-status');
   
   btn.disabled = true;
-  msg.innerText = "Spinning...";
+  status.innerText = "The wheel is spinning...";
   
-  // Logic: 5 full spins + random degrees
-  const extraDegrees = Math.floor(Math.random() * 360);
-  currentRotation += (360 * 5) + extraDegrees;
-  wheel.style.transform = `rotate(${currentRotation}deg)`;
+  const addRot = 1800 + Math.floor(Math.random() * 360);
+  rotation += addRot;
+  wheel.style.transform = `rotate(${rotation}deg)`;
+  wheel.style.transition = "transform 4s cubic-bezier(0.15, 0, 0.15, 1)";
 
   setTimeout(() => {
-    const rewards = [10, 20, 50, 'xp', 'xp', 100];
-    const r = rewards[Math.floor(Math.random()*rewards.length)];
+    const wins = [50, 100, 20, 10, 200, 50, 10, 500];
+    const prize = wins[Math.floor(Math.random() * wins.length)];
     
-    if (r === 'xp') {
-      db.collection('users').doc(auth.currentUser.uid).update({ 
-        xp: firebase.firestore.FieldValue.increment(40) 
-      });
-      msg.innerText = 'You won 40 XP!';
-    } else {
-      db.collection('users').doc(auth.currentUser.uid).update({ 
-        diamonds: firebase.firestore.FieldValue.increment(r) 
-      });
-      msg.innerText = `You won ♦ ${r}`;
-    }
+    db.collection('users').doc(auth.currentUser.uid).update({
+      diamonds: firebase.firestore.FieldValue.increment(prize),
+      xp: firebase.firestore.FieldValue.increment(15)
+    });
+    
+    status.innerText = `Congratulations! You won ♦ ${prize}`;
     btn.disabled = false;
   }, 4000);
 }
 
-function send() {
-  const input = document.getElementById('chatInput');
-  const val = input.value.trim();
-  if (!val || !me) return;
-  
-  db.collection('chat').add({ 
-    name: me.name, 
-    msg: val, 
-    time: Date.now() 
+function buy(cost) {
+  if (user.diamonds < cost) return alert("Not enough diamonds!");
+  db.collection('users').doc(auth.currentUser.uid).update({
+    diamonds: firebase.firestore.FieldValue.increment(-cost)
   });
-  
-  db.collection('users').doc(auth.currentUser.uid).update({ 
-    xp: firebase.firestore.FieldValue.increment(5) 
-  });
-  input.value='';
+  alert("Item purchased!");
 }
 
-// Fixed Chat Listener (Auto-Scroll)
-db.collection('chat').orderBy('time', 'desc').limit(30).onSnapshot(s => {
-  const chatDiv = document.getElementById('chat');
-  chatDiv.innerHTML='';
-  const messages = [];
-  s.forEach(d => messages.unshift(d.data()));
-  messages.forEach(m => {
-    chatDiv.innerHTML += `<div class="msg"><b>${m.name}</b>${m.msg}</div>`;
+function updateProfile() {
+  const img = document.getElementById('upd-img').value;
+  const bio = document.getElementById('upd-bio').value;
+  db.collection('users').doc(auth.currentUser.uid).update({
+    avatar: img || user.avatar,
+    bio: bio || user.bio
   });
-  chatDiv.scrollTop = chatDiv.scrollHeight;
+}
+
+function postMsg() {
+  const input = document.getElementById('chat-input');
+  if(!input.value.trim()) return;
+  
+  db.collection('chat').add({
+    user: user.name,
+    text: input.value,
+    ts: Date.now()
+  });
+  input.value = '';
+}
+
+// Listeners
+db.collection('chat').orderBy('ts', 'desc').limit(20).onSnapshot(s => {
+  const stream = document.getElementById('chat-stream');
+  stream.innerHTML = '';
+  s.docs.reverse().forEach(d => {
+    const m = d.data();
+    stream.innerHTML += `<div class="chat-msg"><b>${m.user}</b>${m.text}</div>`;
+  });
+  stream.scrollTop = stream.scrollHeight;
 });
 
-// Fixed Player Grid Listener
 db.collection('users').onSnapshot(s => {
-  const playerDiv = document.getElementById('players');
-  playerDiv.innerHTML='';
+  const list = document.getElementById('player-list');
+  list.innerHTML = '';
   s.forEach(d => {
-    const u = d.data();
-    playerDiv.innerHTML += `
-      <div class="card">
-        <img class="avatar" src="${u.avatar}">
-        <div style="font-weight:800;">${u.name}</div>
-        <p style="font-size:0.7rem; color: #64748b;">${u.bio||''}</p>
+    const p = d.data();
+    list.innerHTML += `
+      <div class="player-card">
+        <div class="avatar-frame"><img src="${p.avatar}"></div>
+        <div style="font-weight:bold; color:var(--gold);">${p.name}</div>
+        <div style="font-size:0.7rem; margin-top:5px; color:#888;">${p.bio}</div>
       </div>`;
   });
 });
